@@ -1,18 +1,20 @@
 <?php namespace Pixie;
 
 use Mockery as m;
+use Viocon\Container;
 
 class TestCase extends \PHPUnit_Framework_TestCase {
+    /**
+     * @var Container
+     */
+    protected $container;
     protected $mockConnection;
     protected $mockPdo;
     protected $mockPdoStatement;
 
     public function setUp()
     {
-        // Launch the container
-        if (!class_exists('\\Pixie\\Container')) {
-            new \Viocon\Container('Pixie\\Container');
-        }
+        $this->container = new Container();
 
         $this->mockPdoStatement = $this->getMock('\\PDOStatement');
 
@@ -26,6 +28,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
         $this->mockConnection->shouldReceive('getPdoInstance')->andReturn($this->mockPdo);
         $this->mockConnection->shouldReceive('getAdapter')->andReturn('mysql');
         $this->mockConnection->shouldReceive('getAdapterConfig')->andReturn(array('prefix' => 'cb_'));
+        $this->mockConnection->shouldReceive('getContainer')->andReturn($this->container);
     }
 
     public function tearDown()

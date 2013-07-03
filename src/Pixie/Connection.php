@@ -1,7 +1,14 @@
 <?php namespace Pixie;
 
+use Viocon\Container;
+
 class Connection
 {
+
+    /**
+     * @var Container
+     */
+    protected $container;
 
     /**
      * @var string
@@ -19,21 +26,21 @@ class Connection
     protected $pdoInstance;
 
     /**
-     * @param                   $adapter
-     * @param array             $adapterConfig
-     * @param bool              $alias
-     *
-     * @internal param \Viocon\Container $container
-     *
-     * @return \Pixie\Connection
+     * @var Connection
      */
-    public function __construct($adapter, array $adapterConfig, $alias = false)
-    {
-        // Launch the container
-        if (!class_exists('\\Pixie\\Container')) {
-            new \Viocon\Container('Pixie\\Container');
-        }
+    protected static $storedConnection;
 
+    /**
+     * @param               $adapter
+     * @param array         $adapterConfig
+     * @param null|string   $alias
+     * @param Container     $container
+     */
+    public function __construct($adapter, array $adapterConfig, $alias = null, Container $container = null)
+    {
+        $container = $container ?: new Container();
+
+        $this->container = $container;
 
         $this->setAdapter($adapter)->setAdapterConfig($adapterConfig)->connect();
 
@@ -42,30 +49,21 @@ class Connection
         }
     }
 
-    /**
-     *
-     */
+
     private function connect()
     {
-
         // Build a database connection if we don't have one connected
 
         $adapter = '\\Pixie\\ConnectionAdapters\\' . ucfirst(strtolower($this->adapter));
 
-        $adapterInstance = Container::build($adapter);
+        $adapterInstance = $this->container->build($adapter);
 
         $pdo = $adapterInstance->connect($this->adapterConfig);
         $this->setPdoInstance($pdo);
 
-        // Preserve the first database connection state with a singleton
-        if (!Container::has('DatabaseConnection')) {
-            $connection = $this;
-            Container::singleton(
-                'DatabaseConnection',
-                function () use ($connection) {
-                    return $connection;
-                }
-            );
+        // Preserve the first database connection with a static property
+        if (!static::$storedConnection) {
+            static::$storedConnection = $this;
         }
     }
 
@@ -124,5 +122,21 @@ class Connection
     public function getAdapterConfig()
     {
         return $this->adapterConfig;
+    }
+
+    /**
+     * @return Container
+     */
+    public function getContainer()
+    {
+        return $this->container;
+    }
+
+    /**
+     * @return Connection
+     */
+    public static function getStoredConnection()
+    {
+        return static::$storedConnection;
     }
 }

@@ -1,10 +1,14 @@
 <?php namespace Pixie\QueryBuilder;
 
 use Pixie\Connection;
-use Pixie\Container;
 
 class QueryBuilderHandler
 {
+
+    /**
+     * @var \Viocon\Container
+     */
+    protected $container;
 
     /**
      * @var Connection
@@ -39,15 +43,13 @@ class QueryBuilderHandler
     public function __construct($connection = null)
     {
         if (is_null($connection)) {
-            if (!Container::has('DatabaseConnection')) {
+            if (!$connection = Connection::getStoredConnection()) {
                 throw new \Exception('No database connection found.');
             }
-
-            $connection = Container::build('DatabaseConnection');
         }
 
         $this->connection = $connection;
-
+        $this->container = $this->connection->getContainer();
         $this->pdo = $this->connection->getPdoInstance();
         $this->adapter = $this->connection->getAdapter();
         $this->adapterConfig = $this->connection->getAdapterConfig();
@@ -57,7 +59,7 @@ class QueryBuilderHandler
         }
 
         // Query builder adapter instance
-        $this->adapterInstance = Container::build('\\Pixie\\QueryBuilder\\Adapters\\' . ucfirst($this->adapter));
+        $this->adapterInstance = $this->container->build('\\Pixie\\QueryBuilder\\Adapters\\' . ucfirst($this->adapter));
 
         $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     }
@@ -103,7 +105,7 @@ class QueryBuilderHandler
         }
 
         $queryArr = $this->adapterInstance->$type($this->statements, $dataToBePassed);
-        return Container::build(
+        return $this->container->build(
             '\\Pixie\\QueryBuilder\\QueryObject',
             array($queryArr['sql'], $queryArr['bindings'], $this->pdo)
         );
@@ -288,7 +290,7 @@ class QueryBuilderHandler
 
     public function raw($value)
     {
-        return Container::build('\\Pixie\\QueryBuilder\\Raw', array($value));
+        return $this->container->build('\\Pixie\\QueryBuilder\\Raw', array($value));
     }
 
     /**

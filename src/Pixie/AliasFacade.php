@@ -1,5 +1,7 @@
 <?php namespace Pixie;
 
+use Pixie\QueryBuilder\QueryBuilderHandler;
+
 /**
  * This class gives the ability to access non-static methods statically
  *
@@ -7,7 +9,11 @@
  *
  * @package Caliber\Database
  */
-class AliasFacade {
+class AliasFacade
+{
+
+    protected static $queryBuilderInstance;
+
     /**
      * @param $method
      * @param $args
@@ -16,10 +22,10 @@ class AliasFacade {
      */
     public static function __callStatic($method, $args)
     {
-        if(!Container::has('QueryBuilder')) {
-            Container::singleton('QueryBuilder', '\\Pixie\\QueryBuilder\\QueryBuilderHandler');
+        if (!static::$queryBuilderInstance) {
+            static::$queryBuilderInstance = new QueryBuilderHandler();
         }
-        $queryBuilder = Container::build('QueryBuilder');
-        return call_user_func_array(array($queryBuilder, $method), $args);
+
+        return call_user_func_array(array(static::$queryBuilderInstance, $method), $args);
     }
 }
