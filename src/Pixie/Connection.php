@@ -19,9 +19,11 @@ class Connection
     protected $pdoInstance;
 
     /**
-     * @param                 $adapter
-     * @param array           $adapterConfig
-     * @param bool            $alias
+     * @param                   $adapter
+     * @param array             $adapterConfig
+     * @param bool              $alias
+     *
+     * @internal param \Viocon\Container $container
      *
      * @return \Pixie\Connection
      */
@@ -41,13 +43,15 @@ class Connection
     }
 
     /**
-     * @return ConnectionAdapters\ConnectionAdapter
+     *
      */
     private function connect()
     {
+
         // Build a database connection if we don't have one connected
 
         $adapter = '\\Pixie\\ConnectionAdapters\\' . ucfirst(strtolower($this->adapter));
+
         $adapterInstance = Container::build($adapter);
 
         $pdo = $adapterInstance->connect($this->adapterConfig);
@@ -65,34 +69,58 @@ class Connection
         }
     }
 
+    /**
+     * @param \PDO $pdo
+     *
+     * @return $this
+     */
     public function setPdoInstance(\PDO $pdo)
     {
         $this->pdoInstance = $pdo;
         return $this;
     }
 
+    /**
+     * @return \PDO
+     */
     public function getPdoInstance()
     {
         return $this->pdoInstance;
     }
 
+    /**
+     * @param $adapter
+     *
+     * @return $this
+     */
     public function setAdapter($adapter)
     {
         $this->adapter = $adapter;
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getAdapter()
     {
         return $this->adapter;
     }
 
+    /**
+     * @param array $adapterConfig
+     *
+     * @return $this
+     */
     public function setAdapterConfig(array $adapterConfig)
     {
         $this->adapterConfig = $adapterConfig;
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getAdapterConfig()
     {
         return $this->adapterConfig;

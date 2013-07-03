@@ -1,15 +1,40 @@
 <?php namespace Pixie\QueryBuilder;
 
+use Pixie\Connection;
 use Pixie\Container;
 
 class QueryBuilderHandler
 {
 
+    /**
+     * @var Connection
+     */
     protected $connection;
+
+    /**
+     * @var array
+     */
     protected $statements = array();
+
+    /**
+     * @var \PDO
+     */
     protected $pdo;
+
+    /**
+     * @var null|QueryObject
+     */
     protected $queryObject = null;
+
+    /**
+     * @var null|string
+     */
     protected $tablePrefix = null;
+
+    /**
+     * @var \Pixie\QueryBuilder\Adapters\BaseAdapter
+     */
+    protected $adapterInstance;
 
     public function __construct($connection = null)
     {

@@ -16,7 +16,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
 
         $this->mockPdoStatement = $this->getMock('\\PDOStatement');
 
-        $this->mockPdo = $this->getMock('\\PDO', array('prepare', 'setAttribute', 'quote'), array('sqlite:memory'));
+        $this->mockPdo = $this->getMock('\\Pixie\\MockPdo', array('prepare', 'setAttribute', 'quote'));
         $this->mockPdo->expects($this->any())->method('prepare')->will($this->returnValue($this->mockPdoStatement));
         $this->mockPdo->expects($this->any())->method('quote')->will($this->returnCallback(function($value){
                     return "'$value'";
@@ -38,5 +38,13 @@ class TestCase extends \PHPUnit_Framework_TestCase {
         $args = func_get_args();
 
         return count($args) == 1 ? $args[0] : $args;
+    }
+}
+
+class MockPdo extends \PDO
+{
+    public function __construct()
+    {
+
     }
 }
