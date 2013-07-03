@@ -1,8 +1,5 @@
 <?php namespace Pixie\ConnectionAdapters;
 
-use PDO;
-
-
 class Mysql extends ConnectionAdapter
 {
     public function connect($config)
@@ -17,7 +14,7 @@ class Mysql extends ConnectionAdapter
             $connectionString .= ";unix_socket={$config['unix_socket']}";
         }
 
-        $connection = new PDO($connectionString, $config['username'], $config['password']);
+        $connection = $this->container->build('\PDO', array($connectionString, $config['username'], $config['password']));
 
         if (isset($config['charset'])) {
             $connection->prepare("SET NAMES '{$config['charset']}'")->execute();

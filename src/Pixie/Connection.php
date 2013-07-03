@@ -56,7 +56,7 @@ class Connection
 
         $adapter = '\\Pixie\\ConnectionAdapters\\' . ucfirst(strtolower($this->adapter));
 
-        $adapterInstance = $this->container->build($adapter);
+        $adapterInstance = $this->container->build($adapter, array($this->container));
 
         $pdo = $adapterInstance->connect($this->adapterConfig);
         $this->setPdoInstance($pdo);
