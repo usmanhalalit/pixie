@@ -18,7 +18,7 @@ class CaliberServiceProvider
                 if (!$app->has($configServiceName)) {
                     throw new \Exception('No config service found under ' . $configServiceName . '.');
                 }
-                
+
                 $config = $app->build($configServiceName);
 
                 // Default adapter, like mysql

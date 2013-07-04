@@ -38,7 +38,7 @@ class Connection
      */
     public function __construct($adapter, array $adapterConfig, $alias = null, Container $container = null)
     {
-        $container = $container ?: new Container();
+        $container = $container ? : new Container();
 
         $this->container = $container;
 
@@ -50,6 +50,9 @@ class Connection
     }
 
 
+    /**
+     * Create the connection adapter
+     */
     private function connect()
     {
         // Build a database connection if we don't have one connected

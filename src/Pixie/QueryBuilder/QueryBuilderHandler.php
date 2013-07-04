@@ -40,6 +40,11 @@ class QueryBuilderHandler
      */
     protected $adapterInstance;
 
+    /**
+     * @param null $connection
+     *
+     * @throws \Exception
+     */
     public function __construct($connection = null)
     {
         if (is_null($connection)) {
@@ -64,6 +69,11 @@ class QueryBuilderHandler
         $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     }
 
+    /**
+     * @param null $connection
+     *
+     * @return static
+     */
     public function newQuery($connection = null)
     {
         if (is_null($connection)) {
@@ -73,6 +83,12 @@ class QueryBuilderHandler
         return new static($connection);
     }
 
+    /**
+     * @param       $sql
+     * @param array $bindings
+     *
+     * @return \PDOStatement
+     */
     public function query($sql, $bindings = array())
     {
         $query = $this->pdo->prepare($sql);
@@ -81,11 +97,9 @@ class QueryBuilderHandler
         return $query;
     }
 
-    protected function makeCollection(\PDOStatement $queryObject)
-    {
-        return $queryObject->fetchAll(\PDO::FETCH_CLASS);
-    }
-
+    /**
+     * @return array
+     */
     public function get()
     {
         if (is_null($this->queryObject)) {
@@ -97,7 +111,14 @@ class QueryBuilderHandler
         return $this->makeCollection($this->queryObject);
     }
 
-    public function getQuery($type = 'select', $dataToBePassed= array())
+    /**
+     * @param string $type
+     * @param array  $dataToBePassed
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getQuery($type = 'select', $dataToBePassed = array())
     {
         $allowedTypes = array('select', 'insert', 'delete', 'update');
         if (!in_array(strtolower($type), $allowedTypes)) {
@@ -111,6 +132,12 @@ class QueryBuilderHandler
         );
     }
 
+    /**
+     * @param QueryBuilderHandler $queryBuilder
+     * @param null                $alias
+     *
+     * @return mixed
+     */
     public function subQuery(QueryBuilderHandler $queryBuilder, $alias = null)
     {
         $sql = '(' . $queryBuilder->getQuery()->getRawSql() . ')';
@@ -121,6 +148,11 @@ class QueryBuilderHandler
         return $queryBuilder->raw($sql);
     }
 
+    /**
+     * @param $data
+     *
+     * @return array|string
+     */
     public function insert($data)
     {
         // If first value is not an array
@@ -145,6 +177,9 @@ class QueryBuilderHandler
         }
     }
 
+    /**
+     * @param $data
+     */
     public function update($data)
     {
         $queryArr = $this->adapterInstance->update($this->statements, $data);
@@ -152,6 +187,9 @@ class QueryBuilderHandler
         $this->query($queryArr['sql'], $queryArr['bindings']);
     }
 
+    /**
+     *
+     */
     public function delete()
     {
         $queryArr = $this->adapterInstance->delete($this->statements);
@@ -159,21 +197,36 @@ class QueryBuilderHandler
         $this->query($queryArr['sql'], $queryArr['bindings']);
     }
 
+    /**
+     * @param $tables
+     *
+     * @return static
+     */
     public function table($tables)
     {
         $instance = new static($this->connection);
         $tables = $this->addTablePrefix($tables, false);
-        $instance->addStatement('froms', $tables);
+        $instance->addStatement('tables', $tables);
         return $instance;
     }
 
+    /**
+     * @param $tables
+     *
+     * @return $this
+     */
     public function from($tables)
     {
         $tables = $this->addTablePrefix($tables, false);
-        $this->addStatement('froms', $tables);
+        $this->addStatement('tables', $tables);
         return $this;
     }
 
+    /**
+     * @param $fields
+     *
+     * @return $this
+     */
     public function select($fields)
     {
         $fields = $this->addTablePrefix($fields);
@@ -181,6 +234,11 @@ class QueryBuilderHandler
         return $this;
     }
 
+    /**
+     * @param $field
+     *
+     * @return $this
+     */
     public function groupBy($field)
     {
         $field = $this->addTablePrefix($field);
@@ -188,6 +246,12 @@ class QueryBuilderHandler
         return $this;
     }
 
+    /**
+     * @param        $field
+     * @param string $type
+     *
+     * @return $this
+     */
     public function orderBy($field, $type = 'ASC')
     {
         $field = $this->addTablePrefix($field);
@@ -195,18 +259,36 @@ class QueryBuilderHandler
         return $this;
     }
 
+    /**
+     * @param $limit
+     *
+     * @return $this
+     */
     public function limit($limit)
     {
         $this->statements['limit'] = $limit;
         return $this;
     }
 
+    /**
+     * @param $offset
+     *
+     * @return $this
+     */
     public function offset($offset)
     {
         $this->statements['offset'] = $offset;
         return $this;
     }
 
+    /**
+     * @param        $key
+     * @param        $operator
+     * @param        $value
+     * @param string $joiner
+     *
+     * @return $this
+     */
     public function having($key, $operator, $value, $joiner = 'AND')
     {
         $key = $this->addTablePrefix($key);
@@ -214,43 +296,84 @@ class QueryBuilderHandler
         return $this;
     }
 
+    /**
+     * @param $key
+     * @param $operator
+     * @param $value
+     *
+     * @return $this
+     */
     public function where($key, $operator, $value)
     {
         return $this->_where($key, $operator, $value);
     }
 
-    protected function _where($key, $operator, $value, $joiner = 'AND')
-    {
-        $key = $this->addTablePrefix($key);
-        $this->statements['wheres'][] = compact('key', 'operator', 'value', 'joiner');
-        return $this;
-    }
-
+    /**
+     * @param $key
+     * @param $operator
+     * @param $value
+     *
+     * @return $this
+     */
     public function orWhere($key, $operator, $value)
     {
         return $this->_where($key, $operator, $value, 'OR');
     }
 
+    /**
+     * @param       $key
+     * @param array $values
+     *
+     * @return $this
+     */
     public function whereIn($key, array $values)
     {
         return $this->_where($key, 'IN', $values, 'AND');
     }
 
+    /**
+     * @param       $key
+     * @param array $values
+     *
+     * @return $this
+     */
     public function whereNotIn($key, array $values)
     {
         return $this->_where($key, 'NOT IN', $values, 'AND');
     }
 
+    /**
+     * @param       $key
+     * @param array $values
+     *
+     * @return $this
+     */
     public function orWhereIn($key, array $values)
     {
         return $this->where($key, 'IN', $values, 'OR');
     }
 
+    /**
+     * @param       $key
+     * @param array $values
+     *
+     * @return $this
+     */
     public function orWhereNotIn($key, array $values)
     {
         return $this->where($key, 'NOT IN', $values, 'OR');
     }
 
+    /**
+     * @param        $table
+     * @param        $key
+     * @param        $operator
+     * @param        $value
+     * @param string $type
+     * @param string $joiner
+     *
+     * @return $this
+     */
     public function join($table, $key, $operator, $value, $type = 'inner', $joiner = 'AND')
     {
         $table = $this->addTablePrefix($table, false);
@@ -270,30 +393,45 @@ class QueryBuilderHandler
         return $this;
     }
 
-    public function getStatements()
-    {
-        return $this->statements;
-    }
-
-    protected function addStatement($key, $value)
-    {
-        if (!is_array($value)) {
-            $value = array($value);
-        }
-
-        if (!array_key_exists($key, $this->statements)) {
-            $this->statements[$key] = $value;
-        } else {
-            $this->statements[$key] = array_merge($this->statements[$key], $value);
-        }
-    }
-
+    /**
+     * Add a raw query
+     *
+     * @param $value
+     *
+     * @return mixed
+     */
     public function raw($value)
     {
         return $this->container->build('\\Pixie\\QueryBuilder\\Raw', array($value));
     }
 
     /**
+     * Return PDO instance
+     *
+     * @return \PDO
+     */
+    public function pdo()
+    {
+        return $this->pdo;
+    }
+
+    /**
+     * @param        $key
+     * @param        $operator
+     * @param        $value
+     * @param string $joiner
+     *
+     * @return $this
+     */
+    protected function _where($key, $operator, $value, $joiner = 'AND')
+    {
+        $key = $this->addTablePrefix($key);
+        $this->statements['wheres'][] = compact('key', 'operator', 'value', 'joiner');
+        return $this;
+    }
+
+    /**
+     * Add table prefix (if given) on given string.
      *
      * @param      $values
      * @param bool $tableFieldMix If we have mixes of field and table names with a "."
@@ -342,12 +480,29 @@ class QueryBuilderHandler
     }
 
     /**
-     * return PDO instance
-     *
-     * @return \PDO
+     * @param $key
+     * @param $value
      */
-    public function pdo()
+    protected function addStatement($key, $value)
     {
-        return $this->pdo;
+        if (!is_array($value)) {
+            $value = array($value);
+        }
+
+        if (!array_key_exists($key, $this->statements)) {
+            $this->statements[$key] = $value;
+        } else {
+            $this->statements[$key] = array_merge($this->statements[$key], $value);
+        }
+    }
+
+    /**
+     * @param \PDOStatement $queryObject
+     *
+     * @return array
+     */
+    protected function makeCollection(\PDOStatement $queryObject)
+    {
+        return $queryObject->fetchAll(\PDO::FETCH_CLASS);
     }
 }
