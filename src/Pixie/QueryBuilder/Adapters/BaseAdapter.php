@@ -71,20 +71,14 @@ abstract class BaseAdapter
         list($havingCriteria, $havingBindings) = $this->buildCriteriaWithType($statements, 'havings', 'HAVING');
 
         // Joins
-        list($innerJoinCriteria, $innerJoinBindings) = $this->buildJoin($statements, 'inner');
-        list($outerJoinCriteria, $outerJoinBindings) = $this->buildJoin($statements, 'outer');
-        list($leftJoinCriteria, $leftJoinBindings) = $this->buildJoin($statements, 'left');
-        list($rightJoinCriteria, $rightJoinBindings) = $this->buildJoin($statements, 'right');
+        $joinString = $this->buildJoin($statements);
 
         $sqlArray = array(
             'SELECT',
             $selects,
             'FROM',
             $tables,
-            $innerJoinCriteria,
-            $outerJoinCriteria,
-            $leftJoinCriteria,
-            $rightJoinCriteria,
+            $joinString,
             $whereCriteria,
             $groupBys,
             $havingCriteria,
@@ -96,10 +90,6 @@ abstract class BaseAdapter
         $sql = $this->concatenateQuery($sqlArray);
 
         $bindings = array_merge(
-            $innerJoinBindings,
-            $outerJoinBindings,
-            $leftJoinBindings,
-            $rightJoinBindings,
             $whereBindings,
             $havingBindings
         );
@@ -107,15 +97,14 @@ abstract class BaseAdapter
         return compact('sql', 'bindings');
     }
 
-    public function criteriaOnly($statements)
+    public function criteriaOnly($statements, $bindValues = true)
     {
         $sql = $bindings = array();
-        // Wheres
         if (!isset($statements['criteria'])) {
             return compact('sql', 'bindings');
         }
 
-        list($sql, $bindings) = $this->buildCriteria($statements['criteria']);
+        list($sql, $bindings) = $this->buildCriteria($statements['criteria'], $bindValues);
 
         return compact('sql', 'bindings');
     }
@@ -290,15 +279,15 @@ abstract class BaseAdapter
 
 
             if (is_null($value) && $key instanceof \Closure) {
-                // We have closure, a nested criteria
+                // We have a closure, a nested criteria
 
-                // Build a new NestedCriteria class, keep it by so any changes made
+                // Build a new NestedCriteria class, keep it by reference so any changes made
                 // in the closure should reflect here
                 $nestedCriteria = & $this->container->build('\\Pixie\\QueryBuilder\\NestedCriteria', array($this->connection));
                 // Call the closure with our new nestedCriteria object
                 $key($nestedCriteria);
                 // Get the criteria only query from the nestedCriteria object
-                $queryObject = $nestedCriteria->getQuery('criteriaOnly');
+                $queryObject = $nestedCriteria->getQuery('criteriaOnly', true);
                 // Merge the bindings we get from nestedCriteria object
                 $bindings = array_merge($bindings, $queryObject->getBindings());
                 // Append the sql we get from the nestedCriteria object
@@ -403,27 +392,25 @@ abstract class BaseAdapter
      * Build criteria string and binding for joins
      *
      * @param $statements
-     * @param $type
      *
      * @return array
      */
-    protected function buildJoin($statements, $type)
+    protected function buildJoin($statements)
     {
-        $joinCriteria = '';
-        $joinBindings = array();
+        $sql = '';
 
-        if (isset($statements['joins'][$type])) {
-            foreach ($statements['joins'][$type] as $table => $criteriaArr) {
-                $criteria = $this->buildCriteriaWithType($statements['joins'][$type], $table, ' ON', false);
-                // TODO: Check if .= is really needed
-                $joinCriteria .= $criteria[0];
-                $joinBindings = array_merge($criteria[1], $joinBindings);
-
-                if ($joinCriteria) {
-                    $joinCriteria = strtoupper($type) . ' JOIN ' . $this->wrapSanitizer($table) . ' ' . $joinCriteria;
-                }
-            }
+        if (!array_key_exists('joins', $statements) || !is_array($statements['joins'])) {
+            return $sql;
         }
-        return array($joinCriteria, $joinBindings);
+
+        foreach ($statements['joins'] as $type => $joinArr) {
+            $table = $this->wrapSanitizer($joinArr['table']);
+            $joinBuilder = $joinArr['joinBuilder'];
+
+            $sqlArr = array($sql, strtoupper($type), 'JOIN', $table, 'ON', $joinBuilder->getQuery('criteriaOnly', false)->getSql());
+            $sql = $this->concatenateQuery($sqlArr);
+        }
+
+        return $sql;
     }
 }

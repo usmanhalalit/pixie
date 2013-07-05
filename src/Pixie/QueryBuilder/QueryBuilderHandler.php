@@ -370,25 +370,25 @@ class QueryBuilderHandler
      * @param        $operator
      * @param        $value
      * @param string $type
-     * @param string $joiner
      *
      * @return $this
      */
-    public function join($table, $key, $operator, $value, $type = 'inner', $joiner = 'AND')
+    public function join($table, $key, $operator = null, $value = null, $type = 'inner')
     {
-        $table = $this->addTablePrefix($table, false);
-        $key = $this->addTablePrefix($key);
-        $value = $this->addTablePrefix($value);
-
-        $joinStatement = array(compact('key', 'operator', 'value', 'joiner'));
-        if (isset($this->statements['joins'][$type][$table])) {
-            $this->statements['joins'][$type][$table] = array_merge(
-                $joinStatement,
-                $this->statements['joins'][$type][$table]
-            );
-        } else {
-            $this->statements['joins'][$type][$table] = $joinStatement;
+        if (!$key instanceof \Closure) {
+            $key = function($joinBuilder) use ($key, $operator, $value) {
+                $joinBuilder->on($key, $operator, $value);
+            };
         }
+
+        // Build a new JoinBuilder class, keep it by reference so any changes made
+        // in the closure should reflect here
+        $joinBuilder = & $this->container->build('\\Pixie\\QueryBuilder\\JoinBuilder', array($this->connection));
+        // Call the closure with our new joinBuilder object
+        $key($joinBuilder);
+        $table = $this->addTablePrefix($table, false);
+        // Get the criteria only query from the joinBuilder object
+        $this->statements['joins'][$type] = compact('table', 'joinBuilder');
 
         return $this;
     }
@@ -440,7 +440,7 @@ class QueryBuilderHandler
      */
     protected function addTablePrefix($values, $tableFieldMix = true)
     {
-        if (!$this->tablePrefix) {
+        if (is_null($this->tablePrefix)) {
             return $values;
         }
 

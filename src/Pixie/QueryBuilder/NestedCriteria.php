@@ -3,6 +3,14 @@
 
 class NestedCriteria extends QueryBuilderHandler
 {
+    /**
+     * @param        $key
+     * @param null   $operator
+     * @param null   $value
+     * @param string $joiner
+     *
+     * @return $this
+     */
     protected function _where($key, $operator = null, $value = null, $joiner = 'AND')
     {
         $key = $this->addTablePrefix($key);
