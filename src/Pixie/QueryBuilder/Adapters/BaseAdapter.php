@@ -97,6 +97,14 @@ abstract class BaseAdapter
         return compact('sql', 'bindings');
     }
 
+    /**
+     * Build just criteria part of the query
+     *
+     * @param      $statements
+     * @param bool $bindValues
+     *
+     * @return array
+     */
     public function criteriaOnly($statements, $bindValues = true)
     {
         $sql = $bindings = array();

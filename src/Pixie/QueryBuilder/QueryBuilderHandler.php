@@ -394,6 +394,45 @@ class QueryBuilderHandler
     }
 
     /**
+     * @param      $table
+     * @param      $key
+     * @param null $operator
+     * @param null $value
+     *
+     * @return $this
+     */
+    public function leftJoin($table, $key, $operator = null, $value = null)
+    {
+        return $this->join($table, $key, $operator, $value, 'left');
+    }
+
+    /**
+     * @param      $table
+     * @param      $key
+     * @param null $operator
+     * @param null $value
+     *
+     * @return $this
+     */
+    public function rightJoin($table, $key, $operator = null, $value = null)
+    {
+        return $this->join($table, $key, $operator, $value, 'right');
+    }
+
+    /**
+     * @param      $table
+     * @param      $key
+     * @param null $operator
+     * @param null $value
+     *
+     * @return $this
+     */
+    public function innerJoin($table, $key, $operator = null, $value = null)
+    {
+        return $this->join($table, $key, $operator, $value, 'inner');
+    }
+
+    /**
      * Add a raw query
      *
      * @param $value
