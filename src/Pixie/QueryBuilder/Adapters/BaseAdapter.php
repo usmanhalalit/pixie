@@ -389,7 +389,7 @@ abstract class BaseAdapter
     }
 
     /**
-     * Build criteria string and binding for joins
+     * Build join string
      *
      * @param $statements
      *

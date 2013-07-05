@@ -45,17 +45,27 @@ class Connection
         $this->setAdapter($adapter)->setAdapterConfig($adapterConfig)->connect();
 
         if ($alias) {
-            class_alias('Pixie\\AliasFacade', $alias);
-            $builder = $this->container->build('\\Pixie\\QueryBuilder\\QueryBuilderHandler', array($this));
-            AliasFacade::setQueryBuilderInstance($builder);
+            $this->createAlias($alias);
         }
+    }
+
+    /**
+     * Create an easily accessible query builder alias
+     *
+     * @param $alias
+     */
+    public function createAlias($alias)
+    {
+        class_alias('Pixie\\AliasFacade', $alias);
+        $builder = $this->container->build('\\Pixie\\QueryBuilder\\QueryBuilderHandler', array($this));
+        AliasFacade::setQueryBuilderInstance($builder);
     }
 
 
     /**
      * Create the connection adapter
      */
-    private function connect()
+    protected function connect()
     {
         // Build a database connection if we don't have one connected
 
