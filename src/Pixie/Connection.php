@@ -46,6 +46,8 @@ class Connection
 
         if ($alias) {
             class_alias('Pixie\\AliasFacade', $alias);
+            $builder = $this->container->build('\\Pixie\\QueryBuilder\\QueryBuilderHandler', array($this));
+            AliasFacade::setQueryBuilderInstance($builder);
         }
     }
 

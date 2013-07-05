@@ -15,5 +15,10 @@ abstract class ConnectionAdapter
         $this->container = $container;
     }
 
+    /**
+     * @param $config
+     *
+     * @return \PDO
+     */
     abstract public function connect($config);
 }

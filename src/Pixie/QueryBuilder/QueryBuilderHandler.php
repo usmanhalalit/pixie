@@ -64,7 +64,7 @@ class QueryBuilderHandler
         }
 
         // Query builder adapter instance
-        $this->adapterInstance = $this->container->build('\\Pixie\\QueryBuilder\\Adapters\\' . ucfirst($this->adapter));
+        $this->adapterInstance = $this->container->build('\\Pixie\\QueryBuilder\\Adapters\\' . ucfirst($this->adapter), array($this->connection));
 
         $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     }
@@ -120,7 +120,7 @@ class QueryBuilderHandler
      */
     public function getQuery($type = 'select', $dataToBePassed = array())
     {
-        $allowedTypes = array('select', 'insert', 'delete', 'update');
+        $allowedTypes = array('select', 'insert', 'delete', 'update', 'criteriaonly');
         if (!in_array(strtolower($type), $allowedTypes)) {
             throw new \Exception($type . ' is not a known type.');
         }
@@ -303,7 +303,7 @@ class QueryBuilderHandler
      *
      * @return $this
      */
-    public function where($key, $operator, $value)
+    public function where($key, $operator = null, $value = null)
     {
         return $this->_where($key, $operator, $value);
     }
@@ -315,7 +315,7 @@ class QueryBuilderHandler
      *
      * @return $this
      */
-    public function orWhere($key, $operator, $value)
+    public function orWhere($key, $operator = null, $value = null)
     {
         return $this->_where($key, $operator, $value, 'OR');
     }
@@ -423,7 +423,7 @@ class QueryBuilderHandler
      *
      * @return $this
      */
-    protected function _where($key, $operator, $value, $joiner = 'AND')
+    protected function _where($key, $operator = null, $value = null, $joiner = 'AND')
     {
         $key = $this->addTablePrefix($key);
         $this->statements['wheres'][] = compact('key', 'operator', 'value', 'joiner');
@@ -458,7 +458,7 @@ class QueryBuilderHandler
 
         foreach ($values as $key => $value) {
             // Its a raw query, just add it to our return array and continue next
-            if ($value instanceof Raw) {
+            if ($value instanceof Raw || $value instanceof \Closure) {
                 $return[$key] = $value;
                 continue;
             }

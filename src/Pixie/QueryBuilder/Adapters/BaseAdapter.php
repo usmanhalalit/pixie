@@ -1,18 +1,43 @@
 <?php namespace Pixie\QueryBuilder\Adapters;
 
+use Pixie\Connection;
+use Pixie\QueryBuilder\NestedCriteria;
 use Pixie\QueryBuilder\Raw;
 
 abstract class BaseAdapter
 {
     /**
+     * @var \Pixie\Connection
+     */
+    protected $connection;
+
+    /**
+     * @var \Viocon\Container
+     */
+    protected $container;
+
+    public function __construct(Connection $connection)
+    {
+        $this->connection = $connection;
+        $this->container = $this->connection->getContainer();
+    }
+
+    /**
      * Build select query string and bindings
      *
      * @param $statements
      *
+     * @throws \Exception
      * @return array
      */
     public function select($statements)
     {
+        if (!array_key_exists('tables', $statements)) {
+            throw new \Exception('No table specified.');
+        } elseif (!array_key_exists('selects', $statements)) {
+            $statements['selects'][] = '*';
+        }
+
         // From
         $tables = $this->arrayStr($statements['tables'], ', ');
         // Select
@@ -79,6 +104,19 @@ abstract class BaseAdapter
             $whereBindings,
             $havingBindings
         );
+
+        return compact('sql', 'bindings');
+    }
+
+    public function criteriaOnly($statements)
+    {
+        $sql = $bindings = array();
+        // Wheres
+        if (!isset($statements['criteria'])) {
+            return compact('sql', 'bindings');
+        }
+
+        list($sql, $bindings) = $this->buildCriteria($statements['criteria']);
 
         return compact('sql', 'bindings');
     }
@@ -249,20 +287,26 @@ abstract class BaseAdapter
         foreach ($statements as $statement) {
 
             $key = $this->wrapSanitizer($statement['key']);
+            $value = $statement['value'];
 
-            if (!is_array($value = $statement['value'])) {
-                if (!$bindValues) {
-                    // We are not binding values, lets sanitize then
-                    $value = $this->wrapSanitizer($value);
-                    $criteria .= $statement['joiner'] . ' ' . $key . ' ' . $statement['operator'] . ' ' . $value . ' ';
-                } else {
-                    $valuePlaceholder = '?';
-                    $bindings[] = $value;
-                    $criteria .= $statement['joiner'] . ' ' . $key . ' ' . $statement['operator'] . ' '
-                        . $valuePlaceholder . ' ';
-                }
-            } else {
+
+            if (is_null($value) && $key instanceof \Closure) {
+                // We have closure, a nested criteria
+
+                // Build a new NestedCriteria class, keep it by so any changes made
+                // in the closure should reflect here
+                $nestedCriteria = & $this->container->build('\\Pixie\\QueryBuilder\\NestedCriteria', array($this->connection));
+                // Call the closure with our new nestedCriteria object
+                $key($nestedCriteria);
+                // Get the criteria only query from the nestedCriteria object
+                $queryObject = $nestedCriteria->getQuery('criteriaOnly');
+                // Merge the bindings we get from nestedCriteria object
+                $bindings = array_merge($bindings, $queryObject->getBindings());
+                // Append the sql we get from the nestedCriteria object
+                $criteria .= $statement['joiner'] . ' (' . $queryObject->getSql() . ') ';
+            } elseif (is_array($value)) {
                 // where_in like query
+
                 $valuePlaceholder = '';
                 foreach ($statement['value'] as $subValue) {
                     $valuePlaceholder .= '?, ';
@@ -270,9 +314,24 @@ abstract class BaseAdapter
                 }
 
                 $valuePlaceholder = trim($valuePlaceholder, ', ');
-                $criteria
-                    .=
-                    $statement['joiner'] . ' ' . $key . ' ' . $statement['operator'] . ' (' . $valuePlaceholder . ')';
+                $criteria .= $statement['joiner'] . ' ' . $key . ' ' . $statement['operator'] . ' (' . $valuePlaceholder . ')';
+            } else {
+                // Usual where like criteria
+
+                if (!$bindValues) {
+                    // Specially for joins
+
+                    // We are not binding values, lets sanitize then
+                    $value = $this->wrapSanitizer($value);
+                    $criteria .= $statement['joiner'] . ' ' . $key . ' ' . $statement['operator'] . ' ' . $value . ' ';
+                } else {
+                    // For wheres
+
+                    $valuePlaceholder = '?';
+                    $bindings[] = $value;
+                    $criteria .= $statement['joiner'] . ' ' . $key . ' ' . $statement['operator'] . ' '
+                        . $valuePlaceholder . ' ';
+                }
             }
         }
 
@@ -297,6 +356,8 @@ abstract class BaseAdapter
         // Its a raw query, just cast as string, object has __toString()
         if ($value instanceof Raw) {
             return (string)$value;
+        } elseif ($value instanceof \Closure) {
+            return $value;
         }
 
         // Separate our table and fields which are joined with a ".",

@@ -27,7 +27,9 @@ class ConnectionTest extends TestCase
 
     public function testQueryBuilderAliasCreatedByConnection()
     {
-        $this->container->setInstance('\\Pixie\\QueryBuilder\\Adapters\\Mysqlmock', m::mock('\\Pixie\\QueryBuilder\\Adapters\\Mysqlmock'));
+        $mockQBAdapter = m::mock('\\Pixie\\QueryBuilder\\Adapters\\Mysql');
+
+        $this->container->setInstance('\\Pixie\\QueryBuilder\\Adapters\\Mysqlmock', $mockQBAdapter);
         $connection = new Connection('mysqlmock', array('prefix' => 'cb_'), 'DBAlias', $this->container);
         $this->assertEquals($this->mockPdo, $connection->getPdoInstance());
         $this->assertInstanceOf('\\Pixie\\QueryBuilder\\QueryBuilderHandler', \DBAlias::newQuery());
