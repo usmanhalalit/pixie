@@ -384,7 +384,8 @@ class QueryBuilderHandler
 
         // Build a new JoinBuilder class, keep it by reference so any changes made
         // in the closure should reflect here
-        $joinBuilder = & $this->container->build('\\Pixie\\QueryBuilder\\JoinBuilder', array($this->connection));
+        $joinBuilder = $this->container->build('\\Pixie\\QueryBuilder\\JoinBuilder', array($this->connection));
+        $joinBuilder = & $joinBuilder;
         // Call the closure with our new joinBuilder object
         $key($joinBuilder);
         $table = $this->addTablePrefix($table, false);
