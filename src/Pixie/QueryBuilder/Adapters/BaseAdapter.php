@@ -1,7 +1,6 @@
 <?php namespace Pixie\QueryBuilder\Adapters;
 
 use Pixie\Connection;
-use Pixie\QueryBuilder\NestedCriteria;
 use Pixie\QueryBuilder\Raw;
 
 abstract class BaseAdapter
