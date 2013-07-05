@@ -26,9 +26,9 @@ class QueryBuilderHandler
     protected $pdo;
 
     /**
-     * @var null|QueryObject
+     * @var null|\PDOStatement
      */
-    protected $queryObject = null;
+    protected $pdoStatement = null;
 
     /**
      * @var null|string
@@ -93,22 +93,21 @@ class QueryBuilderHandler
     {
         $query = $this->pdo->prepare($sql);
         $query->execute($bindings);
-        $this->queryObject = $query;
+        $this->pdoStatement = $query;
         return $query;
     }
 
     /**
-     * @return array
+     * @return \stdClass
      */
     public function get()
     {
-        if (is_null($this->queryObject)) {
+        if (is_null($this->pdoStatement)) {
             $queryArr = $this->adapterInstance->select($this->statements);
-            var_dump($queryArr);
             $this->query($queryArr['sql'], $queryArr['bindings']);
         }
 
-        return $this->makeCollection($this->queryObject);
+        return $this->makeCollection($this->pdoStatement);
     }
 
     /**
@@ -136,7 +135,7 @@ class QueryBuilderHandler
      * @param QueryBuilderHandler $queryBuilder
      * @param null                $alias
      *
-     * @return mixed
+     * @return Raw
      */
     public function subQuery(QueryBuilderHandler $queryBuilder, $alias = null)
     {
@@ -179,6 +178,8 @@ class QueryBuilderHandler
 
     /**
      * @param $data
+     *
+     * @return void
      */
     public function update($data)
     {
