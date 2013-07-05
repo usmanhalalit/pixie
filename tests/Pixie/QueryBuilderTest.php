@@ -49,7 +49,7 @@ class QueryBuilderTest extends TestCase
 
         $query = $this->builder->table('my_table')
             ->where('my_table.id', '>', 1)
-            ->orWhere('my_table.id', '=', 1)
+            ->orWhere('my_table.id', 1)
             ->where(function($q)
                 {
                     $q->where('value', 'LIKE', '%sana%');
@@ -84,7 +84,7 @@ class QueryBuilderTest extends TestCase
 
     public function testUpdateQuery()
     {
-        $builder = $this->builder->table('my_table')->where('value', '=', 'Sana');
+        $builder = $this->builder->table('my_table')->where('value', 'Sana');
 
         $data = array(
             'key' => 'Sana',

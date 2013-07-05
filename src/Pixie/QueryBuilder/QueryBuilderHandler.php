@@ -306,6 +306,12 @@ class QueryBuilderHandler
      */
     public function where($key, $operator = null, $value = null)
     {
+        // If two params are given then assume operator is =
+        if (func_num_args() == 2) {
+            $value = $operator;
+            $operator = '=';
+        }
+
         return $this->_where($key, $operator, $value);
     }
 
@@ -318,6 +324,12 @@ class QueryBuilderHandler
      */
     public function orWhere($key, $operator = null, $value = null)
     {
+        // If two params are given then assume operator is =
+        if (func_num_args() == 2) {
+            $value = $operator;
+            $operator = '=';
+        }
+
         return $this->_where($key, $operator, $value, 'OR');
     }
 
