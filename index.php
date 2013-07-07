@@ -14,7 +14,7 @@ new Pixie\Connection('mysql', array(
 
 $query = DB::table('my_table')
     ->where('my_table.id', '>', 1)
-    ->orWhere('my_table.id', '=', 1)
+    ->orWhere('my_table.id', 1)
     ->where(function($q)
         {
             $q->where('value', 'LIKE', '%sana%');

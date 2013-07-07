@@ -298,6 +298,18 @@ class QueryBuilderHandler
     }
 
     /**
+     * @param        $key
+     * @param        $operator
+     * @param        $value
+     *
+     * @return $this
+     */
+    public function orHaving($key, $operator, $value)
+    {
+        return $this->having($key, $operator, $value, 'OR');
+    }
+
+    /**
      * @param $key
      * @param $operator
      * @param $value
@@ -491,7 +503,7 @@ class QueryBuilderHandler
      *
      * @return array|mixed
      */
-    protected function addTablePrefix($values, $tableFieldMix = true)
+    public function addTablePrefix($values, $tableFieldMix = true)
     {
         if (is_null($this->tablePrefix)) {
             return $values;
