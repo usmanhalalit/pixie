@@ -59,8 +59,6 @@ Library on [Packagist](https://packagist.org/packages/usmanhalalit/pixie).
 
 ### Table of Context
 
- - [Example](#example)
- - [Installation](#installation)
  - [Connection](#connection)
     - [Alias](#alias)
     - [Multiple Connection](#alias)
