@@ -12,6 +12,9 @@ The syntax is quite similar to Laravel's query builder.
 
 ## Example
 ```PHP
+// Make sure you have Composer's autoload file included
+require 'vendor/autoload.php';
+
 // Create a connection, once only.
 new \Pixie\Connection('mysql', array(
                     'driver'    => 'mysql',
@@ -36,7 +39,7 @@ Full queries:
 $query = QB::table('my_table')->where('name', '=', 'Sana');
 
 // Get result
-var_dump($query->get());
+$query->get();
 ```
 
 There are many advanced options which are documented below. Sold? Lets install.
@@ -87,12 +90,15 @@ Library on [Packagist](https://packagist.org/packages/usmanhalalit/pixie).
  - [Get Built Query](#get-built-query)
  - [Sub Queries and Nested Queries](#sub-queries-and-nested-queries)
  - [Get PDO Instance](#get-pdo-instance)
- 
+
 ___
 
 ## Connection
 Pixie supports three database drivers, MySQL, SQLite and PostgreSQL. You can specify the driver during connection and the associated configuration when creating a new connection. You can also create multiple connections, but use different alias for each (not `QB` for all);
 ```PHP
+// Make sure you have Composer's autoload file included
+require 'vendor/autoload.php';
+
 $config = array(
             'driver'    => 'mysql', // Db driver
             'host'      => 'localhost',
