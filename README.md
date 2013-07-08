@@ -16,16 +16,18 @@ The syntax is quite similar to Laravel's query builder.
 require 'vendor/autoload.php';
 
 // Create a connection, once only.
-new \Pixie\Connection('mysql', array(
-                    'driver'    => 'mysql',
-                    'host'      => 'localhost',
-                    'database'  => 'your-database',
-                    'username'  => 'root',
-                    'password'  => 'your-password',
-                    'charset'   => 'utf8',
-                    'collation' => 'utf8_unicode_ci',
-                    'prefix'    => 'cb_',
-            ), 'QB');
+$config = array(
+            'driver'    => 'mysql', // Db driver
+            'host'      => 'localhost',
+            'database'  => 'your-database',
+            'username'  => 'root',
+            'password'  => 'your-password',
+            'charset'   => 'utf8', // Optional
+            'collation' => 'utf8_unicode_ci', // Optional
+            'prefix'    => 'cb_', // Table prefix, optional
+        );
+
+new \Pixie\Connection('mysql', $config, 'QB');
 ```
 
 The query below returns the row where id = 3, null if no rows.
@@ -112,7 +114,8 @@ $config = array(
 
 new \Pixie\Connection('mysql', $config), 'QB');
 
-$query = QB::table('person_details')->where('person_id', '=', 3);
+// Run query
+$query = QB::table('my_table')->where('name', '=', 'Sana');
 ```
 
 ### Alias
@@ -120,7 +123,7 @@ $query = QB::table('person_details')->where('person_id', '=', 3);
 
 When you create a connection:
 ```PHP
-new \Pixie\Connection('mysql', $config), 'MyAlias');
+new \Pixie\Connection('mysql', $config, 'MyAlias');
 ```
 MyAlias is the name for the class alias you want to use (like `MyAlias::table(...)`), you can use whatever name (with Namespace also, `MyNamespace\\MyClass`) you like or you may skip it if you don't need an alias. Alias gives you the ability to easily access the QueryBuilder class across your application.
 
@@ -130,7 +133,7 @@ When not using an alias you can instanciate the QueryBuilder handler separately,
 $connection = new \Pixie\Connection('mysql', $config));
 $qb = new \Pixie\QueryBuilder\QueryBuilderHandler($connection);
 
-$query = $qb->table('person_details')->where('person_id', '=', 3);
+$query = $qb->table('my_table')->where('name', '=', 'Sana');
 
 var_dump($query->get());
 ```
@@ -424,12 +427,12 @@ $query = QB::table('my_table')
             ->select('my_table.*')
             ->select(QB::subQuery($subQuery, 'pop'));
 
-$nestedQuery = QB::table(QB::subQuery($query, 'bb'))->select('*');
+$nestedQuery = QB::table(QB::subQuery($query, 'table_alias'))->select('*');
 ```
 
 This will produce a query like this:
 
-    SELECT * FROM (SELECT `cb_my_table`.*, (SELECT `details` FROM `cb_person_details` WHERE `person_id` = 3) as pop FROM `cb_my_table`) as bb
+    SELECT * FROM (SELECT `cb_my_table`.*, (SELECT `details` FROM `cb_person_details` WHERE `person_id` = 3) as pop FROM `cb_my_table`) as table_alias
     
 **NOTE:** Pixie doesn't use bindings for sub queries and nested queries. It quotes values with PDO's `quote()` method.
 
