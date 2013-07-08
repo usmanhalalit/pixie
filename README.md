@@ -10,40 +10,6 @@ It has some advanced features like:
 
 The syntax is quite similar to Laravel's query builder.
 
-### Table of Context
-
- - [Example](#example)
- - [Installation](#installation)
- - [Connection](#connection)
-    - [Alias](#alias)
-    - [Multiple Connection](#alias)
-    - [SQLite and PostgreSQL Config Sample](sqlite-and-postgresql-config-sample)
- - [Query](#query)
- - [**Select**](#select)
-    - [Get Easily](#get-easily)
-    - [Multiple Selects](#multiple-selects)
-    - [Get All](#get-all)
-    - [Get First Row](#get-first-row)
-    - [Get Rows Count](#get-rows-count)
- - [**Where**](#where)
-    - [Where In](#where-in)
-    - [Grouped Where](#grouped-where)
- - [Group By and Order By](#group-by-and-order-by)
- - [Having](#having)
- - [Limit and Offset](#limit-and-offset)
- - [Join](#join)
-    - [Multiple Join Criteria](#multiple-join-criteria)
- - [Raw Query](#raw-query)
-    - [Raw Expressions](#raw-expressions)
- - [**Insert**](#insert)
-    - [Batch Insert](#batch-insert)
- - [**Update**](#update)
- - [**Delete**](#delete)
- - [Get Built Query](#get-built-query)
- - [Sub Queries and Nested Queries](#sub-queries-and-nested-queries)
- - [Get PDO Instance](#get-pdo-instance)
-
-
 ## Example
 ```PHP
 // Create a connection, once only.
@@ -90,6 +56,39 @@ And run:
 Library on [Packagist](https://packagist.org/packages/usmanhalalit/pixie).
 
 ## Full Usage API
+
+### Table of Context
+
+ - [Example](#example)
+ - [Installation](#installation)
+ - [Connection](#connection)
+    - [Alias](#alias)
+    - [Multiple Connection](#alias)
+    - [SQLite and PostgreSQL Config Sample](sqlite-and-postgresql-config-sample)
+ - [Query](#query)
+ - [**Select**](#select)
+    - [Get Easily](#get-easily)
+    - [Multiple Selects](#multiple-selects)
+    - [Get All](#get-all)
+    - [Get First Row](#get-first-row)
+    - [Get Rows Count](#get-rows-count)
+ - [**Where**](#where)
+    - [Where In](#where-in)
+    - [Grouped Where](#grouped-where)
+ - [Group By and Order By](#group-by-and-order-by)
+ - [Having](#having)
+ - [Limit and Offset](#limit-and-offset)
+ - [Join](#join)
+    - [Multiple Join Criteria](#multiple-join-criteria)
+ - [Raw Query](#raw-query)
+    - [Raw Expressions](#raw-expressions)
+ - [**Insert**](#insert)
+    - [Batch Insert](#batch-insert)
+ - [**Update**](#update)
+ - [**Delete**](#delete)
+ - [Get Built Query](#get-built-query)
+ - [Sub Queries and Nested Queries](#sub-queries-and-nested-queries)
+ - [Get PDO Instance](#get-pdo-instance)
 ___
 
 ## Connection
