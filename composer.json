@@ -1,8 +1,8 @@
 {
 	"name": "usmanhalalit/pixie",
-	"description": "A cross-database SQL query builder for PHP.",
+	"description": "A lightweight, expressive, framework agnostic query builder for PHP.",
 	"homepage": "https://github.com/usmanhalalit/pixie",
-	"keywords": ["query-builder", "sql", "database"],
+	"keywords": ["query builder", "sql", "database", "mysql", "postgresql", "sqlite"],
 	"license": "MIT",
 	"authors":
 	[

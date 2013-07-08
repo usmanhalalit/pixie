@@ -1,5 +1,5 @@
 # Pixie Query Builder
-An expressive, framework agnostic query builder for PHP, it supports MySQL, SQLite and PostgreSQL. It takes care of query sanitization, table prefixing and many other things with a unified API. PHP 5.3 is required.
+A lightweight, expressive, framework agnostic query builder for PHP. It supports MySQL, SQLite and PostgreSQL. It takes care of query sanitization, table prefixing and many other things with a unified API. PHP 5.3 is required.
 
 It has some advanced features like:
 
