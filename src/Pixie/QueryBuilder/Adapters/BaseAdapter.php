@@ -332,11 +332,8 @@ abstract class BaseAdapter
             }
         }
 
-        // TODO: Simplify
-        $criteria = trim($criteria);
-        $criteria = trim($criteria, 'AND');
-        $criteria = trim($criteria, 'OR');
-        $criteria = trim($criteria);
+        // Clear all white spaces, and, or from beginning and white spaces from ending
+        $criteria = preg_replace('/^(\s?AND ?|\s?OR ?)|\s$/i','', $criteria);
 
         return array($criteria, $bindings);
     }
