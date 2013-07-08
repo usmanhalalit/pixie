@@ -110,7 +110,7 @@ $config = array(
             'charset'   => 'utf8', // Optional
             'collation' => 'utf8_unicode_ci', // Optional
             'prefix'    => 'cb_', // Table prefix, optional
-        )
+        );
 
 new \Pixie\Connection('mysql', $config), 'QB');
 
@@ -163,7 +163,7 @@ new \Pixie\Connection('pgsql', array(
 ```
 
 ## Query
-You **must** use `table()` method before every query.
+You **must** use `table()` method before every query, except raw `query()`.
 To select from multiple tables just pass an array.
 ```PHP
 QB::table(array('mytable1', 'mytable2'));
@@ -280,8 +280,8 @@ Using `groupBy()` or `orderBy()` methods multiple times `groupBy('a')->groupBy('
 
 ### Having
 ```PHP
-    ->having('total_count', '>', 2)
-    ->orHaving('type', '=', 'admin');
+->having('total_count', '>', 2)
+->orHaving('type', '=', 'admin');
 ```
 
 ### Limit and Offset
@@ -315,9 +315,9 @@ If you need more than one criterion to join a table then pass a closure as secon
 ```PHP
 ->join('another_table'), function($table)
     {
-        $table->on(''another_table.person_id', '=', 'my_table.id');
-        $table->on(''another_table.person_id2', '=', 'my_table.id2');
-        $table->orOn(''another_table.age', '>', QB::raw(1));
+        $table->on('another_table.person_id', '=', 'my_table.id');
+        $table->on('another_table.person_id2', '=', 'my_table.id2');
+        $table->orOn('another_table.age', '>', QB::raw(1));
     })
 ```
 
