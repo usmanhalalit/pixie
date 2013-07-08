@@ -35,3 +35,16 @@ $query = DB::table('my_table')
 
 var_dump($query->getQuery()->getRawSql());
 var_dump($query->get());
+
+DB::getConnection()->createAlias('QB');
+
+$subQuery = QB::table('person_details')->select('details')->where('person_id', '=', 3);
+
+
+$query = QB::table('my_table')
+            ->select('my_table.*')
+            ->select(QB::subQuery($subQuery, 'pop'));
+
+$nestedQuery = QB::table(QB::subQuery($query, 'bb'))->select('*');
+
+var_dump($nestedQuery->getQuery()->getRawSql());

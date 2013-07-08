@@ -1,7 +1,7 @@
 # Pixie Query Builder
-An expressive, framework agnostic query bulder for PHP, it supports MySQL, SQLite and PostgreSQL. It takes care of query sanitazion, table prefixing and many other things with a unified API.
+An expressive, framework agnostic query bulder for PHP, it supports MySQL, SQLite and PostgreSQL. It takes care of query sanitazion, table prefixing and many other things with a unified API. PHP 5.3 is required.
 
-It has some advanced query features like:
+It has some advanced features like:
 
  - Nested Criteria
  - Subqueries
@@ -10,8 +10,40 @@ It has some advanced query features like:
 
 The syntax is quite similar to Laravel's query builder.
 
+### Table of Context
+
+ - [Example](#example)
+ - [Installation](#installation)
+ - [Connection](#connection)
+    - [Alias](#alias)
+    - [Multiple Connection](#alias)
+    - [SQLite and PostgreSQL Config Sample](sqlite-and-postgresql-config-sample)
+ - [Query](#query)
+ - [**Select**](#select)
+    - [Multiple Selects](#multiple-selects)
+    - [Get All](#get-all)
+ - [**Where**](#where)
+    - [Where In](#where-in)
+    - [Grouped Where](#grouped-where)
+ - [Group By and Order By](#group-by-and-order-by)
+ - [Having](#having)
+ - [Limit and Offset](#limit-and-offset)
+ - [Join](#join)
+    - [Multiple Join Criteria](#multiple-join-criteria)
+ - [Raw Query](#raw-query)
+    - [Raw Expressions](#raw-expressions)
+ - [**Insert**](#insert)
+    - [Batch Insert](#batch-insert)
+ - [**Update**](#update)
+ - [**Delete**](#delete)
+ - [Get Built Query](#get-built-query)
+ - [Sub Queries and Nested Queries](#sub-queries-and-nested-queries)
+ - [Get PDO Instance](#get-pdo-instance)
+
+
 ## Example
 ```PHP
+// Create a connection, once only.
 new \Pixie\Connection('mysql', array(
                     'driver'    => 'mysql',
                     'host'      => 'localhost',
@@ -23,8 +55,10 @@ new \Pixie\Connection('mysql', array(
                     'prefix'    => 'cb_',
             ), 'QB');
 
+// Build queries
 $query = QB::table('person_details')->where('person_id', '=', 3);
 
+// Get result
 var_dump($query->get());
 ```
 
@@ -66,7 +100,9 @@ new \Pixie\Connection('mysql', $config), 'QB');
 $query = QB::table('person_details')->where('person_id', '=', 3);
 ```
 
-### Alias (optional, you may skip)
+### Alias
+**(Optional topic, you may skip)**
+
 When you create a connection:
 ```PHP
 new \Pixie\Connection('mysql', $config), 'MyAlias');
@@ -151,7 +187,6 @@ QB::table('my_table')
 QB::table('my_table')
     ->whereIn('name', array('usman', 'sana'))
     ->orWhereIn('name', array('heera', 'dalim'))
-    
     ;
 
 QB::table('my_table')
@@ -180,7 +215,7 @@ QB::table('my_table')
 $query = QB::table('my_table')->groupBy('age')->orderBy('created_at');
 ```
 
-#### Multiple
+#### Multiple Group By
 ```PHP
 ->groupBy(array('mytable.myfield1', 'mytable.myfield2', 'another_table.myfield3'));
 
@@ -304,8 +339,8 @@ QB::table('my_table')->where('id', '>', 5)->delete();
 ```
 Will delete all the rows where id is greater than 5.
 
-### Get Rendered Query
-Sometimes you need to get the query string, its possible.
+### Get Built Query
+Sometimes you may need to get the query string, its possible.
 ```PHP
 $query = QB::table('my_table')->where('id', '=', 3);
 $queryObj = $query->getQuery();
@@ -327,3 +362,28 @@ $queryObj->getRawSql();
 // Returns: SELECT * FROM my_table where `id` = 3
 ```
 
+### Sub Queries and Nested Queries
+Rarely but you may need to do sub queries or nested queries. Pixie is powerful enough to do this for you. You can create different query objects and use the `QB::subQuery()` method.
+
+```PHP
+$subQuery = QB::table('person_details')->select('details')->where('person_id', '=', 3);
+
+
+$query = QB::table('my_table')
+            ->select('my_table.*')
+            ->select(QB::subQuery($subQuery, 'pop'));
+
+$nestedQuery = QB::table(QB::subQuery($query, 'bb'))->select('*');
+```
+
+This will produce a query like this:
+
+    SELECT * FROM (SELECT `cb_my_table`.*, (SELECT `details` FROM `cb_person_details` WHERE `person_id` = 3) as pop FROM `cb_my_table`) as bb
+    
+**NOTE:** Pixie doens't use bindings for sub queries and nested queries. It quotes values with PDO's `quote()` method.
+
+### Get PDO Instance
+```PHP
+QB::pdo();
+```
+    
