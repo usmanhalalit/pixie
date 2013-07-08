@@ -437,6 +437,8 @@ This will produce a query like this:
 **NOTE:** Pixie doesn't use bindings for sub queries and nested queries. It quotes values with PDO's `quote()` method.
 
 ### Get PDO Instance
+If you need to get the PDO instance you can do so.
+
 ```PHP
 QB::pdo();
 ```
