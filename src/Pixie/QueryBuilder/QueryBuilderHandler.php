@@ -481,6 +481,25 @@ class QueryBuilderHandler
     }
 
     /**
+     * @param Connection $connection
+     *
+     * @return $this
+     */
+    public function setConnection(Connection $connection)
+    {
+        $this->connection = $connection;
+        return $this;
+    }
+
+    /**
+     * @return Connection
+     */
+    public function getConnection()
+    {
+        return $this->connection;
+    }
+
+    /**
      * @param        $key
      * @param        $operator
      * @param        $value
