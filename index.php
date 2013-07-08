@@ -49,4 +49,6 @@ $nestedQuery = QB::table(QB::subQuery($query, 'bb'))->select('*');
 
 //var_dump($nestedQuery->getQuery()->getRawSql());
 
-var_dump(DB::query('select * from cb_my_table where id = ?', array(2))->get());
+//var_dump(DB::query('select * from cb_my_table')->first());
+
+var_dump(DB::table('my_table')->find(2));

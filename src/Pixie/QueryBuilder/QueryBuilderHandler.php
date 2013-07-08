@@ -98,18 +98,61 @@ class QueryBuilderHandler
     }
 
     /**
-     * @return \stdClass
+     * Get all rows
+     *
+     * @return \stdClass|null
      */
     public function get()
     {
-        if (is_null($this->pdoStatement)) {
-            $queryArr = $this->adapterInstance->select($this->statements);
-            $this->query($queryArr['sql'], $queryArr['bindings']);
-        }
-
+        $this->preparePdoStatement();
         $result = $this->pdoStatement->fetchAll(\PDO::FETCH_CLASS);
-
         return empty($result) ? null : $result;
+    }
+
+    /**
+     * Get count of rows
+     *
+     * @return \stdClass|null
+     */
+    public function first()
+    {
+        $this->limit(1);
+        $result = $this->get();
+        return $result ? $result[0] : null;
+    }
+    /**
+     * @param        $value
+     * @param string $fieldName
+     *
+     * @return null|\stdClass
+     */
+    public function findAll($value, $fieldName = 'id')
+    {
+        $this->where($fieldName, '=', $value);
+        return $this->get();
+    }
+
+    /**
+     * @param        $value
+     * @param string $fieldName
+     *
+     * @return null|\stdClass
+     */
+    public function find($value, $fieldName = 'id')
+    {
+        $this->where($fieldName, '=', $value);
+        return $this->first();
+    }
+
+    /**
+     * Get count of rows
+     *
+     * @return int
+     */
+    public function count()
+    {
+        $this->preparePdoStatement();
+        return $this->pdoStatement->rowCount();
     }
 
     /**
@@ -499,6 +542,14 @@ class QueryBuilderHandler
     public function getConnection()
     {
         return $this->connection;
+    }
+
+    protected function preparePdoStatement(){
+        // If user has not passed any statement (its a raw query)
+        if (is_null($this->pdoStatement)) {
+            $queryArr = $this->adapterInstance->select($this->statements);
+            $this->query($queryArr['sql'], $queryArr['bindings']);
+        }
     }
 
     /**
