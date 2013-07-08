@@ -87,6 +87,7 @@ Library on [Packagist](https://packagist.org/packages/usmanhalalit/pixie).
  - [Get Built Query](#get-built-query)
  - [Sub Queries and Nested Queries](#sub-queries-and-nested-queries)
  - [Get PDO Instance](#get-pdo-instance)
+ 
 ___
 
 ## Connection
