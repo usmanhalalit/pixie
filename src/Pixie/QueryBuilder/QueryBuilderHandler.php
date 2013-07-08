@@ -105,12 +105,11 @@ class QueryBuilderHandler
     public function get()
     {
         $this->preparePdoStatement();
-        $result = $this->pdoStatement->fetchAll(\PDO::FETCH_CLASS);
-        return empty($result) ? null : $result;
+        return $this->pdoStatement->fetchAll(\PDO::FETCH_CLASS);
     }
 
     /**
-     * Get count of rows
+     * Get first row
      *
      * @return \stdClass|null
      */
@@ -118,15 +117,16 @@ class QueryBuilderHandler
     {
         $this->limit(1);
         $result = $this->get();
-        return $result ? $result[0] : null;
+        return empty($result) ? null : $result[0];
     }
+
     /**
      * @param        $value
      * @param string $fieldName
      *
      * @return null|\stdClass
      */
-    public function findAll($value, $fieldName = 'id')
+    public function findAll($fieldName, $value)
     {
         $this->where($fieldName, '=', $value);
         return $this->get();

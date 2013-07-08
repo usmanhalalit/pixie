@@ -1,10 +1,10 @@
 # Pixie Query Builder
-An expressive, framework agnostic query bulder for PHP, it supports MySQL, SQLite and PostgreSQL. It takes care of query sanitazion, table prefixing and many other things with a unified API. PHP 5.3 is required.
+An expressive, framework agnostic query builder for PHP, it supports MySQL, SQLite and PostgreSQL. It takes care of query sanitization, table prefixing and many other things with a unified API. PHP 5.3 is required.
 
 It has some advanced features like:
 
  - Nested Criteria
- - Subqueries
+ - Sub Queries
  - Nested Queries
  - Multiple Database Connections.
 
@@ -20,8 +20,11 @@ The syntax is quite similar to Laravel's query builder.
     - [SQLite and PostgreSQL Config Sample](sqlite-and-postgresql-config-sample)
  - [Query](#query)
  - [**Select**](#select)
+    - [Get Easily](#get-easily)
     - [Multiple Selects](#multiple-selects)
     - [Get All](#get-all)
+    - [Get First Row](#get-first-row)
+    - [Get Rows Count](#get-rows-count)
  - [**Where**](#where)
     - [Where In](#where-in)
     - [Grouped Where](#grouped-where)
@@ -47,16 +50,24 @@ The syntax is quite similar to Laravel's query builder.
 new \Pixie\Connection('mysql', array(
                     'driver'    => 'mysql',
                     'host'      => 'localhost',
-                    'database'  => 'yourdatabase',
+                    'database'  => 'your-database',
                     'username'  => 'root',
-                    'password'  => 'yourpassword',
+                    'password'  => 'your-password',
                     'charset'   => 'utf8',
                     'collation' => 'utf8_unicode_ci',
                     'prefix'    => 'cb_',
             ), 'QB');
+```
 
-// Build queries
-$query = QB::table('person_details')->where('person_id', '=', 3);
+The query below returns the row where id = 3, null if no rows.
+```PHP
+$row = QB::table('my_table')->find(3);
+```
+
+Full queries:
+
+```PHP
+$query = QB::table('my_table')->where('name', '=', 'Sana');
 
 // Get result
 var_dump($query->get());
@@ -82,14 +93,14 @@ Library on [Packagist](https://packagist.org/packages/usmanhalalit/pixie).
 ___
 
 ## Connection
-Pixie supports three database drivers, MySQL, SQLite and PostgreSQL. You can specify the driver during connection and the associated configuration when creating a new connection. You can also create multiple connections, but use diffrent alias for each (not `QB` for all);
+Pixie supports three database drivers, MySQL, SQLite and PostgreSQL. You can specify the driver during connection and the associated configuration when creating a new connection. You can also create multiple connections, but use different alias for each (not `QB` for all);
 ```PHP
 $config = array(
             'driver'    => 'mysql', // Db driver
             'host'      => 'localhost',
-            'database'  => 'yourdatabase',
+            'database'  => 'your-database',
             'username'  => 'root',
-            'password'  => 'yourpassword',
+            'password'  => 'your-password',
             'charset'   => 'utf8', // Optional
             'collation' => 'utf8_unicode_ci', // Optional
             'prefix'    => 'cb_', // Table prefix, optional
@@ -107,7 +118,7 @@ When you create a connection:
 ```PHP
 new \Pixie\Connection('mysql', $config), 'MyAlias');
 ```
-MyAlias is the name for the class alias you want to use (like `MyAlias::table(...)`), you can use whatever name (with Namespace also, `MyNamespace\\MyClass`) you like or you may skip it if you don't need an alias. Alias gives you the ability to easily access the QueryBuilder class accross your application.
+MyAlias is the name for the class alias you want to use (like `MyAlias::table(...)`), you can use whatever name (with Namespace also, `MyNamespace\\MyClass`) you like or you may skip it if you don't need an alias. Alias gives you the ability to easily access the QueryBuilder class across your application.
 
 When not using an alias you can instanciate the QueryBuilder handler separately, helpful for Dependency Injection and Testing.
 
@@ -126,7 +137,7 @@ var_dump($query->get());
 ```PHP
 new \Pixie\Connection('sqlite', array(
         	    'driver'   => 'sqlite',
-			    'database' => 'yourfile.sqlite',
+			    'database' => 'your-file.sqlite',
 			    'prefix'   => 'cb_',
 		    ), 'QB');
 ```
@@ -135,9 +146,9 @@ new \Pixie\Connection('sqlite', array(
 new \Pixie\Connection('pgsql', array(
                     'driver'   => 'pgsql',
                     'host'     => 'localhost',
-                    'database' => 'yourdatabase',
+                    'database' => 'your-database',
                     'username' => 'postgres',
-                    'password' => 'yourpassword',
+                    'password' => 'your-password',
                     'charset'  => 'utf8',
                     'prefix'   => 'cb_',
                     'schema'   => 'public',
@@ -150,6 +161,20 @@ To select from multiple tables just pass an array.
 ```PHP
 QB::table(array('mytable1', 'mytable2'));
 ```
+
+
+### Get Easily
+The query below returns the (first) row where id = 3, null if no rows.
+```PHP
+$row = QB::table('my_table')->find(3);
+```
+Access you row like, `echo $row->name`. If your field name is not `id` then pass the field name as second parameter `QB::table('my_table')->find(3, 'person_id');`.
+
+The query below returns the all rows where name = 'Sana', null if no rows.
+```PHP
+$result = QB::table('my_table')->findAll('name', 'Sana');
+```
+
 
 ### Select
 ```PHP
@@ -165,8 +190,30 @@ Using select method multiple times `select('a')->select('b')` will also select `
 
 
 #### Get All
+Return an array.
 ```PHP
-$query->get();
+$query = QB::table('my_table')->where('name', '=', 'Sana');
+$result = $query->get();
+```
+You can loop through it like:
+```PHP
+foreach ($result as $row) {
+    echo $row->name;
+}
+```
+
+#### Get First Row
+```PHP
+$query = QB::table('my_table')->where('name', '=', 'Sana');
+$row = $query->first();
+```
+Returns the first row, or null if there is no record. Using this method you can also make sure if a record exists. Access these like `echo $row->name`.
+
+
+#### Get Rows Count
+```PHP
+$query = QB::table('my_table')->where('name', '=', 'Sana');
+$query->count();
 ```
 
 ### Where
@@ -250,7 +297,7 @@ Available methods,
  - leftJoin()
  - rightJoin()
 
-If you need `FULL OUTER` join or any other join, just pass it as 5th paramater of `join` method.
+If you need `FULL OUTER` join or any other join, just pass it as 5th parameter of `join` method.
 ```PHP
 ->join('another_table', 'another_table.person_id', '=', 'my_table.id, 'FULL OUTER')
 ```
@@ -291,7 +338,7 @@ QB::table('my_table')
 
 
 ___
-**NOTE:** Queries that run through `query()` method are not sanitized until you pass all values throug bindings. Queries that run through `raw()` method are not sanitized either, you have to do it yourself. And of course these don't add table prefix too, but you can use the `addTablePrefix()` method.
+**NOTE:** Queries that run through `query()` method are not sanitized until you pass all values through bindings. Queries that run through `raw()` method are not sanitized either, you have to do it yourself. And of course these don't add table prefix too, but you can use the `addTablePrefix()` method.
 
 ### Insert
 ```PHP
@@ -380,7 +427,7 @@ This will produce a query like this:
 
     SELECT * FROM (SELECT `cb_my_table`.*, (SELECT `details` FROM `cb_person_details` WHERE `person_id` = 3) as pop FROM `cb_my_table`) as bb
     
-**NOTE:** Pixie doens't use bindings for sub queries and nested queries. It quotes values with PDO's `quote()` method.
+**NOTE:** Pixie doesn't use bindings for sub queries and nested queries. It quotes values with PDO's `quote()` method.
 
 ### Get PDO Instance
 ```PHP
