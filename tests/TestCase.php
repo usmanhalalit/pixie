@@ -18,8 +18,22 @@ class TestCase extends \PHPUnit_Framework_TestCase {
 
         $this->mockPdoStatement = $this->getMock('\\PDOStatement');
 
+        $mockPdoStatement = & $this->mockPdoStatement;
+
+        $this->mockPdoStatement->expects($this->any())->method('execute')->will($this->returnCallback(function($bindings) use ($mockPdoStatement){
+                    $mockPdoStatement->bindings = $bindings;
+                }));
+        $this->mockPdoStatement->expects($this->any())->method('fetchAll')->will($this->returnCallback(function() use ($mockPdoStatement){
+                    return array($mockPdoStatement->sql, $mockPdoStatement->bindings);
+                }));
+
         $this->mockPdo = $this->getMock('\\Pixie\\MockPdo', array('prepare', 'setAttribute', 'quote'));
-        $this->mockPdo->expects($this->any())->method('prepare')->will($this->returnValue($this->mockPdoStatement));
+
+        $this->mockPdo->expects($this->any())->method('prepare')->will($this->returnCallback(function($sql) use ($mockPdoStatement){
+                    $mockPdoStatement->sql = $sql;
+                    return $mockPdoStatement;
+                }));
+
         $this->mockPdo->expects($this->any())->method('quote')->will($this->returnCallback(function($value){
                     return "'$value'";
                 }));

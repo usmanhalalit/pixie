@@ -87,14 +87,14 @@ class QueryBuilderHandler
      * @param       $sql
      * @param array $bindings
      *
-     * @return \PDOStatement
+     * @return $this
      */
     public function query($sql, $bindings = array())
     {
-        $query = $this->pdo->prepare($sql);
-        $query->execute($bindings);
-        $this->pdoStatement = $query;
-        return $query;
+        $pdoStatement = $this->pdo->prepare($sql);
+        $pdoStatement->execute($bindings);
+        $this->pdoStatement = $pdoStatement;
+        return $this;
     }
 
     /**
@@ -107,7 +107,9 @@ class QueryBuilderHandler
             $this->query($queryArr['sql'], $queryArr['bindings']);
         }
 
-        return $this->makeCollection($this->pdoStatement);
+        $result = $this->pdoStatement->fetchAll(\PDO::FETCH_CLASS);
+
+        return empty($result) ? null : $result;
     }
 
     /**
@@ -578,15 +580,5 @@ class QueryBuilderHandler
         } else {
             $this->statements[$key] = array_merge($this->statements[$key], $value);
         }
-    }
-
-    /**
-     * @param \PDOStatement $queryObject
-     *
-     * @return array
-     */
-    protected function makeCollection(\PDOStatement $queryObject)
-    {
-        return $queryObject->fetchAll(\PDO::FETCH_CLASS);
     }
 }
