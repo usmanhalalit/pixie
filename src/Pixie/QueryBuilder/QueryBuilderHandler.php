@@ -41,6 +41,11 @@ class QueryBuilderHandler
     protected $adapterInstance;
 
     /**
+     * @var array
+     */
+    protected $firedEvents = array();
+
+    /**
      * @param null $connection
      *
      * @throws \Exception
@@ -105,7 +110,9 @@ class QueryBuilderHandler
     public function get()
     {
         $this->preparePdoStatement();
-        return $this->pdoStatement->fetchAll(\PDO::FETCH_CLASS);
+        $result = $this->pdoStatement->fetchAll(\PDO::FETCH_CLASS);
+        $this->fireEvents('after-select', $result);
+        return $result;
     }
 
     /**
@@ -169,7 +176,9 @@ class QueryBuilderHandler
             throw new \Exception($type . ' is not a known type.');
         }
 
+        $this->fireEvents('before-' . $type);
         $queryArr = $this->adapterInstance->$type($this->statements, $dataToBePassed);
+
         return $this->container->build(
             '\\Pixie\\QueryBuilder\\QueryObject',
             array($queryArr['sql'], $queryArr['bindings'], $this->pdo)
@@ -202,23 +211,22 @@ class QueryBuilderHandler
         // If first value is not an array
         // Its not a batch insert
         if (!is_array(current($data))) {
-            $queryArr = $this->adapterInstance->insert($this->statements, $data);
-            var_dump($queryArr);
-            $this->query($queryArr['sql'], $queryArr['bindings']);
+            $queryObject = $this->getQuery('insert', $data);
+            $this->query($queryObject->getSql(), $queryObject->getBindings());
 
-            return $this->pdo->lastInsertId();
+            $return = $this->pdo->lastInsertId();
         } else {
             // Its a batch insert
             $return = array();
             foreach ($data as $subData) {
-                $queryArr = $this->adapterInstance->insert($this->statements, $subData);
-                var_dump($queryArr);
-                $this->query($queryArr['sql'], $queryArr['bindings']);
+                $queryObject = $this->getQuery('insert', $subData);
+                $this->query($queryObject->getSql(), $queryObject->getBindings());
                 $return[] = $this->pdo->lastInsertId();
             }
-
-            return $return;
         }
+
+        $this->fireEvents('after-insert', $return);
+        return $return;
     }
 
     /**
@@ -228,9 +236,9 @@ class QueryBuilderHandler
      */
     public function update($data)
     {
-        $queryArr = $this->adapterInstance->update($this->statements, $data);
-        var_dump($queryArr);
-        $this->query($queryArr['sql'], $queryArr['bindings']);
+        $queryObject = $this->getQuery('update', $data);
+        $this->query($queryObject->getSql(), $queryObject->getBindings());
+        $this->fireEvents('after-update', $queryObject);
     }
 
     /**
@@ -238,9 +246,9 @@ class QueryBuilderHandler
      */
     public function delete()
     {
-        $queryArr = $this->adapterInstance->delete($this->statements);
-        var_dump($queryArr);
-        $this->query($queryArr['sql'], $queryArr['bindings']);
+        $queryObject = $this->getQuery('delete');
+        $this->query($queryObject->getSql(), $queryObject->getBindings());
+        $this->fireEvents('after-delete', $queryObject);
     }
 
     /**
@@ -547,8 +555,8 @@ class QueryBuilderHandler
     protected function preparePdoStatement(){
         // If user has not passed any statement (its a raw query)
         if (is_null($this->pdoStatement)) {
-            $queryArr = $this->adapterInstance->select($this->statements);
-            $this->query($queryArr['sql'], $queryArr['bindings']);
+            $queryObject = $this->getQuery('select');
+            $this->query($queryObject->getSql(), $queryObject->getBindings());
         }
     }
 
@@ -630,6 +638,70 @@ class QueryBuilderHandler
             $this->statements[$key] = $value;
         } else {
             $this->statements[$key] = array_merge($this->statements[$key], $value);
+        }
+    }
+
+    /**
+     * @param $event
+     * @param $table
+     *
+     * @return callable|null
+     */
+    public function getEvent($event, $table = ':any')
+    {
+        return $this->connection->getEvent($event, $table);
+    }
+
+    /**
+     * @param          $event
+     * @param string   $table
+     * @param callable $action
+     *
+     * @return void
+     */
+    public function registerEvent($event, $table = ':any', \Closure $action)
+    {
+        if ($table != ':any') {
+            $table = $this->addTablePrefix($table, false);
+        }
+        return $this->connection->registerEvent($event, $table, $action);
+    }
+
+    /**
+     * @param          $event
+     * @param string   $table
+     *
+     * @return void
+     */
+    public function removeEvent($event, $table = ':any')
+    {
+        if ($table != ':any') {
+            $table = $this->addTablePrefix($table, false);
+        }
+        return $this->connection->removeEvent($event, $table);
+    }
+
+    protected function fireEvents($event, $dataToBePassed = null) {
+        $tables = isset($this->statements['tables']) ? $this->statements['tables'] : array();
+
+        // Events added with :any will be fired in case of any table,
+        // we are adding :any as a fake table.
+        $tables[] = ':any';
+
+        // Fire before events for specific table
+        foreach ($tables as $table) {
+            // Fire before events for :any table
+            if ($action = $this->getEvent($event, $table)) {
+                // Make an event id, with event type and table
+                $eventId = $event . $table;
+                // Check if event is already fired
+                if (! in_array($eventId, $this->firedEvents)) {
+                    // Fire event
+                    $action($this, $dataToBePassed);
+                    // Add to fired list
+                    $this->firedEvents[] = $eventId;
+                }
+            }
         }
     }
 }

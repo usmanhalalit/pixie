@@ -1,5 +1,6 @@
 <?php namespace Pixie;
 
+use Pixie\QueryBuilder\Raw;
 use Viocon\Container;
 
 class Connection
@@ -24,6 +25,11 @@ class Connection
      * @var \PDO
      */
     protected $pdoInstance;
+
+    /**
+     * @var array
+     */
+    protected $events = array();
 
     /**
      * @var Connection
@@ -153,5 +159,50 @@ class Connection
     public static function getStoredConnection()
     {
         return static::$storedConnection;
+    }
+
+    /**
+     * @return array
+     */
+    public function getEvents()
+    {
+        return $this->events;
+    }
+
+    /**
+     * @param $event
+     * @param $table
+     *
+     * @return callable|null
+     */
+    public function getEvent($event, $table = ':any')
+    {
+        if ($table instanceof Raw) {
+            return null;
+        }
+        return isset($this->events[$table][$event]) ? $this->events[$table][$event] : null;
+    }
+
+    /**
+     * @param          $event
+     * @param string   $table
+     * @param callable $action
+     *
+     * @return void
+     */
+    public function registerEvent($event, $table = ':any', \Closure $action)
+    {
+        $this->events[$table][$event] = $action;
+    }
+
+    /**
+     * @param          $event
+     * @param string   $table
+     *
+     * @return void
+     */
+    public function removeEvent($event, $table = ':any')
+    {
+        unset($this->events[$table][$event]);
     }
 }
