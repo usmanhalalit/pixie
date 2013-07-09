@@ -49,9 +49,9 @@ $query->get();
 
 **Query Events:**
 
-```PHP
-After this code, every time a select query occurs on `users` table, it will add this where criteria, so banned users don't get access.
+After the code below, every time a select query occurs on `users` table, it will add this where criteria, so banned users don't get access.
 
+```PHP
 QB::registerEvent('before-select', 'users', function($qb)
 {
     $qb->where('status', '!=', 'banned');
@@ -143,7 +143,7 @@ When you create a connection:
 ```PHP
 new \Pixie\Connection('mysql', $config, 'MyAlias');
 ```
-MyAlias is the name for the class alias you want to use (like `MyAlias::table(...)`), you can use whatever name (with Namespace also, `MyNamespace\\MyClass`) you like or you may skip it if you don't need an alias. Alias gives you the ability to easily access the QueryBuilder class across your application.
+`MyAlias` is the name for the class alias you want to use (like `MyAlias::table(...)`), you can use whatever name (with Namespace also, `MyNamespace\\MyClass`) you like or you may skip it if you don't need an alias. Alias gives you the ability to easily access the QueryBuilder class across your application.
 
 When not using an alias you can instanciate the QueryBuilder handler separately, helpful for Dependency Injection and Testing.
 
@@ -312,7 +312,7 @@ Using `groupBy()` or `orderBy()` methods multiple times `groupBy('a')->groupBy('
 ### Join
 ```PHP
 QB::table('my_table')
-    ->join('another_table', 'another_table.person_id', '=', 'my_table.id)
+    ->join('another_table', 'another_table.person_id', '=', 'my_table.id')
     
 ```
 
@@ -324,7 +324,7 @@ Available methods,
 
 If you need `FULL OUTER` join or any other join, just pass it as 5th parameter of `join` method.
 ```PHP
-->join('another_table', 'another_table.person_id', '=', 'my_table.id, 'FULL OUTER')
+->join('another_table', 'another_table.person_id', '=', 'my_table.id', 'FULL OUTER')
 ```
 
 #### Multiple Join Criteria
@@ -443,14 +443,15 @@ $subQuery = QB::table('person_details')->select('details')->where('person_id', '
 
 $query = QB::table('my_table')
             ->select('my_table.*')
-            ->select(QB::subQuery($subQuery, 'pop'));
+            ->select(QB::subQuery($subQuery, 'table_alias1'));
 
-$nestedQuery = QB::table(QB::subQuery($query, 'table_alias'))->select('*');
+$nestedQuery = QB::table(QB::subQuery($query, 'table_alias2'))->select('*');
+$nestedQuery->get();
 ```
 
 This will produce a query like this:
 
-    SELECT * FROM (SELECT `cb_my_table`.*, (SELECT `details` FROM `cb_person_details` WHERE `person_id` = 3) as pop FROM `cb_my_table`) as table_alias
+    SELECT * FROM (SELECT `cb_my_table`.*, (SELECT `details` FROM `cb_person_details` WHERE `person_id` = 3) as table_alias1 FROM `cb_my_table`) as table_alias2
     
 **NOTE:** Pixie doesn't use bindings for sub queries and nested queries. It quotes values with PDO's `quote()` method.
 
@@ -491,7 +492,7 @@ If you want the event to be performed when **any table is being queried**, provi
 
 **Other examples:**
 
-After inserting data into `my_table`, details will be inserted into another table.
+After inserting data into `my_table`, details will be inserted into another table
 ```PHP
 QB::registerEvent('after-insert', 'my_table', function($queryBuilder, $insertId)
 {
@@ -500,7 +501,7 @@ QB::registerEvent('after-insert', 'my_table', function($queryBuilder, $insertId)
 });
 ```
 
-Whenever data is inserted into `person_details` table, set the timestamp field `created_at`, so we don't have to specify it everywhere.
+Whenever data is inserted into `person_details` table, set the timestamp field `created_at`, so we don't have to specify it everywhere:
 ```PHP
 QB::registerEvent('after-insert', 'person_details', function($queryBuilder, $insertId)
 {
@@ -508,7 +509,7 @@ QB::registerEvent('after-insert', 'person_details', function($queryBuilder, $ins
 });
 ```
 
-After deleting from `my_table` delete the relations.
+After deleting from `my_table` delete the relations:
 ```PHP
 QB::registerEvent('after-delete', 'my_table', function($queryBuilder, $queryObject)
 {
@@ -535,7 +536,7 @@ QB::removeEvent('event-name', 'table-name');
 
 #### Some Use Cases
 
-Here are some cases where Query Events can be extremely useful:
+Here are some cases where Query Events can be extremely helpful:
 
  - Restrict banned users.
  - Get only `deleted = 0` records.
@@ -548,6 +549,9 @@ Here are some cases where Query Events can be extremely useful:
 #### Notes
  - Query Events are set as per connection basis so multiple database connection don't create any problem.
  - Query Events go recursively, for example after inserting into `table_a` your event inserts into `table_b`, now you can have another event registered with `table_b` which inserts into `table_c`.
+ - Of course Query Events don't work with raw queries.
 
 ___
+If you find any typo then please edit and send pull request.
+
 &copy; 2013 [Muhammad Usman](http://usman.it/). Licensed under MIT license.
