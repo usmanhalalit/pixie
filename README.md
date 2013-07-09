@@ -3,6 +3,7 @@ A lightweight, expressive, framework agnostic query builder for PHP. It supports
 
 It has some advanced features like:
 
+ - Query Events
  - Nested Criteria
  - Sub Queries
  - Nested Queries
@@ -30,12 +31,14 @@ $config = array(
 new \Pixie\Connection('mysql', $config, 'QB');
 ```
 
+**Simple Query:**
+
 The query below returns the row where id = 3, null if no rows.
 ```PHP
 $row = QB::table('my_table')->find(3);
 ```
 
-Full queries:
+**Full Queries:**
 
 ```PHP
 $query = QB::table('my_table')->where('name', '=', 'Sana');
@@ -43,6 +46,17 @@ $query = QB::table('my_table')->where('name', '=', 'Sana');
 // Get result
 $query->get();
 ```
+
+**Query Events:**
+
+```PHP
+QB::registerEvent('before-select', 'users', function($qb)
+{
+    $qb->where('status', '!=', 'banned');
+});
+```
+Now every time a select query occurs on `users` table, it will add this where criteria, so banned users don't get access.
+
 
 There are many advanced options which are documented below. Sold? Lets install.
 
@@ -92,6 +106,11 @@ Library on [Packagist](https://packagist.org/packages/usmanhalalit/pixie).
  - [Get Built Query](#get-built-query)
  - [Sub Queries and Nested Queries](#sub-queries-and-nested-queries)
  - [Get PDO Instance](#get-pdo-instance)
+ - [Query Events](#query-events)
+    - [Available Events](#available-events)
+    - [Registering Events](#registering-events)
+    - [Removing Events](#removing-events)
+    - [Some Use Cases](#some-use-cases)
 
 ___
 
@@ -141,7 +160,7 @@ var_dump($query->get());
 ### SQLite and PostgreSQL Config Sample
 ```PHP
 new \Pixie\Connection('sqlite', array(
-        	    'driver'   => 'sqlite',
+                'driver'   => 'sqlite',
 			    'database' => 'your-file.sqlite',
 			    'prefix'   => 'cb_',
 		    ), 'QB');
@@ -440,7 +459,92 @@ If you need to get the PDO instance you can do so.
 ```PHP
 QB::pdo();
 ```
-    
+
+### Query Events
+Pixie comes with powerful query events to supercharge your application. These events are like database triggers, you can perform some actions when an event occurs, for example you can hook `after-delete` event of a table and delete related data from another table.
+
+#### Available Events
+ 
+ - before-select
+ - after-select
+ - before-insert
+ - after-insert
+ - before-update
+ - after-update
+ - before-delete
+ - after-delete
+
+#### Registering Events
+
+```PHP
+QB::registerEvent('before-select', 'users', function($qb)
+{
+    $qb->where('status', '!=', 'banned');
+});
+```
+Now every time a select query occurs on `users` table, it will add this where criteria, so banned users don't get access.
+
+The syntax is `registerEvent('event type', 'table name', action in a closure)`.
+
+If you want the event to be performed when **any table is being queried**, provide `':any'` as table name.
+
+**Other examples:**
+
+After inserting data into `my_table`, details will be inserted into another table.
+```PHP
+QB::registerEvent('after-insert', 'my_table', function($queryBuilder, $insertId)
+{
+    $data = array('person_id' => $insertId, 'details' => 'Meh', 'age' => 5);
+    $queryBuilder->table('person_details')->insert($data);
+});
+```
+
+Whenever data is inserted into `person_details` table, set the timestamp field `created_at`, so we don't have to specify it everywhere.
+```PHP
+QB::registerEvent('after-insert', 'person_details', function($queryBuilder, $insertId)
+{
+    $queryBuilder->table('person_details')->where('id', $insertId)->update(array('created_at' => date('Y-m-d H:i:s')));
+});
+```
+
+After deleting from `my_table` delete the relations.
+```PHP
+QB::registerEvent('after-delete', 'my_table', function($queryBuilder, $queryObject)
+{
+    $bindings = $queryObject->getBindings();
+    $queryBuilder->table('person_details')->where('person_id', $binding[0])->delete();
+});
+```
+
+
+
+Pixie passes the current instance of query builder as first parameter of your closure so you can build queries with this object, you can do anything like usual query builder (`QB`).
+
+Only on `after-*` events you get two parameters first is the query builder and the second varies:
+
+ - On `after-select` you get the `results` obtained from `select`.
+ - On `after-insert` you get the insert id (or array of ids in case of batch insert)
+ - On `after-delete` you get the [query object](#get-built-query) (same as what you get from `getQuery()`), from it you can get SQL and Bindings.
+ - On `after-update` you get the [query object](#get-built-query) like `after-delete`.
+
+#### Removing Events
+```PHP
+QB::removeEvent('event-name', 'table-name');
+```
+
+#### Some Use Cases
+
+ - Restrict banned users.
+ - Get only `deleted = 0` records.
+ - Delete relationship data after a delete query.
+ - Trigger user notification after every entry.
+ - Insert relationship data after an insert query.
+ - Keep records of modification after each update query.
+ - Add/edit created_at and updated _at data after each entry.
+
+#### Notes
+ - Query Events are set as per connection basis so multiple database connection don't create any problem.
+ - Query Events go recursively, for example after inserting into `table_a` your event inserts into `table_b`, now you can have another event registered with `table_b` which inserts into `table_c`.
 
 ___
-Copyright 2013 Muhammad Usman.
+&copy; 2013 [Muhammad Usman](http://usman.it/). Licensed under MIT license.
