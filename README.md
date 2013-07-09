@@ -119,8 +119,6 @@ $query = QB::table('my_table')->where('name', '=', 'Sana');
 ```
 
 ### Alias
-**(Optional topic, you may skip)**
-
 When you create a connection:
 ```PHP
 new \Pixie\Connection('mysql', $config, 'MyAlias');
@@ -443,3 +441,6 @@ If you need to get the PDO instance you can do so.
 QB::pdo();
 ```
     
+
+___
+Copyright 2013 Muhammad Usman.
