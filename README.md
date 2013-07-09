@@ -50,12 +50,13 @@ $query->get();
 **Query Events:**
 
 ```PHP
+After this code, every time a select query occurs on `users` table, it will add this where criteria, so banned users don't get access.
+
 QB::registerEvent('before-select', 'users', function($qb)
 {
     $qb->where('status', '!=', 'banned');
 });
 ```
-Now every time a select query occurs on `users` table, it will add this where criteria, so banned users don't get access.
 
 
 There are many advanced options which are documented below. Sold? Lets install.
@@ -533,6 +534,8 @@ QB::removeEvent('event-name', 'table-name');
 ```
 
 #### Some Use Cases
+
+Here are some cases where Query Events can be extremely useful:
 
  - Restrict banned users.
  - Get only `deleted = 0` records.
