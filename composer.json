@@ -16,7 +16,7 @@
 	
 	"require": {
 		"php": ">=5.3.0",
-        "usmanhalalit/viocon": "dev-master"
+        "usmanhalalit/viocon": "1.0.*@dev"
 	},
 	
 	"require-dev": {
