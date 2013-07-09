@@ -4,6 +4,7 @@
 	"homepage": "https://github.com/usmanhalalit/pixie",
 	"keywords": ["query builder", "sql", "database", "mysql", "postgresql", "sqlite"],
 	"license": "MIT",
+	"minimum-stability": "dev",
 	"authors":
 	[
 		{
