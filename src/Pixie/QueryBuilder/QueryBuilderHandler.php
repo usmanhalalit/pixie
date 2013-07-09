@@ -685,10 +685,10 @@ class QueryBuilderHandler
         $tables = isset($this->statements['tables']) ? $this->statements['tables'] : array();
 
         // Events added with :any will be fired in case of any table,
-        // we are adding :any as a fake table.
-        $tables[] = ':any';
+        // we are adding :any as a fake table at the beginning.
+        array_unshift($tables, ':any');
 
-        // Fire before events for specific table
+        // Fire all events
         foreach ($tables as $table) {
             // Fire before events for :any table
             if ($action = $this->getEvent($event, $table)) {
