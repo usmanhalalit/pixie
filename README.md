@@ -1,5 +1,5 @@
 # Pixie Query Builder [![Build Status](https://travis-ci.org/usmanhalalit/pixie.png?branch=master)](https://travis-ci.org/usmanhalalit/pixie)
-A lightweight, expressive, framework agnostic query builder for PHP. It supports MySQL, SQLite and PostgreSQL. It takes care of query sanitization, table prefixing and many other things with a unified API. PHP 5.3 is required.
+A lightweight, expressive, framework agnostic query builder for PHP. Pixie supports MySQL, SQLite and PostgreSQL and it takes care of query sanitization, table prefixing and many other things with a unified API. At least PHP 5.3 is required.
 
 It has some advanced features like:
 
@@ -547,7 +547,7 @@ Here are some cases where Query Events can be extremely helpful:
  - Add/edit created_at and updated _at data after each entry.
 
 #### Notes
- - Query Events are set as per connection basis so multiple database connection don't create any problem.
+ - Query Events are set as per connection basis so multiple database connection don't create any problem, and creating new query builder instance preserves your events.
  - Query Events go recursively, for example after inserting into `table_a` your event inserts into `table_b`, now you can have another event registered with `table_b` which inserts into `table_c`.
  - Of course Query Events don't work with raw queries.
 
