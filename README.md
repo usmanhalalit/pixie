@@ -77,7 +77,7 @@ Library on [Packagist](https://packagist.org/packages/usmanhalalit/pixie).
 
 ## Full Usage API
 
-### Table of Context
+### Table of Contents
 
  - [Connection](#connection)
     - [Alias](#alias)
