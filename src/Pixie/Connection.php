@@ -67,6 +67,14 @@ class Connection
         AliasFacade::setQueryBuilderInstance($builder);
     }
 
+    /**
+     * Returns an instance of Query Builder
+     */
+    public function getQueryBuilder()
+    {
+        return $this->container->build('\\Pixie\\QueryBuilder\\QueryBuilderHandler', array($this));
+    }
+
 
     /**
      * Create the connection adapter
