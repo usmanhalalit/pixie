@@ -72,6 +72,20 @@ class QueryBuilderTest extends TestCase
             , $query->getQuery()->getRawSql());
     }
 
+    public function testSelectWithQueryEvents()
+    {
+        $builder = $this->builder;
+
+        $builder->registerEvent('before-select', ':any', function($qb)
+        {
+            $qb->whereIn('status', array(1, 2));
+        });
+
+        $query = $builder->table('some_table')->where('name', 'Some');
+
+        $this->assertEquals("SELECT * FROM `cb_some_table` WHERE `name` = 'Some' AND `status` IN (1, 2)", $query->getQuery()->getRawSql());
+    }
+
     public function testInsertQuery()
     {
         $builder = $this->builder->from('my_table');

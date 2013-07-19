@@ -27,14 +27,14 @@ class Connection
     protected $pdoInstance;
 
     /**
-     * @var array
-     */
-    protected $events = array();
-
-    /**
      * @var Connection
      */
     protected static $storedConnection;
+
+    /**
+     * @var EventHandler
+     */
+    protected $eventHandler;
 
     /**
      * @param               $adapter
@@ -49,6 +49,9 @@ class Connection
         $this->container = $container;
 
         $this->setAdapter($adapter)->setAdapterConfig($adapterConfig)->connect();
+
+        // Create event dependency
+        $this->eventHandler = $this->container->build('\\Pixie\\EventHandler');
 
         if ($alias) {
             $this->createAlias($alias);
@@ -162,55 +165,18 @@ class Connection
     }
 
     /**
+     * @return EventHandler
+     */
+    public function getEventHandler()
+    {
+        return $this->eventHandler;
+    }
+
+    /**
      * @return Connection
      */
     public static function getStoredConnection()
     {
         return static::$storedConnection;
-    }
-
-    /**
-     * @return array
-     */
-    public function getEvents()
-    {
-        return $this->events;
-    }
-
-    /**
-     * @param $event
-     * @param $table
-     *
-     * @return callable|null
-     */
-    public function getEvent($event, $table = ':any')
-    {
-        if ($table instanceof Raw) {
-            return null;
-        }
-        return isset($this->events[$table][$event]) ? $this->events[$table][$event] : null;
-    }
-
-    /**
-     * @param          $event
-     * @param string   $table
-     * @param callable $action
-     *
-     * @return void
-     */
-    public function registerEvent($event, $table = ':any', \Closure $action)
-    {
-        $this->events[$table][$event] = $action;
-    }
-
-    /**
-     * @param          $event
-     * @param string   $table
-     *
-     * @return void
-     */
-    public function removeEvent($event, $table = ':any')
-    {
-        unset($this->events[$table][$event]);
     }
 }

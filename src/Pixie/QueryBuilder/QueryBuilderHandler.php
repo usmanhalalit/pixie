@@ -41,11 +41,6 @@ class QueryBuilderHandler
     protected $adapterInstance;
 
     /**
-     * @var array
-     */
-    protected $firedEvents = array();
-
-    /**
      * @param null $connection
      *
      * @throws \Exception
@@ -649,7 +644,7 @@ class QueryBuilderHandler
      */
     public function getEvent($event, $table = ':any')
     {
-        return $this->connection->getEvent($event, $table);
+        return $this->connection->getEventHandler()->getEvent($event, $table);
     }
 
     /**
@@ -664,7 +659,7 @@ class QueryBuilderHandler
         if ($table != ':any') {
             $table = $this->addTablePrefix($table, false);
         }
-        return $this->connection->registerEvent($event, $table, $action);
+        return $this->connection->getEventHandler()->registerEvent($event, $table, $action);
     }
 
     /**
@@ -678,30 +673,23 @@ class QueryBuilderHandler
         if ($table != ':any') {
             $table = $this->addTablePrefix($table, false);
         }
-        return $this->connection->removeEvent($event, $table);
+
+        return $this->connection->getEventHandler()->removeEvent($event, $table);
     }
 
-    protected function fireEvents($event, $dataToBePassed = null) {
-        $tables = isset($this->statements['tables']) ? $this->statements['tables'] : array();
+    /**
+     * @param      $event
+     * @param null $dataToBePassed
+     */
+    public function fireEvents($event, $dataToBePassed = null) {
+        return $this->connection->getEventHandler()->fireEvents($this, $event, $dataToBePassed);
+    }
 
-        // Events added with :any will be fired in case of any table,
-        // we are adding :any as a fake table at the beginning.
-        array_unshift($tables, ':any');
-
-        // Fire all events
-        foreach ($tables as $table) {
-            // Fire before events for :any table
-            if ($action = $this->getEvent($event, $table)) {
-                // Make an event id, with event type and table
-                $eventId = $event . $table;
-                // Check if event is already fired
-                if (! in_array($eventId, $this->firedEvents)) {
-                    // Fire event
-                    $action($this, $dataToBePassed);
-                    // Add to fired list
-                    $this->firedEvents[] = $eventId;
-                }
-            }
-        }
+    /**
+     * @return array
+     */
+    public function getStatements()
+    {
+        return $this->statements;
     }
 }

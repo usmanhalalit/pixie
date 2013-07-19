@@ -38,12 +38,14 @@ class TestCase extends \PHPUnit_Framework_TestCase {
                     return "'$value'";
                 }));
 
+        $eventHandler = new EventHandler();
+
         $this->mockConnection = m::mock('\\Pixie\\Connection');
         $this->mockConnection->shouldReceive('getPdoInstance')->andReturn($this->mockPdo);
         $this->mockConnection->shouldReceive('getAdapter')->andReturn('mysql');
         $this->mockConnection->shouldReceive('getAdapterConfig')->andReturn(array('prefix' => 'cb_'));
         $this->mockConnection->shouldReceive('getContainer')->andReturn($this->container);
-        $this->mockConnection->shouldReceive('getEvent')->andReturn(null);
+        $this->mockConnection->shouldReceive('getEventHandler')->andReturn($eventHandler);
     }
 
     public function tearDown()
