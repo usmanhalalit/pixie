@@ -193,7 +193,7 @@ The query below returns the (first) row where id = 3, null if no rows.
 ```PHP
 $row = QB::table('my_table')->find(3);
 ```
-Access you row like, `echo $row->name`. If your field name is not `id` then pass the field name as second parameter `QB::table('my_table')->find(3, 'person_id');`.
+Access your row like, `echo $row->name`. If your field name is not `id` then pass the field name as second parameter `QB::table('my_table')->find(3, 'person_id');`.
 
 The query below returns the all rows where name = 'Sana', null if no rows.
 ```PHP
