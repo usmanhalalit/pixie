@@ -1,6 +1,7 @@
 <?php namespace Pixie\QueryBuilder\Adapters;
 
 use Pixie\Connection;
+use Pixie\Exception;
 use Pixie\QueryBuilder\Raw;
 
 abstract class BaseAdapter
@@ -26,13 +27,13 @@ abstract class BaseAdapter
      *
      * @param $statements
      *
-     * @throws \Exception
+     * @throws Exception
      * @return array
      */
     public function select($statements)
     {
         if (!array_key_exists('tables', $statements)) {
-            throw new \Exception('No table specified.');
+            throw new Exception('No table specified.', 3);
         } elseif (!array_key_exists('selects', $statements)) {
             $statements['selects'][] = '*';
         }
@@ -124,14 +125,14 @@ abstract class BaseAdapter
      * @param array $data
      *
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function insert($statements, array $data)
     {
         if (!isset($statements['tables'])) {
-            throw new \Exception('No table specified');
+            throw new Exception('No table specified', 3);
         } elseif (count($data) < 1) {
-            throw new \Exception('No data given.');
+            throw new Exception('No data given.', 4);
         }
 
         $table = end($statements['tables']);
@@ -164,14 +165,14 @@ abstract class BaseAdapter
      * @param array $data
      *
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function update($statements, array $data)
     {
         if (!isset($statements['tables'])) {
-            throw new \Exception('No table specified');
+            throw new Exception('No table specified', 3);
         } elseif (count($data) < 1) {
-            throw new \Exception('No data given.');
+            throw new Exception('No data given.', 4);
         }
 
         $table = end($statements['tables']);
@@ -208,12 +209,12 @@ abstract class BaseAdapter
      * @param $statements
      *
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function delete($statements)
     {
         if (!isset($statements['tables'])) {
-            throw new \Exception('No table specified');
+            throw new Exception('No table specified', 3);
         }
 
         $table = end($statements['tables']);

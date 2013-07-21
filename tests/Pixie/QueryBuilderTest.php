@@ -23,4 +23,12 @@ class QueryBuilder extends TestCase
         $queryArr = $this->builder->query($query, $bindings)->get();
         $this->assertEquals($queryArr, array($query, $bindings));
     }
+
+    /**
+     * @expectedException \Pixie\Exception
+     * @expectedExceptionCode 3
+     */
+    public function testTableNotSpecifiedException(){
+        $this->builder->where('a', 'b')->get();
+    }
 }

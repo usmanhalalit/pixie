@@ -1,6 +1,7 @@
 <?php namespace Pixie\QueryBuilder;
 
 use Pixie\Connection;
+use Pixie\Exception;
 
 class QueryBuilderHandler
 {
@@ -43,13 +44,13 @@ class QueryBuilderHandler
     /**
      * @param null $connection
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct($connection = null)
     {
         if (is_null($connection)) {
             if (!$connection = Connection::getStoredConnection()) {
-                throw new \Exception('No database connection found.');
+                throw new Exception('No database connection found.', 1);
             }
         }
 
@@ -162,13 +163,13 @@ class QueryBuilderHandler
      * @param array  $dataToBePassed
      *
      * @return mixed
-     * @throws \Exception
+     * @throws Exception
      */
     public function getQuery($type = 'select', $dataToBePassed = array())
     {
         $allowedTypes = array('select', 'insert', 'delete', 'update', 'criteriaonly');
         if (!in_array(strtolower($type), $allowedTypes)) {
-            throw new \Exception($type . ' is not a known type.');
+            throw new Exception($type . ' is not a known type.', 2);
         }
 
         $this->fireEvents('before-' . $type);
