@@ -1,6 +1,6 @@
 <?php namespace Pixie\ConnectionAdapters;
 
-abstract class ConnectionAdapter
+abstract class ConnectionAdapter implements ConnectionInterface
 {
     /**
      * @var \Viocon\Container
@@ -14,11 +14,4 @@ abstract class ConnectionAdapter
     {
         $this->container = $container;
     }
-
-    /**
-     * @param $config
-     *
-     * @return \PDO
-     */
-    abstract public function connect($config);
 }
