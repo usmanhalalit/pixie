@@ -1,6 +1,6 @@
 <?php namespace Pixie\ConnectionAdapters;
 
-class Mysql extends ConnectionAdapter
+class Mysql extends BaseAdapter
 {
     /**
      * @param $config

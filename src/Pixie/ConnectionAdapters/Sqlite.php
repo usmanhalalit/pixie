@@ -1,6 +1,6 @@
 <?php namespace Pixie\ConnectionAdapters;
 
-class Sqlite extends ConnectionAdapter
+class Sqlite extends BaseAdapter
 {
     /**
      * @param $config

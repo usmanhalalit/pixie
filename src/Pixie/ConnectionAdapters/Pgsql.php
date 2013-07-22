@@ -1,6 +1,6 @@
 <?php namespace Pixie\ConnectionAdapters;
 
-class Pgsql extends ConnectionAdapter
+class Pgsql extends BaseAdapter
 {
     /**
      * @param $config

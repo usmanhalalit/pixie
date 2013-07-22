@@ -1,6 +1,6 @@
 <?php namespace Pixie\ConnectionAdapters;
 
-abstract class ConnectionAdapter implements ConnectionInterface
+abstract class BaseAdapter implements ConnectionInterface
 {
     /**
      * @var \Viocon\Container
