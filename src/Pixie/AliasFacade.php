@@ -7,7 +7,7 @@ use Pixie\QueryBuilder\QueryBuilderHandler;
  *
  * Class AliasFacade
  *
- * @package Caliber\Database
+ * @package Pixie
  */
 class AliasFacade
 {
