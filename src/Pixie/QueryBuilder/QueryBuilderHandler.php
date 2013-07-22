@@ -42,11 +42,11 @@ class QueryBuilderHandler
     protected $adapterInstance;
 
     /**
-     * @param null $connection
+     * @param null|\Pixie\Connection $connection
      *
-     * @throws Exception
+     * @throws \Pixie\Exception
      */
-    public function __construct($connection = null)
+    public function __construct(Connection $connection = null)
     {
         if (is_null($connection)) {
             if (!$connection = Connection::getStoredConnection()) {
@@ -71,11 +71,11 @@ class QueryBuilderHandler
     }
 
     /**
-     * @param null $connection
+     * @param null|\Pixie\Connection $connection
      *
      * @return static
      */
-    public function newQuery($connection = null)
+    public function newQuery(Connection $connection = null)
     {
         if (is_null($connection)) {
             $connection = $this->connection;
