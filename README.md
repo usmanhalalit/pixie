@@ -112,11 +112,12 @@ Library on [Packagist](https://packagist.org/packages/usmanhalalit/pixie).
     - [Registering Events](#registering-events)
     - [Removing Events](#removing-events)
     - [Some Use Cases](#some-use-cases)
+    - [Notes](#notes)
 
 ___
 
 ## Connection
-Pixie supports three database drivers, MySQL, SQLite and PostgreSQL. You can specify the driver during connection and the associated configuration when creating a new connection. You can also create multiple connections, but use different alias for each (not `QB` for all);
+Pixie supports three database drivers, MySQL, SQLite and PostgreSQL. You can specify the driver during connection and the associated configuration when creating a new connection. You can also create multiple connections, but you can use alias for only one connection at a time.;
 ```PHP
 // Make sure you have Composer's autoload file included
 require 'vendor/autoload.php';
