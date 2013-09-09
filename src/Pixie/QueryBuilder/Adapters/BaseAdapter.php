@@ -16,6 +16,12 @@ abstract class BaseAdapter
      */
     protected $container;
 
+    /**
+     * Regex pattern used to match a data-source function rather than field name in query
+     * @var string $functionPattern
+     */
+    protected $functionPattern = '/(\\(.*\\))/';
+
     public function __construct(Connection $connection)
     {
         $this->connection = $connection;
@@ -355,6 +361,11 @@ abstract class BaseAdapter
             return $value;
         }
 
+        if($this->isDataSourceFunction($value))
+        {
+            return $value;
+        }
+
         // Separate our table and fields which are joined with a ".",
         // like my_table.id
         $valueArr = explode('.', $value, 2);
@@ -366,6 +377,23 @@ abstract class BaseAdapter
 
         // Join these back with "." and return
         return implode('.', $valueArr);
+    }
+
+    /**
+     * isDataSourceFunction returns bool result if it thinks a function is being used
+     *
+     * @param string $value
+     *
+     * @return bool
+     */
+    protected function isDataSourceFunction($value)
+    {
+        if(preg_match($this->functionPattern, $value))
+        {
+            return true;
+        }
+
+        return false;
     }
 
     /**
