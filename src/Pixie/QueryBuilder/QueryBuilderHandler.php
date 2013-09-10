@@ -439,6 +439,50 @@ class QueryBuilderHandler
     }
 
     /**
+     * @param       $key
+     * @param array $values
+     *
+     * @return $this
+     */
+    public function whereBetween($key, array $values)
+    {
+        return $this->_where($key, 'BETWEEN', $values, 'AND');
+    }
+
+    /**
+     * @param       $key
+     * @param array $values
+     *
+     * @return $this
+     */
+    public function whereNotBetween($key, array $values)
+    {
+        return $this->_where($key, 'NOT BETWEEN', $values, 'AND');
+    }
+
+    /**
+     * @param       $key
+     * @param array $values
+     *
+     * @return $this
+     */
+    public function orWhereBetween($key, array $values)
+    {
+        return $this->_where($key, 'BETWEEN', $values, 'OR');
+    }
+
+    /**
+     * @param       $key
+     * @param array $values
+     *
+     * @return $this
+     */
+    public function orWhereNotBetween($key, array $values)
+    {
+        return $this->_where($key, 'NOT BETWEEN', $values, 'OR');
+    }
+
+    /**
      * @param        $table
      * @param        $key
      * @param        $operator
