@@ -318,7 +318,7 @@ abstract class BaseAdapter
                 }
 
                 $valuePlaceholder = trim($valuePlaceholder, ', ');
-                $criteria .= $statement['joiner'] . ' ' . $key . ' ' . $statement['operator'] . ' (' . $valuePlaceholder . ')';
+                $criteria .= $statement['joiner'] . ' ' . $key . ' ' . $statement['operator'] . ' (' . $valuePlaceholder . ') ';
             } else {
                 // Usual where like criteria
 
