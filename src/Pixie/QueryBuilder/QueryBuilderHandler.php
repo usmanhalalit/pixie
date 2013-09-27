@@ -107,6 +107,7 @@ class QueryBuilderHandler
     {
         $this->preparePdoStatement();
         $result = $this->pdoStatement->fetchAll(\PDO::FETCH_CLASS);
+        $this->pdoStatement = null;
         $this->fireEvents('after-select', $result);
         return $result;
     }
