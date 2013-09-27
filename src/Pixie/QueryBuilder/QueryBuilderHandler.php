@@ -154,8 +154,29 @@ class QueryBuilderHandler
      */
     public function count()
     {
-        $this->preparePdoStatement();
-        return $this->pdoStatement->rowCount();
+        return $this->aggregate('count');
+    }
+
+    /**
+     * @param $type
+     *
+     * @return int
+     */
+    protected function aggregate($type)
+    {
+        // Get the current selects
+        $mainSelects = isset($this->statements['selects']) ? $this->statements['selects'] : null;
+        // Replace select with a scalar value like `count`
+        $this->statements['selects'] = array($this->raw($type . '(*) as field'));
+        var_dump($this->getQuery()->getRawSql());
+        $row = $this->get();
+
+        // Set the select as it was
+        if ($mainSelects) {
+            $this->statements['selects'] = $mainSelects;
+        }
+
+        return isset($row[0]->field) ? (int) $row[0]->field : 0;
     }
 
     /**
