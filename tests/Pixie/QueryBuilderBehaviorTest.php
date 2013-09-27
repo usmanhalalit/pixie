@@ -82,8 +82,10 @@ class QueryBuilderTest extends TestCase
         });
 
         $query = $builder->table('some_table')->where('name', 'Some');
+        $query->get();
+        $actual = $query->getQuery()->getRawSql();
 
-        $this->assertEquals("SELECT * FROM `cb_some_table` WHERE `name` = 'Some' AND `status` IN (1, 2)", $query->getQuery()->getRawSql());
+        $this->assertEquals("SELECT * FROM `cb_some_table` WHERE `name` = 'Some' AND `status` IN (1, 2)", $actual);
     }
 
     public function testInsertQuery()
