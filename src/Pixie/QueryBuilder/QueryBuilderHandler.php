@@ -175,6 +175,8 @@ class QueryBuilderHandler
         // Set the select as it was
         if ($mainSelects) {
             $this->statements['selects'] = $mainSelects;
+        } else {
+            unset($this->statements['selects']);
         }
 
         return isset($row[0]->field) ? (int) $row[0]->field : 0;
