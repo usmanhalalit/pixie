@@ -79,13 +79,11 @@ class EventHandler
             if ($action = $this->getEvent($event, $table)) {
                 // Make an event id, with event type and table
                 $eventId = $event . $table;
-                // Check if event is already fired
-                if (! in_array($eventId, $this->firedEvents)) {
-                    // Fire event
-                    $action($queryBuilder, $dataToBePassed);
-                    // Add to fired list
-                    $this->firedEvents[] = $eventId;
-                }
+
+                // Fire event
+                $action($queryBuilder, $dataToBePassed);
+                // Add to fired list
+                $this->firedEvents[] = $eventId;
             }
         }
     }

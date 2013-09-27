@@ -105,6 +105,7 @@ class QueryBuilderHandler
      */
     public function get()
     {
+        $this->fireEvents('before-select');
         $this->preparePdoStatement();
         $result = $this->pdoStatement->fetchAll(\PDO::FETCH_CLASS);
         $this->pdoStatement = null;
@@ -193,7 +194,6 @@ class QueryBuilderHandler
             throw new Exception($type . ' is not a known type.', 2);
         }
 
-        $this->fireEvents('before-' . $type);
         $queryArr = $this->adapterInstance->$type($this->statements, $dataToBePassed);
 
         return $this->container->build(
@@ -225,6 +225,7 @@ class QueryBuilderHandler
      */
     public function insert($data)
     {
+        $this->fireEvents('before-insert');
         // If first value is not an array
         // Its not a batch insert
         if (!is_array(current($data))) {
@@ -253,6 +254,7 @@ class QueryBuilderHandler
      */
     public function update($data)
     {
+        $this->fireEvents('before-update');
         $queryObject = $this->getQuery('update', $data);
         $this->query($queryObject->getSql(), $queryObject->getBindings());
         $this->fireEvents('after-update', $queryObject);
@@ -263,6 +265,7 @@ class QueryBuilderHandler
      */
     public function delete()
     {
+        $this->fireEvents('before-delete');
         $queryObject = $this->getQuery('delete');
         $this->query($queryObject->getSql(), $queryObject->getBindings());
         $this->fireEvents('after-delete', $queryObject);
