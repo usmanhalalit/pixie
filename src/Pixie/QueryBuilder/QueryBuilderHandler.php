@@ -168,7 +168,6 @@ class QueryBuilderHandler
         $mainSelects = isset($this->statements['selects']) ? $this->statements['selects'] : null;
         // Replace select with a scalar value like `count`
         $this->statements['selects'] = array($this->raw($type . '(*) as field'));
-        var_dump($this->getQuery()->getRawSql());
         $row = $this->get();
 
         // Set the select as it was
