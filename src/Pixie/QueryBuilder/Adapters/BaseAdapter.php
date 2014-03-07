@@ -410,11 +410,11 @@ abstract class BaseAdapter
             return $sql;
         }
 
-        foreach ($statements['joins'] as $type => $joinArr) {
+        foreach ($statements['joins'] as $joinArr) {
             $table = $this->wrapSanitizer($joinArr['table']);
             $joinBuilder = $joinArr['joinBuilder'];
 
-            $sqlArr = array($sql, strtoupper($type), 'JOIN', $table, 'ON', $joinBuilder->getQuery('criteriaOnly', false)->getSql());
+            $sqlArr = array($sql, strtoupper($joinArr['type']), 'JOIN', $table, 'ON', $joinBuilder->getQuery('criteriaOnly', false)->getSql());
             $sql = $this->concatenateQuery($sqlArr);
         }
 
