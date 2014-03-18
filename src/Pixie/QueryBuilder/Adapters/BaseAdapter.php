@@ -414,7 +414,7 @@ abstract class BaseAdapter
             $table = $this->wrapSanitizer($joinArr['table']);
             $joinBuilder = $joinArr['joinBuilder'];
 
-            $sqlArr = array($sql, strtoupper($type), 'JOIN', $table, 'ON', $joinBuilder->getQuery('criteriaOnly', false)->getSql());
+            $sqlArr = array($sql, strtoupper($joinArr['type']), 'JOIN', $table, 'ON', $joinBuilder->getQuery('criteriaOnly', false)->getSql());
             $sql = $this->concatenateQuery($sqlArr);
         }
 
