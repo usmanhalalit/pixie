@@ -299,14 +299,16 @@ class QueryBuilderHandler
     }
 
     /**
-     * @param $fields
+     * @param(s) $fields
      *
      * @return $this
      */
     public function select($fields)
     {
-        $fields = $this->addTablePrefix($fields);
-        $this->addStatement('selects', $fields);
+        foreach( func_get_args() as $field ){
+            $fields = $this->addTablePrefix($field);
+            $this->addStatement('selects', $field);   
+        }
         return $this;
     }
 
