@@ -299,7 +299,7 @@ class QueryBuilderHandler
     }
 
     /**
-     * @params $fields
+     * This meathod accepts as many params as you give it
      *
      * @return $this
      */
