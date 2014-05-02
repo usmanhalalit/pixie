@@ -18,12 +18,12 @@ class QueryBuilderTest extends TestCase
         $subQuery = $this->builder->table('person_details')->select('details')->where('person_id', '=', 3);
 
 
-        $query = $this->builder->table('my_table')
-            ->select('my_table.*')
+        $query = $this->builder->table('cb_my_table')
+            ->select('cb_my_table.*')
             ->select(array($this->builder->raw('count(cb_my_table.id) as tot'), $this->builder->subQuery($subQuery, 'pop')))
             ->where('value', '=', 'Ifrah')
             ->orWhereIn('my_table.id', array(1, 2))
-            ->groupBy(array('value', 'my_table.id', 'person_details.id'))
+            ->groupBy(array('value', 'cb_my_table.id', 'person_details.id'))
             ->orderBy('my_table.id', 'DESC')
             ->orderBy('value')
             ->having('tot', '<', 2)
@@ -33,7 +33,7 @@ class QueryBuilderTest extends TestCase
                 'person_details',
                 'person_details.person_id',
                 '=',
-                'my_table.id'
+                'cb_my_table.id'
             )//->join('cb_person_details', 'cb_person_details.person.id', '=', 'cb_my_table.id')
         ;
 

@@ -299,14 +299,16 @@ class QueryBuilderHandler
     }
 
     /**
-     * @param $fields
+     * This meathod accepts as many params as you give it
      *
      * @return $this
      */
-    public function select($fields)
+    public function select()
     {
-        $fields = $this->addTablePrefix($fields);
-        $this->addStatement('selects', $fields);
+        foreach( func_get_args() as $field ){
+            $fields = $this->addTablePrefix($field);
+            $this->addStatement('selects', $field);   
+        }
         return $this;
     }
 
