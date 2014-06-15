@@ -92,7 +92,7 @@ class QueryBuilderHandler
      */
     public function query($sql, $bindings = array())
     {
-        $this->statement($sql, $bindings);
+        $this->pdoStatement = $this->statement($sql, $bindings);
         
         return $this;
     }
