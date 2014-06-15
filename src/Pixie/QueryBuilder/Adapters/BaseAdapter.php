@@ -119,7 +119,7 @@ abstract class BaseAdapter
     }
 
     /**
-     * Build Insert query
+     * Build a generic insert/ignore/replace query
      *
      * @param       $statements
      * @param array $data
@@ -127,7 +127,7 @@ abstract class BaseAdapter
      * @return array
      * @throws Exception
      */
-    public function insert($statements, array $data)
+    private function doInsert($statements, array $data, $type)
     {
         if (!isset($statements['tables'])) {
             throw new Exception('No table specified', 3);
@@ -146,7 +146,7 @@ abstract class BaseAdapter
         }
 
         $sqlArray = array(
-            'INSERT INTO',
+            $type . ' INTO',
             $table,
             '(' . $this->arrayStr($keys, ',') . ')',
             'VALUES',
@@ -156,6 +156,48 @@ abstract class BaseAdapter
         $sql = $this->concatenateQuery($sqlArray, ' ', false);
 
         return compact('sql', 'bindings');
+    }
+
+    /**
+     * Build Insert query
+     *
+     * @param       $statements
+     * @param array $data
+     *
+     * @return array
+     * @throws Exception
+     */
+    public function insert($statements, array $data)
+    {
+        return $this->doInsert($statements, $data, 'INSERT');
+    }
+
+    /**
+     * Build Insert Ignore query
+     *
+     * @param       $statements
+     * @param array $data
+     *
+     * @return array
+     * @throws Exception
+     */
+    public function insertIgnore($statements, array $data)
+    {
+        return $this->doInsert($statements, $data, 'INSERT IGNORE');
+    }
+
+    /**
+     * Build Insert Ignore query
+     *
+     * @param       $statements
+     * @param array $data
+     *
+     * @return array
+     * @throws Exception
+     */
+    public function replace($statements, array $data)
+    {
+        return $this->doInsert($statements, $data, 'REPLACE');
     }
 
     /**

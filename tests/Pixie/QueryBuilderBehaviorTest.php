@@ -98,6 +98,26 @@ class QueryBuilderTest extends TestCase
             , $builder->getQuery('insert', $data)->getRawSql());
     }
 
+    public function testInsertIgnoreQuery()
+    {
+        $builder = $this->builder->from('my_table');
+        $data = array('key' => 'Name',
+            'value' => 'Sana',);
+
+        $this->assertEquals("INSERT IGNORE INTO cb_my_table (`key`,`value`) VALUES ('Name','Sana')"
+            , $builder->getQuery('insertignore', $data)->getRawSql());
+    }
+
+    public function testRreplaceQuery()
+    {
+        $builder = $this->builder->from('my_table');
+        $data = array('key' => 'Name',
+            'value' => 'Sana',);
+
+        $this->assertEquals("REPLACE INTO cb_my_table (`key`,`value`) VALUES ('Name','Sana')"
+            , $builder->getQuery('replace', $data)->getRawSql());
+    }
+
     public function testUpdateQuery()
     {
         $builder = $this->builder->table('my_table')->where('value', 'Sana');
