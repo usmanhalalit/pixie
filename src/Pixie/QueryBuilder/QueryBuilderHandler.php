@@ -42,6 +42,13 @@ class QueryBuilderHandler
     protected $adapterInstance;
 
     /**
+     * The PDO fetch mode to use
+     *
+     * @var int
+     */
+    protected $fetchMode = \PDO::FETCH_OBJ;
+
+    /**
      * @param null|\Pixie\Connection $connection
      *
      * @throws \Pixie\Exception
@@ -68,6 +75,16 @@ class QueryBuilderHandler
         $this->adapterInstance = $this->container->build('\\Pixie\\QueryBuilder\\Adapters\\' . ucfirst($this->adapter), array($this->connection));
 
         $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+    }
+
+    /**
+     * Set the fetch mode
+     *
+     * @param $mode
+     */
+    public function setFetchMode($mode)
+    {
+        $this->fetchMode = $mode;
     }
 
     /**
@@ -119,7 +136,7 @@ class QueryBuilderHandler
     {
         $this->fireEvents('before-select');
         $this->preparePdoStatement();
-        $result = $this->pdoStatement->fetchAll(\PDO::FETCH_CLASS);
+        $result = $this->pdoStatement->fetchAll($this->fetchMode);
         $this->pdoStatement = null;
         $this->fireEvents('after-select', $result);
         return $result;
