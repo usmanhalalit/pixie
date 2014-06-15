@@ -27,7 +27,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
                     return array($mockPdoStatement->sql, $mockPdoStatement->bindings);
                 }));
 
-        $this->mockPdo = $this->getMock('\\Pixie\\MockPdo', array('prepare', 'setAttribute', 'quote'));
+        $this->mockPdo = $this->getMock('\\Pixie\\MockPdo', array('prepare', 'setAttribute', 'quote', 'lastInsertId'));
 
         $this->mockPdo->expects($this->any())->method('prepare')->will($this->returnCallback(function($sql) use ($mockPdoStatement){
                     $mockPdoStatement->sql = $sql;

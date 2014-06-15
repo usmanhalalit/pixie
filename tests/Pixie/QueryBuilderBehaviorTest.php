@@ -108,7 +108,7 @@ class QueryBuilderTest extends TestCase
             , $builder->getQuery('insertignore', $data)->getRawSql());
     }
 
-    public function testRreplaceQuery()
+    public function testReplaceQuery()
     {
         $builder = $this->builder->from('my_table');
         $data = array('key' => 'Name',
