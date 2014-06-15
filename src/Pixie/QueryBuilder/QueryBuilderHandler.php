@@ -270,8 +270,10 @@ class QueryBuilderHandler
     {
         $this->fireEvents('before-update');
         $queryObject = $this->getQuery('update', $data);
-        $this->query($queryObject->getSql(), $queryObject->getBindings());
+        $response = $this->statement($queryObject->getSql(), $queryObject->getBindings());
         $this->fireEvents('after-update', $queryObject);
+        
+        return $response;
     }
 
     /**
@@ -281,8 +283,10 @@ class QueryBuilderHandler
     {
         $this->fireEvents('before-delete');
         $queryObject = $this->getQuery('delete');
-        $this->query($queryObject->getSql(), $queryObject->getBindings());
+        $response = $this->statement($queryObject->getSql(), $queryObject->getBindings());
         $this->fireEvents('after-delete', $queryObject);
+        
+        return $response;
     }
 
     /**
