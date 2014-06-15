@@ -92,10 +92,22 @@ class QueryBuilderHandler
      */
     public function query($sql, $bindings = array())
     {
+        $this->statement($sql, $bindings);
+        
+        return $this;
+    }
+    
+    /**
+     * @param       $sql
+     * @param array $bindings
+     *
+     * @return $this
+     */
+    public function statement($sql, $bindings = array())
+    {
         $pdoStatement = $this->pdo->prepare($sql);
         $pdoStatement->execute($bindings);
-        $this->pdoStatement = $pdoStatement;
-        return $this;
+        return $pdoStatement;
     }
 
     /**
