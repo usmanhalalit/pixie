@@ -133,7 +133,7 @@ $config = array(
             'prefix'    => 'cb_', // Table prefix, optional
         );
 
-new \Pixie\Connection('mysql', $config), 'QB');
+new \Pixie\Connection('mysql', $config, 'QB');
 
 // Run query
 $query = QB::table('my_table')->where('name', '=', 'Sana');
