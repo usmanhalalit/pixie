@@ -332,7 +332,7 @@ If you need `FULL OUTER` join or any other join, just pass it as 5th parameter o
 If you need more than one criterion to join a table then pass a closure as second parameter.
 
 ```PHP
-->join('another_table'), function($table)
+->join('another_table', function($table)
     {
         $table->on('another_table.person_id', '=', 'my_table.id');
         $table->on('another_table.person_id2', '=', 'my_table.id2');
