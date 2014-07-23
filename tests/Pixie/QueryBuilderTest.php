@@ -13,6 +13,7 @@ class QueryBuilder extends TestCase
     public function setUp()
     {
         parent::setUp();
+
         $this->builder = new QueryBuilderHandler($this->mockConnection);
     }
 
@@ -22,6 +23,61 @@ class QueryBuilder extends TestCase
         $bindings = array(5, 'usman');
         $queryArr = $this->builder->query($query, $bindings)->get();
         $this->assertEquals($queryArr, array($query, $bindings));
+    }
+
+    public function testInsertQueryReturnsIdForInsert()
+    {
+        $this->mockPdoStatement
+            ->expects($this->once())
+            ->method('rowCount')
+            ->will($this->returnValue(1));
+
+        $this->mockPdo
+            ->expects($this->once())
+            ->method('lastInsertId')
+            ->will($this->returnValue(11));
+
+        $id = $this->builder->table('test')->insert(array(
+            'id' => 5,
+            'name' => 'usman'
+        ));
+
+        $this->assertEquals(11, $id);
+    }
+
+    public function testInsertQueryReturnsIdForInsertIgnore()
+    {
+        $this->mockPdoStatement
+            ->expects($this->once())
+            ->method('rowCount')
+            ->will($this->returnValue(1));
+
+        $this->mockPdo
+            ->expects($this->once())
+            ->method('lastInsertId')
+            ->will($this->returnValue(11));
+
+        $id = $this->builder->table('test')->insertIgnore(array(
+            'id' => 5,
+            'name' => 'usman'
+        ));
+
+        $this->assertEquals(11, $id);
+    }
+
+    public function testInsertQueryReturnsNullForIgnoredInsert()
+    {
+        $this->mockPdoStatement
+            ->expects($this->once())
+            ->method('rowCount')
+            ->will($this->returnValue(0));
+
+        $id = $this->builder->table('test')->insertIgnore(array(
+            'id' => 5,
+            'name' => 'usman'
+        ));
+
+        $this->assertEquals(null, $id);
     }
 
     /**

@@ -220,7 +220,7 @@ class QueryBuilderHandler
      */
     public function getQuery($type = 'select', $dataToBePassed = array())
     {
-        $allowedTypes = array('select', 'insert', 'delete', 'update', 'criteriaonly');
+        $allowedTypes = array('select', 'insert', 'insertignore', 'replace', 'delete', 'update', 'criteriaonly');
         if (!in_array(strtolower($type), $allowedTypes)) {
             throw new Exception($type . ' is not a known type.', 2);
         }
@@ -254,28 +254,66 @@ class QueryBuilderHandler
      *
      * @return array|string
      */
-    public function insert($data)
+    private function doInsert($data, $type)
     {
         $this->fireEvents('before-insert');
         // If first value is not an array
         // Its not a batch insert
         if (!is_array(current($data))) {
-            $queryObject = $this->getQuery('insert', $data);
-            $this->query($queryObject->getSql(), $queryObject->getBindings());
 
-            $return = $this->pdo->lastInsertId();
+            $queryObject = $this->getQuery($type, $data);
+
+            $result = $this->statement($queryObject->getSql(), $queryObject->getBindings());
+
+            $return = $result->rowCount() === 1 ? $this->pdo->lastInsertId() : null;
         } else {
             // Its a batch insert
             $return = array();
             foreach ($data as $subData) {
-                $queryObject = $this->getQuery('insert', $subData);
-                $this->query($queryObject->getSql(), $queryObject->getBindings());
-                $return[] = $this->pdo->lastInsertId();
+
+                $queryObject = $this->getQuery($type, $subData);
+
+                $result = $this->statement($queryObject->getSql(), $queryObject->getBindings());
+
+                if($result->rowCount() === 1){
+                    $return[] = $this->pdo->lastInsertId();
+                }
             }
         }
 
         $this->fireEvents('after-insert', $return);
+
         return $return;
+    }
+
+    /**
+     * @param $data
+     *
+     * @return array|string
+     */
+    public function insert($data)
+    {
+        return $this->doInsert($data, 'insert');
+    }
+
+    /**
+     * @param $data
+     *
+     * @return array|string
+     */
+    public function insertIgnore($data)
+    {
+        return $this->doInsert($data, 'insertignore');
+    }
+
+    /**
+     * @param $data
+     *
+     * @return array|string
+     */
+    public function replace($data)
+    {
+        return $this->doInsert($data, 'replace');
     }
 
     /**
