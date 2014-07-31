@@ -231,12 +231,16 @@ abstract class BaseAdapter
 
         // Wheres
         list($whereCriteria, $whereBindings) = $this->buildCriteriaWithType($statements, 'wheres', 'WHERE');
+        
+        // Limit
+        $limit = isset($statements['limit']) ? 'LIMIT ' . $statements['limit'] : '';
 
         $sqlArray = array(
             'UPDATE',
             $table,
             'SET ' . $updateStatement,
             $whereCriteria,
+            $limit
         );
 
         $sql = $this->concatenateQuery($sqlArray, ' ', false);
@@ -263,8 +267,11 @@ abstract class BaseAdapter
 
         // Wheres
         list($whereCriteria, $whereBindings) = $this->buildCriteriaWithType($statements, 'wheres', 'WHERE');
+        
+        // Limit
+        $limit = isset($statements['limit']) ? 'LIMIT ' . $statements['limit'] : '';
 
-        $sqlArray = array('DELETE from', $table, $whereCriteria);
+        $sqlArray = array('DELETE from', $table, $whereCriteria, $limit);
         $sql = $this->concatenateQuery($sqlArray, ' ', false);
         $bindings = $whereBindings;
 
