@@ -141,8 +141,12 @@ abstract class BaseAdapter
 
         foreach ($data as $key => $value) {
             $keys[] = $key;
-            $values[] = '?';
-            $bindings[] = $value;
+            if ($value instanceof Raw) {
+                $values[] = (string) $value;
+            } else {
+                $values[] =  '?';
+                $bindings[] = $value;
+            }
         }
 
         $sqlArray = array(
@@ -223,8 +227,13 @@ abstract class BaseAdapter
         $updateStatement = '';
 
         foreach ($data as $key => $value) {
-            $updateStatement .= $this->wrapSanitizer($key) . '=?,';
-            $bindings[] = $value;
+            if ($value instanceof Raw) {
+                $updateStatement .= $this->wrapSanitizer($key) . '=' . $value . ',';
+            } else {
+                $updateStatement .= $this->wrapSanitizer($key) . '=?,';
+                $bindings[] = $value;
+            }
+
         }
 
         $updateStatement = trim($updateStatement, ',');
