@@ -319,7 +319,7 @@ class QueryBuilderHandler
     /**
      * @param $data
      *
-     * @return void
+     * @return $this
      */
     public function update($data)
     {
@@ -329,6 +329,20 @@ class QueryBuilderHandler
         $this->fireEvents('after-update', $queryObject);
         
         return $response;
+    }
+
+    /**
+     * @param $data
+     *
+     * @return array|string
+     */
+    public function updateOrInsert($data)
+    {
+        if ($this->first()) {
+            return $this->update($data);
+        } else {
+            return $this->insert($data);
+        }
     }
 
     /**
