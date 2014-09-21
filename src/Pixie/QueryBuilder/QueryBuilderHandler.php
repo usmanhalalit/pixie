@@ -558,7 +558,7 @@ class QueryBuilderHandler
      */
     public function whereBetween($key, $valueFrom, $valueTo)
     {
-        return $this->_where($key, 'BETWEEN', [$valueFrom, $valueTo], 'AND');
+        return $this->_where($key, 'BETWEEN', array($valueFrom, $valueTo), 'AND');
     }
 
     /**
@@ -570,7 +570,7 @@ class QueryBuilderHandler
      */
     public function orWhereBetween($key, $valueFrom, $valueTo)
     {
-        return $this->_where($key, 'BETWEEN', [$valueFrom, $valueTo], 'OR');
+        return $this->_where($key, 'BETWEEN', array($valueFrom, $valueTo), 'OR');
     }
 
     /**
