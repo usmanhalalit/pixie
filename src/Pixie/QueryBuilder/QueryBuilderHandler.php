@@ -42,11 +42,11 @@ class QueryBuilderHandler
     protected $adapterInstance;
 
     /**
-     * The PDO fetch mode to use
+     * The PDO fetch parameters to use
      *
-     * @var int
+     * @var array
      */
-    protected $fetchMode = \PDO::FETCH_OBJ;
+    protected $fetchParameters = array(\PDO::FETCH_OBJ);
 
     /**
      * @param null|\Pixie\Connection $connection
@@ -81,10 +81,24 @@ class QueryBuilderHandler
      * Set the fetch mode
      *
      * @param $mode
+     * @return $this
      */
     public function setFetchMode($mode)
     {
-        $this->fetchMode = $mode;
+        $this->fetchParameters = func_get_args();
+        return $this;
+    }
+
+    /**
+     * Fetch query results as object of specified type
+     *
+     * @param $className
+     * @param array $constructorArgs
+     * @return QueryBuilderHandler
+     */
+    public function asObject($className, $constructorArgs = array())
+    {
+        return $this->setFetchMode(\PDO::FETCH_CLASS, $className, $constructorArgs);
     }
 
     /**
@@ -136,7 +150,7 @@ class QueryBuilderHandler
     {
         $this->fireEvents('before-select');
         $this->preparePdoStatement();
-        $result = $this->pdoStatement->fetchAll($this->fetchMode);
+        $result = call_user_func_array(array($this->pdoStatement, 'fetchAll'), $this->fetchParameters);
         $this->pdoStatement = null;
         $this->fireEvents('after-select', $result);
         return $result;
