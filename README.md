@@ -248,9 +248,9 @@ Basic syntax is `(fieldname, operator, value)`, if you give two parameters then 
 ```PHP
 QB::table('my_table')
     ->where('name', '=', 'usman')
-    ->where('age', '>', 25)
+    ->whereNot('age', '>', 25)
     ->orWhere('type', '=', 'admin')
-    ->orWhere('description', 'LIKE', '%query%')
+    ->orWhereNot('description', 'LIKE', '%query%')
     ;
 ```
 
