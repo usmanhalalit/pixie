@@ -483,7 +483,6 @@ class QueryBuilderHandler
             $value = $operator;
             $operator = '=';
         }
-
         return $this->_where($key, $operator, $value);
     }
 
@@ -503,6 +502,40 @@ class QueryBuilderHandler
         }
 
         return $this->_where($key, $operator, $value, 'OR');
+    }
+
+    /**
+     * @param $key
+     * @param $operator
+     * @param $value
+     *
+     * @return $this
+     */
+    public function whereNot($key, $operator = null, $value = null)
+    {
+        // If two params are given then assume operator is =
+        if (func_num_args() == 2) {
+            $value = $operator;
+            $operator = '=';
+        }
+        return $this->_where($key, $operator, $value, 'AND NOT');
+    }
+
+    /**
+     * @param $key
+     * @param $operator
+     * @param $value
+     *
+     * @return $this
+     */
+    public function orWhereNot($key, $operator = null, $value = null)
+    {
+        // If two params are given then assume operator is =
+        if (func_num_args() == 2) {
+            $value = $operator;
+            $operator = '=';
+        }
+        return $this->_where($key, $operator, $value, 'OR NOT');
     }
 
     /**
