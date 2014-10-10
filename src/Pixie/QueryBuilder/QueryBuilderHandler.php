@@ -185,7 +185,16 @@ class QueryBuilderHandler
      */
     public function count()
     {
-        return $this->aggregate('count');
+        // Get the current statements
+        $originalStatements = $this->statements;
+
+        unset($this->statements['limit']);
+        unset($this->statements['offset']);
+
+        $count = $this->aggregate('count');
+        $this->statements = $originalStatements;
+
+        return $count;
     }
 
     /**
