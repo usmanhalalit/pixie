@@ -23,6 +23,7 @@ class QueryBuilderTest extends TestCase
             ->select(array($this->builder->raw('count(cb_my_table.id) as tot'), $this->builder->subQuery($subQuery, 'pop')))
             ->where('value', '=', 'Ifrah')
             ->orWhereIn('my_table.id', array(1, 2))
+            ->orWhere('foo', 'bar')
             ->groupBy(array('value', 'my_table.id', 'person_details.id'))
             ->orderBy('my_table.id', 'DESC')
             ->orderBy('value')
@@ -39,7 +40,7 @@ class QueryBuilderTest extends TestCase
 
         $nestedQuery = $this->builder->table($this->builder->subQuery($query, 'bb'))->select('*');
         //$query = $this->builder->select('*')->from('cb_my_table')->whereNotIn('id', array(1))->get();
-        $this->assertEquals("SELECT * FROM (SELECT `cb_my_table`.*, count(cb_my_table.id) as tot, (SELECT `details` FROM `cb_person_details` WHERE `person_id` = 3) as pop FROM `cb_my_table` INNER JOIN `cb_person_details` ON `cb_person_details`.`person_id` = `cb_my_table`.`id` WHERE `value` = 'Ifrah' OR `cb_my_table`.`id` IN (1, 2) GROUP BY `value`, `cb_my_table`.`id`, `cb_person_details`.`id` HAVING `tot` < 2 ORDER BY `cb_my_table`.`id` DESC,`value` ASC LIMIT 1 OFFSET 0) as bb"
+        $this->assertEquals("SELECT * FROM (SELECT `cb_my_table`.*, count(cb_my_table.id) as tot, (SELECT `details` FROM `cb_person_details` WHERE `person_id` = 3) as pop FROM `cb_my_table` INNER JOIN `cb_person_details` ON `cb_person_details`.`person_id` = `cb_my_table`.`id` WHERE `value` = 'Ifrah' OR `cb_my_table`.`id` IN (1, 2) OR `foo` = 'bar' GROUP BY `value`, `cb_my_table`.`id`, `cb_person_details`.`id` HAVING `tot` < 2 ORDER BY `cb_my_table`.`id` DESC,`value` ASC LIMIT 1 OFFSET 0) as bb"
             , $nestedQuery->getQuery()->getRawSql());
     }
 

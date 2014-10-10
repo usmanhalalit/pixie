@@ -550,6 +550,30 @@ class QueryBuilderHandler
     }
 
     /**
+     * @param $key
+     * @param $valueFrom
+     * @param $valueTo
+     *
+     * @return $this
+     */
+    public function whereBetween($key, $valueFrom, $valueTo)
+    {
+        return $this->_where($key, 'BETWEEN', array($valueFrom, $valueTo), 'AND');
+    }
+
+    /**
+     * @param $key
+     * @param $valueFrom
+     * @param $valueTo
+     *
+     * @return $this
+     */
+    public function orWhereBetween($key, $valueFrom, $valueTo)
+    {
+        return $this->_where($key, 'BETWEEN', array($valueFrom, $valueTo), 'OR');
+    }
+
+    /**
      * @param        $table
      * @param        $key
      * @param        $operator
@@ -771,7 +795,7 @@ class QueryBuilderHandler
         if ($table != ':any') {
             $table = $this->addTablePrefix($table, false);
         }
-        return $this->connection->getEventHandler()->registerEvent($event, $table, $action);
+        $this->connection->getEventHandler()->registerEvent($event, $table, $action);
     }
 
     /**
@@ -786,15 +810,17 @@ class QueryBuilderHandler
             $table = $this->addTablePrefix($table, false);
         }
 
-        return $this->connection->getEventHandler()->removeEvent($event, $table);
+        $this->connection->getEventHandler()->removeEvent($event, $table);
     }
 
     /**
      * @param      $event
      * @param null $dataToBePassed
+     *
+     * @return void
      */
     public function fireEvents($event, $dataToBePassed = null) {
-        return $this->connection->getEventHandler()->fireEvents($this, $event, $dataToBePassed);
+        $this->connection->getEventHandler()->fireEvents($this, $event, $dataToBePassed);
     }
 
     /**

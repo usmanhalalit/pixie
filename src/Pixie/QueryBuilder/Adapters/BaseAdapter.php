@@ -361,16 +361,25 @@ abstract class BaseAdapter
                 // Append the sql we get from the nestedCriteria object
                 $criteria .= $statement['joiner'] . ' (' . $queryObject->getSql() . ') ';
             } elseif (is_array($value)) {
-                // where_in like query
+                // where_in or between like query
+                $criteria .= $statement['joiner'] . ' ' . $key . ' ' . $statement['operator'];
 
-                $valuePlaceholder = '';
-                foreach ($statement['value'] as $subValue) {
-                    $valuePlaceholder .= '?, ';
-                    $bindings[] = $subValue;
+                switch ($statement['operator']) {
+                    case 'BETWEEN':
+                        $bindings = array_merge($bindings, $statement['value']);
+                        $criteria .= ' ? AND ?';
+                        break;
+                    default:
+                        $valuePlaceholder = '';
+                        foreach ($statement['value'] as $subValue) {
+                            $valuePlaceholder .= '?, ';
+                            $bindings[] = $subValue;
+                        }
+
+                        $valuePlaceholder = trim($valuePlaceholder, ', ');
+                        $criteria .= ' (' . $valuePlaceholder . ') ';
+                        break;
                 }
-
-                $valuePlaceholder = trim($valuePlaceholder, ', ');
-                $criteria .= $statement['joiner'] . ' ' . $key . ' ' . $statement['operator'] . ' (' . $valuePlaceholder . ')';
             } else {
                 // Usual where like criteria
 
