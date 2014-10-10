@@ -795,7 +795,7 @@ class QueryBuilderHandler
         if ($table != ':any') {
             $table = $this->addTablePrefix($table, false);
         }
-        $this->connection->getEventHandler()->registerEvent($event, $table, $action);
+        return $this->connection->getEventHandler()->registerEvent($event, $table, $action);
     }
 
     /**
@@ -810,7 +810,7 @@ class QueryBuilderHandler
             $table = $this->addTablePrefix($table, false);
         }
 
-        $this->connection->getEventHandler()->removeEvent($event, $table);
+        return $this->connection->getEventHandler()->removeEvent($event, $table);
     }
 
     /**
@@ -820,7 +820,7 @@ class QueryBuilderHandler
      * @return void
      */
     public function fireEvents($event, $dataToBePassed = null) {
-        $this->connection->getEventHandler()->fireEvents($this, $event, $dataToBePassed);
+        return $this->connection->getEventHandler()->fireEvents($this, $event, $dataToBePassed);
     }
 
     /**
