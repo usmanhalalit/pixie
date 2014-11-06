@@ -157,6 +157,15 @@ abstract class BaseAdapter
             '(' . $this->arrayStr($values, ',', false) . ')',
         );
 
+        if (isset($statements['onduplicate'])) {
+            if (count($statements['onduplicate']) < 1) {
+                throw new Exception('No data given.', 4);
+            }
+            list($updateStatement, $updateBindings) = $this->getUpdateStatement($statements['onduplicate']);
+            $sqlArray[] = 'ON DUPLICATE KEY UPDATE ' . $updateStatement;
+            $bindings = array_merge($bindings, $updateBindings);
+        }
+
         $sql = $this->concatenateQuery($sqlArray, ' ', false);
 
         return compact('sql', 'bindings');
@@ -205,6 +214,31 @@ abstract class BaseAdapter
     }
 
     /**
+     * Build fields assignment part of SET ... or ON DUBLICATE KEY UPDATE ... statements
+     *
+     * @param array $data
+     *
+     * @return array
+     */
+    private function getUpdateStatement($data)
+    {
+        $bindings = array();
+        $statement = '';
+
+        foreach ($data as $key => $value) {
+            if ($value instanceof Raw) {
+                $statement .= $this->wrapSanitizer($key) . '=' . $value . ',';
+            } else {
+                $statement .= $this->wrapSanitizer($key) . '=?,';
+                $bindings[] = $value;
+            }
+        }
+
+        $statement = trim($statement, ',');
+        return array($statement, $bindings);
+    }
+
+    /**
      * Build update query
      *
      * @param       $statements
@@ -223,20 +257,8 @@ abstract class BaseAdapter
 
         $table = end($statements['tables']);
 
-        $bindings = $keys = $values = array();
-        $updateStatement = '';
-
-        foreach ($data as $key => $value) {
-            if ($value instanceof Raw) {
-                $updateStatement .= $this->wrapSanitizer($key) . '=' . $value . ',';
-            } else {
-                $updateStatement .= $this->wrapSanitizer($key) . '=?,';
-                $bindings[] = $value;
-            }
-
-        }
-
-        $updateStatement = trim($updateStatement, ',');
+        // Update statement
+        list($updateStatement, $bindings) = $this->getUpdateStatement($data);
 
         // Wheres
         list($whereCriteria, $whereBindings) = $this->buildCriteriaWithType($statements, 'wheres', 'WHERE');
