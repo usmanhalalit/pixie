@@ -125,6 +125,22 @@ class QueryBuilderTest extends TestCase
             , $builder->getQuery('replace', $data)->getRawSql());
     }
 
+    public function testInsertOnDuplicateKeyUpdateQuery()
+    {
+        $builder = $this->builder;
+        $data = array(
+            'name' => 'Sana',
+            'counter' => 1
+        );
+        $dataUpdate = array(
+            'name' => 'Sana',
+            'counter' => 2
+        );
+        $builder->from('my_table')->onDuplicateKeyUpdate($dataUpdate);
+        $this->assertEquals("INSERT INTO cb_my_table (`name`,`counter`) VALUES ('Sana',1) ON DUPLICATE KEY UPDATE `name`='Sana',`counter`=2"
+            , $builder->getQuery('insert', $data)->getRawSql());
+    }
+
     public function testUpdateQuery()
     {
         $builder = $this->builder->table('my_table')->where('value', 'Sana');
