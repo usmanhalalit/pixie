@@ -627,6 +627,42 @@ class QueryBuilderHandler
     }
 
     /**
+     * @param $key
+     * @return QueryBuilderHandler
+     */
+    public function whereNull($key)
+    {
+        return $this->_where($key, 'IS', null);
+    }
+
+    /**
+     * @param $key
+     * @return QueryBuilderHandler
+     */
+    public function whereNotNull($key)
+    {
+        return $this->_where($key, 'IS NOT', null);
+    }
+
+    /**
+     * @param $key
+     * @return QueryBuilderHandler
+     */
+    public function orWhereNull($key)
+    {
+        return $this->_where($key, 'IS', null, 'OR');
+    }
+
+    /**
+     * @param $key
+     * @return QueryBuilderHandler
+     */
+    public function orWhereNotNull($key)
+    {
+        return $this->_where($key, 'IS NOT', null, 'OR');
+    }
+
+    /**
      * @param        $table
      * @param        $key
      * @param        $operator
