@@ -355,6 +355,17 @@ class QueryBuilderHandler
     }
 
     /**
+     * @param $data
+     *
+     * @return $this
+     */
+    public function onDuplicateKeyUpdate($data)
+    {
+        $this->addStatement('onduplicate', $data);
+        return $this;
+    }
+
+    /**
      *
      */
     public function delete()

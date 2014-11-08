@@ -102,6 +102,7 @@ Library on [Packagist](https://packagist.org/packages/usmanhalalit/pixie).
     - [Raw Expressions](#raw-expressions)
  - [**Insert**](#insert)
     - [Batch Insert](#batch-insert)
+    - [Insert with ON DUPLICATE KEY statement](#insert-with-on-duplicate-key-statement)
  - [**Update**](#update)
  - [**Delete**](#delete)
  - [Get Built Query](#get-built-query)
@@ -393,6 +394,19 @@ $insertIds = QB::table('my_table')->insert($data);
 ```
 
 In case of batch insert, it will return an array of insert ids.
+
+#### Insert with ON DUPLICATE KEY statement
+```PHP
+$data = array(
+    'name' = 'Sana',
+    'counter' = 1
+);
+$dataUpdate = array(
+    'name' = 'Sana',
+    'counter' = 2
+);
+$insertId = QB::table('my_table')->onDuplicateKeyUpdate($dataUpdate)->insert($data);
+```
 
 ### Update
 ```PHP
