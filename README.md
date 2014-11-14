@@ -216,6 +216,12 @@ $query = QB::table('my_table')->select('*');
 Using select method multiple times `select('a')->select('b')` will also select `a` and `b`. Can be useful if you want to do conditional selects (within a PHP `if`).
 
 
+#### Select Distinct
+```PHP
+->selectDistinct(array('mytable.myfield1', 'mytable.myfield2'));
+```
+
+
 #### Get All
 Return an array.
 ```PHP

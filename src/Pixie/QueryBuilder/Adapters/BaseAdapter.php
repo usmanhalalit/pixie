@@ -75,7 +75,7 @@ abstract class BaseAdapter
         $joinString = $this->buildJoin($statements);
 
         $sqlArray = array(
-            'SELECT',
+            'SELECT' . (isset($statements['distinct']) ? ' DISTINCT' : ''),
             $selects,
             'FROM',
             $tables,
