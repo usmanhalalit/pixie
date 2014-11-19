@@ -44,6 +44,16 @@ class QueryBuilderTest extends TestCase
             , $nestedQuery->getQuery()->getRawSql());
     }
 
+    public function testSelectAliases()
+    {
+        $query = $this->builder->from('my_table')->select('foo')->select(['bar' => 'baz', 'qux']);
+
+        $this->assertEquals(
+            "SELECT `foo`, `bar` AS `baz`, `qux` FROM `cb_my_table`",
+            $query->getQuery()->getRawSql()
+        );
+    }
+
     public function testStandaloneWhereNot()
     {
         $query = $this->builder->table('my_table')->whereNot('foo', 1);
