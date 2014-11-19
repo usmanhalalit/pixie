@@ -262,7 +262,7 @@ abstract class BaseAdapter
 
         // Wheres
         list($whereCriteria, $whereBindings) = $this->buildCriteriaWithType($statements, 'wheres', 'WHERE');
-        
+
         // Limit
         $limit = isset($statements['limit']) ? 'LIMIT ' . $statements['limit'] : '';
 
@@ -298,7 +298,7 @@ abstract class BaseAdapter
 
         // Wheres
         list($whereCriteria, $whereBindings) = $this->buildCriteriaWithType($statements, 'wheres', 'WHERE');
-        
+
         // Limit
         $limit = isset($statements['limit']) ? 'LIMIT ' . $statements['limit'] : '';
 
@@ -322,9 +322,13 @@ abstract class BaseAdapter
     protected function arrayStr(array $pieces, $glue, $wrapSanitizer = true)
     {
         $str = '';
-        foreach ($pieces as $piece) {
+        foreach ($pieces as $key => $piece) {
             if ($wrapSanitizer) {
                 $piece = $this->wrapSanitizer($piece);
+            }
+
+            if (!is_int($key)) {
+                $piece = ($wrapSanitizer ? $this->wrapSanitizer($key) : $key) . ' AS ' . $piece;
             }
 
             $str .= $piece . $glue;
@@ -429,7 +433,7 @@ abstract class BaseAdapter
     }
 
     /**
-     * Wrap values with adapter's sanitizer like, `
+     * Wrap values with adapter's sanitizer like, '`'
      *
      * @param $value
      *
