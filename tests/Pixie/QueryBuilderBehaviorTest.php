@@ -46,7 +46,7 @@ class QueryBuilderTest extends TestCase
 
     public function testSelectAliases()
     {
-        $query = $this->builder->from('my_table')->select('foo')->select(['bar' => 'baz', 'qux']);
+        $query = $this->builder->from('my_table')->select('foo')->select(array('bar' => 'baz', 'qux'));
 
         $this->assertEquals(
             "SELECT `foo`, `bar` AS `baz`, `qux` FROM `cb_my_table`",
