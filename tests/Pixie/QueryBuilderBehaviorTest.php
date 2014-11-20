@@ -60,6 +60,24 @@ class QueryBuilderTest extends TestCase
         $this->assertEquals("SELECT * FROM `cb_my_table` WHERE NOT `foo` = 1", $query->getQuery()->getRawSql());
     }
 
+    public function testSelectDistinct()
+    {
+        $query = $this->builder->selectDistinct(array('name', 'surname'))->from('my_table');
+        $this->assertEquals("SELECT DISTINCT `name`, `surname` FROM `cb_my_table`", $query->getQuery()->getRawSql());
+    }
+
+    public function testSelectDistinctWithSingleColumn()
+    {
+        $query = $this->builder->selectDistinct('name')->from('my_table');
+        $this->assertEquals("SELECT DISTINCT `name` FROM `cb_my_table`", $query->getQuery()->getRawSql());
+    }
+
+    public function testSelectDistinctAndSelectCalls()
+    {
+        $query = $this->builder->select('name')->selectDistinct('surname')->select(array('birthday', 'address'))->from('my_table');
+        $this->assertEquals("SELECT DISTINCT `name`, `surname`, `birthday`, `address` FROM `cb_my_table`", $query->getQuery()->getRawSql());
+    }
+
     public function testSelectQueryWithNestedCriteriaAndJoins()
     {
         $builder = $this->builder;
