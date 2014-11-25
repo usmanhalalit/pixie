@@ -735,12 +735,13 @@ class QueryBuilderHandler
      * Add a raw query
      *
      * @param $value
+     * @param $bindings
      *
      * @return mixed
      */
-    public function raw($value)
+    public function raw($value, $bindings = array())
     {
-        return $this->container->build('\\Pixie\\QueryBuilder\\Raw', array($value));
+        return $this->container->build('\\Pixie\\QueryBuilder\\Raw', array($value, $bindings));
     }
 
     /**

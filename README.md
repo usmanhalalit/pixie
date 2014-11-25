@@ -361,6 +361,7 @@ When you wrap an expression with `raw()` method, Pixie doesn't try to sanitize t
 QB::table('my_table')
             ->select(QB::raw('count(cb_my_table.id) as tot'))
             ->where('value', '=', 'Ifrah')
+            ->where(QB::raw('DATE(?)', 'now'))
 ```
 
 

@@ -370,7 +370,6 @@ abstract class BaseAdapter
             $key = $this->wrapSanitizer($statement['key']);
             $value = $statement['value'];
 
-
             if (is_null($value) && $key instanceof \Closure) {
                 // We have a closure, a nested criteria
 
@@ -415,6 +414,9 @@ abstract class BaseAdapter
                     // We are not binding values, lets sanitize then
                     $value = $this->wrapSanitizer($value);
                     $criteria .= $statement['joiner'] . ' ' . $key . ' ' . $statement['operator'] . ' ' . $value . ' ';
+                } elseif ($statement['key'] instanceof Raw) {
+                    $criteria .= $statement['joiner'] . ' ' . $key . ' ';
+                    $bindings = array_merge($bindings, $statement['key']->getBindings());
                 } else {
                     // For wheres
 
