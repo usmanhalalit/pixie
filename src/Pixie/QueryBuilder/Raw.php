@@ -9,9 +9,20 @@ class Raw
      */
     protected $value;
 
-    public function __construct($value)
+    /**
+     * @var array
+     */
+    protected $bindings;
+
+    public function __construct($value, $bindings = array())
     {
         $this->value = (string)$value;
+        $this->bindings = (array)$bindings;
+    }
+
+    public function getBindings()
+    {
+        return $this->bindings;
     }
 
     /**

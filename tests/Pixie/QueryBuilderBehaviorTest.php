@@ -54,6 +54,20 @@ class QueryBuilderTest extends TestCase
         );
     }
 
+    public function testRawStatementsWithinCriteria()
+    {
+        $query = $this->builder->from('my_table')
+            ->where('simple', 'criteria')
+            ->where($this->builder->raw('RAW'))
+            ->where($this->builder->raw('PARAMETERIZED_ONE(?)', 'foo'))
+            ->where($this->builder->raw('PARAMETERIZED_SEVERAL(?, ?, ?)', array(1, '2', 'foo')));
+
+        $this->assertEquals(
+            "SELECT * FROM `cb_my_table` WHERE `simple` = 'criteria' AND RAW AND PARAMETERIZED_ONE('foo') AND PARAMETERIZED_SEVERAL(1, '2', 'foo')",
+            $query->getQuery()->getRawSql()
+        );
+    }
+
     public function testStandaloneWhereNot()
     {
         $query = $this->builder->table('my_table')->whereNot('foo', 1);
