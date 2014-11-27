@@ -538,7 +538,7 @@ QB::registerEvent('after-delete', 'my_table', function($queryBuilder, $queryObje
 
 Pixie passes the current instance of query builder as first parameter of your closure so you can build queries with this object, you can do anything like usual query builder (`QB`).
 
-Only on `after-*` events you get two parameters first is the query builder and the second varies:
+Only on `after-*` events you get three parameters: **first** is the query builder, **third** is the execution time as float and **the second** varies:
 
  - On `after-select` you get the `results` obtained from `select`.
  - On `after-insert` you get the insert id (or array of ids in case of batch insert)

@@ -63,9 +63,8 @@ class EventHandler
     /**
      * @param QueryBuilderHandler   $queryBuilder
      * @param                       $event
-     * @param null                  $dataToBePassed
      */
-    public function fireEvents($queryBuilder, $event, $dataToBePassed = null) {
+    public function fireEvents($queryBuilder, $event) {
         $statements = $queryBuilder->getStatements();
         $tables = isset($statements['tables']) ? $statements['tables'] : array();
 
@@ -81,7 +80,9 @@ class EventHandler
                 $eventId = $event . $table;
 
                 // Fire event
-                $action($queryBuilder, $dataToBePassed);
+                $handlerParams = func_get_args();
+                unset($handlerParams[1]); // we do not need $event
+                call_user_func_array($action, $handlerParams);
                 // Add to fired list
                 $this->firedEvents[] = $eventId;
             }
