@@ -7,7 +7,7 @@ class Pgsql extends BaseAdapter
      *
      * @return mixed
      */
-    public function connect($config)
+    protected function doConnect($config)
     {
         $connectionString = "pgsql:host={$config['host']};dbname={$config['database']}";
 
@@ -17,7 +17,7 @@ class Pgsql extends BaseAdapter
 
         $connection = $this->container->build(
             '\PDO',
-            array($connectionString, $config['username'], $config['password'])
+            array($connectionString, $config['username'], $config['password'], $config['options'])
         );
 
         if (isset($config['charset'])) {
