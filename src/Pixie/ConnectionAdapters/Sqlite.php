@@ -7,9 +7,12 @@ class Sqlite extends BaseAdapter
      *
      * @return mixed
      */
-    public function connect($config)
+    public function doConnect($config)
     {
         $connectionString = 'sqlite:' . $config['database'];
-        return $this->container->build('\PDO', array($connectionString, null, null));
+        return $this->container->build(
+            '\PDO',
+            array($connectionString, null, null, $config['options'])
+        );
     }
 }
