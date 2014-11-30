@@ -20,23 +20,36 @@ class TestCase extends \PHPUnit_Framework_TestCase {
 
         $mockPdoStatement = & $this->mockPdoStatement;
 
-        $this->mockPdoStatement->expects($this->any())->method('execute')->will($this->returnCallback(function($bindings) use ($mockPdoStatement){
-                    $mockPdoStatement->bindings = $bindings;
-                }));
-        $this->mockPdoStatement->expects($this->any())->method('fetchAll')->will($this->returnCallback(function() use ($mockPdoStatement){
-                    return array($mockPdoStatement->sql, $mockPdoStatement->bindings);
-                }));
+        $this->mockPdoStatement
+            ->expects($this->any())
+            ->method('execute')
+            ->will($this->returnCallback(function($bindings) use ($mockPdoStatement){
+                $mockPdoStatement->bindings = $bindings;
+            }));
+
+        $this->mockPdoStatement
+            ->expects($this->any())
+            ->method('fetchAll')
+            ->will($this->returnCallback(function() use ($mockPdoStatement){
+                return array($mockPdoStatement->sql, $mockPdoStatement->bindings);
+            }));
 
         $this->mockPdo = $this->getMock('\\Pixie\\MockPdo', array('prepare', 'setAttribute', 'quote', 'lastInsertId'));
 
-        $this->mockPdo->expects($this->any())->method('prepare')->will($this->returnCallback(function($sql) use ($mockPdoStatement){
-                    $mockPdoStatement->sql = $sql;
-                    return $mockPdoStatement;
-                }));
+        $this->mockPdo
+            ->expects($this->any())
+            ->method('prepare')
+            ->will($this->returnCallback(function($sql) use ($mockPdoStatement){
+                $mockPdoStatement->sql = $sql;
+                return $mockPdoStatement;
+            }));
 
-        $this->mockPdo->expects($this->any())->method('quote')->will($this->returnCallback(function($value){
-                    return "'$value'";
-                }));
+        $this->mockPdo
+            ->expects($this->any())
+            ->method('quote')
+            ->will($this->returnCallback(function($value){
+                return "'$value'";
+            }));
 
         $eventHandler = new EventHandler();
 
@@ -56,7 +69,6 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     public function callbackMock()
     {
         $args = func_get_args();
-
         return count($args) == 1 ? $args[0] : $args;
     }
 }

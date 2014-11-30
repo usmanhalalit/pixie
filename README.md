@@ -108,6 +108,7 @@ Library on [Packagist](https://packagist.org/packages/usmanhalalit/pixie).
  - [Get Built Query](#get-built-query)
  - [Sub Queries and Nested Queries](#sub-queries-and-nested-queries)
  - [Get PDO Instance](#get-pdo-instance)
+ - [Fetch results as objects of specified class](#fetch-results-as-objects-of-specified-class)
  - [Query Events](#query-events)
     - [Available Events](#available-events)
     - [Registering Events](#registering-events)
@@ -315,7 +316,7 @@ Using `groupBy()` or `orderBy()` methods multiple times `groupBy('a')->groupBy('
 ```PHP
 QB::table('my_table')
     ->join('another_table', 'another_table.person_id', '=', 'my_table.id')
-    
+
 ```
 
 Available methods,
@@ -468,7 +469,7 @@ $nestedQuery->get();
 This will produce a query like this:
 
     SELECT * FROM (SELECT `cb_my_table`.*, (SELECT `details` FROM `cb_person_details` WHERE `person_id` = 3) as table_alias1 FROM `cb_my_table`) as table_alias2
-    
+
 **NOTE:** Pixie doesn't use bindings for sub queries and nested queries. It quotes values with PDO's `quote()` method.
 
 ### Get PDO Instance
@@ -478,11 +479,24 @@ If you need to get the PDO instance you can do so.
 QB::pdo();
 ```
 
+### Fetch results as objects of specified class
+Simply call `asObject` query's method.
+
+```PHP
+QB::table('my_table')->asObject('SomeClass', array('ctor', 'args'))->first();
+```
+
+Furthermore, you may fine-tune fetching mode by calling `setFetchMode` method.
+
+```PHP
+QB::table('my_table')->setFetchMode(PDO::FETCH_COLUMN|PDO::FETCH_UNIQUE)->get();
+```
+
 ### Query Events
 Pixie comes with powerful query events to supercharge your application. These events are like database triggers, you can perform some actions when an event occurs, for example you can hook `after-delete` event of a table and delete related data from another table.
 
 #### Available Events
- 
+
  - before-select
  - after-select
  - before-insert
