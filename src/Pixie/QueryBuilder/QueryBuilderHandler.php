@@ -110,11 +110,11 @@ class QueryBuilderHandler
      */
     public function query($sql, $bindings = array())
     {
-        list($this->pdoStatement, ) = $this->statement($sql, $bindings);
-        
+        list($this->pdoStatement) = $this->statement($sql, $bindings);
+
         return $this;
     }
-    
+
     /**
      * @param       $sql
      * @param array $bindings
@@ -349,9 +349,10 @@ class QueryBuilderHandler
     {
         $this->fireEvents('before-update');
         $queryObject = $this->getQuery('update', $data);
+
         list($response, $executionTime) = $this->statement($queryObject->getSql(), $queryObject->getBindings());
         $this->fireEvents('after-update', $queryObject, $executionTime);
-        
+
         return $response;
     }
 
@@ -387,9 +388,11 @@ class QueryBuilderHandler
     {
         $this->fireEvents('before-delete');
         $queryObject = $this->getQuery('delete');
+
         list($response, $executionTime) = $this->statement($queryObject->getSql(), $queryObject->getBindings());
         $this->fireEvents('after-delete', $queryObject, $executionTime);
         
+
         return $response;
     }
 
@@ -427,6 +430,18 @@ class QueryBuilderHandler
     {
         $fields = $this->addTablePrefix($fields);
         $this->addStatement('selects', $fields);
+        return $this;
+    }
+
+    /**
+     * @param $fields
+     *
+     * @return $this
+     */
+    public function selectDistinct($fields)
+    {
+        $this->select($fields);
+        $this->addStatement('distinct', true);
         return $this;
     }
 

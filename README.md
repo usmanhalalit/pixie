@@ -91,6 +91,7 @@ Library on [Packagist](https://packagist.org/packages/usmanhalalit/pixie).
  - [**Select**](#select)
     - [Get Easily](#get-easily)
     - [Multiple Selects](#multiple-selects)
+    - [Select Distinct](#select-distinct)
     - [Get All](#get-all)
     - [Get First Row](#get-first-row)
     - [Get Rows Count](#get-rows-count)
@@ -218,6 +219,12 @@ $query = QB::table('my_table')->select('*');
 ```
 
 Using select method multiple times `select('a')->select('b')` will also select `a` and `b`. Can be useful if you want to do conditional selects (within a PHP `if`).
+
+
+#### Select Distinct
+```PHP
+->selectDistinct(array('mytable.myfield1', 'mytable.myfield2'));
+```
 
 
 #### Get All
