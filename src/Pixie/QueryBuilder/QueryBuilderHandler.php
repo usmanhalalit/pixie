@@ -1,5 +1,6 @@
 <?php namespace Pixie\QueryBuilder;
 
+use PDO;
 use Pixie\Connection;
 use Pixie\Exception;
 
@@ -22,12 +23,12 @@ class QueryBuilderHandler
     protected $statements = array();
 
     /**
-     * @var \PDO
+     * @var PDO
      */
     protected $pdo;
 
     /**
-     * @var null|\PDOStatement
+     * @var null|PDOStatement
      */
     protected $pdoStatement = null;
 
@@ -46,7 +47,7 @@ class QueryBuilderHandler
      *
      * @var int
      */
-    protected $fetchMode = \PDO::FETCH_OBJ;
+    protected $fetchMode = PDO::FETCH_OBJ;
 
     /**
      * @param null|\Pixie\Connection $connection
@@ -74,7 +75,7 @@ class QueryBuilderHandler
         // Query builder adapter instance
         $this->adapterInstance = $this->container->build('\\Pixie\\QueryBuilder\\Adapters\\' . ucfirst($this->adapter), array($this->connection));
 
-        $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 
     /**
@@ -109,7 +110,7 @@ class QueryBuilderHandler
      */
     public function query($sql, $bindings = array())
     {
-        $this->pdoStatement = $this->statement($sql, $bindings);
+        list($this->pdoStatement, ) = $this->statement($sql, $bindings);
         
         return $this;
     }
@@ -118,13 +119,14 @@ class QueryBuilderHandler
      * @param       $sql
      * @param array $bindings
      *
-     * @return $this
+     * @return array PDOStatement and execution time as float
      */
     public function statement($sql, $bindings = array())
     {
+        $start = microtime(true);
         $pdoStatement = $this->pdo->prepare($sql);
         $pdoStatement->execute($bindings);
-        return $pdoStatement;
+        return array($pdoStatement, microtime(true) - $start);
     }
 
     /**
@@ -135,10 +137,21 @@ class QueryBuilderHandler
     public function get()
     {
         $this->fireEvents('before-select');
-        $this->preparePdoStatement();
+
+        $executionTime = 0;
+        if (is_null($this->pdoStatement)) {
+            $queryObject = $this->getQuery('select');
+            list($this->pdoStatement, $executionTime) = $this->statement(
+                $queryObject->getSql(),
+                $queryObject->getBindings()
+            );
+        }
+
+        $start = microtime(true);
         $result = $this->pdoStatement->fetchAll($this->fetchMode);
+        $executionTime += microtime(true) - $start;
         $this->pdoStatement = null;
-        $this->fireEvents('after-select', $result);
+        $this->fireEvents('after-select', $result, $executionTime);
         return $result;
     }
 
@@ -272,17 +285,19 @@ class QueryBuilderHandler
 
             $queryObject = $this->getQuery($type, $data);
 
-            $result = $this->statement($queryObject->getSql(), $queryObject->getBindings());
+            list($result, $executionTime) = $this->statement($queryObject->getSql(), $queryObject->getBindings());
 
             $return = $result->rowCount() === 1 ? $this->pdo->lastInsertId() : null;
         } else {
             // Its a batch insert
             $return = array();
+            $executionTime = 0;
             foreach ($data as $subData) {
 
                 $queryObject = $this->getQuery($type, $subData);
 
-                $result = $this->statement($queryObject->getSql(), $queryObject->getBindings());
+                list($result, $time) = $this->statement($queryObject->getSql(), $queryObject->getBindings());
+                $executionTime += $time;
 
                 if($result->rowCount() === 1){
                     $return[] = $this->pdo->lastInsertId();
@@ -290,7 +305,7 @@ class QueryBuilderHandler
             }
         }
 
-        $this->fireEvents('after-insert', $return);
+        $this->fireEvents('after-insert', $return, $executionTime);
 
         return $return;
     }
@@ -334,8 +349,8 @@ class QueryBuilderHandler
     {
         $this->fireEvents('before-update');
         $queryObject = $this->getQuery('update', $data);
-        $response = $this->statement($queryObject->getSql(), $queryObject->getBindings());
-        $this->fireEvents('after-update', $queryObject);
+        list($response, $executionTime) = $this->statement($queryObject->getSql(), $queryObject->getBindings());
+        $this->fireEvents('after-update', $queryObject, $executionTime);
         
         return $response;
     }
@@ -372,8 +387,8 @@ class QueryBuilderHandler
     {
         $this->fireEvents('before-delete');
         $queryObject = $this->getQuery('delete');
-        $response = $this->statement($queryObject->getSql(), $queryObject->getBindings());
-        $this->fireEvents('after-delete', $queryObject);
+        list($response, $executionTime) = $this->statement($queryObject->getSql(), $queryObject->getBindings());
+        $this->fireEvents('after-delete', $queryObject, $executionTime);
         
         return $response;
     }
@@ -747,7 +762,7 @@ class QueryBuilderHandler
     /**
      * Return PDO instance
      *
-     * @return \PDO
+     * @return PDO
      */
     public function pdo()
     {
@@ -771,14 +786,6 @@ class QueryBuilderHandler
     public function getConnection()
     {
         return $this->connection;
-    }
-
-    protected function preparePdoStatement(){
-        // If user has not passed any statement (its a raw query)
-        if (is_null($this->pdoStatement)) {
-            $queryObject = $this->getQuery('select');
-            $this->query($queryObject->getSql(), $queryObject->getBindings());
-        }
     }
 
     /**
@@ -905,12 +912,12 @@ class QueryBuilderHandler
 
     /**
      * @param      $event
-     * @param null $dataToBePassed
-     *
      * @return void
      */
-    public function fireEvents($event, $dataToBePassed = null) {
-        return $this->connection->getEventHandler()->fireEvents($this, $event, $dataToBePassed);
+    public function fireEvents($event) {
+        $params = func_get_args();
+        array_unshift($params, $this);
+        call_user_func_array(array($this->connection->getEventHandler(), 'fireEvents'), $params);
     }
 
     /**
