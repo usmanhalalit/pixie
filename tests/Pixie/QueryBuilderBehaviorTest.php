@@ -119,6 +119,36 @@ class QueryBuilderTest extends TestCase
         $this->assertEquals("SELECT * FROM `cb_some_table` WHERE `name` = 'Some' AND `status` IN (1, 2)", $actual);
     }
 
+    public function testEventPropagation()
+    {
+        $builder = $this->builder;
+        $counter = 0;
+
+        foreach (array('before', 'after') as $prefix) {
+            foreach (array('insert', 'select', 'update', 'delete') as $action) {
+                $builder->registerEvent("$prefix-$action", ':any', function ($qb) use (&$counter) {
+                    return $counter++;
+                });
+            }
+        }
+
+        $insert = $builder->table('foo')->insert(array('bar' => 'baz'));
+        $this->assertEquals(0, $insert);
+        $this->assertEquals(1, $counter, 'after-insert was not called');
+
+        $select = $builder->from('foo')->select('bar')->get();
+        $this->assertEquals(1, $select);
+        $this->assertEquals(2, $counter, 'after-select was not called');
+
+        $update = $builder->table('foo')->update(array('bar' => 'baz'));
+        $this->assertEquals(2, $update);
+        $this->assertEquals(3, $counter, 'after-update was not called');
+
+        $delete = $builder->from('foo')->delete();
+        $this->assertEquals(3, $delete);
+        $this->assertEquals(4, $counter, 'after-delete was not called');
+    }
+
     public function testInsertQuery()
     {
         $builder = $this->builder->from('my_table');

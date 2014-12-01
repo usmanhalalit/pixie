@@ -552,6 +552,8 @@ QB::registerEvent('after-delete', 'my_table', function($queryBuilder, $queryObje
 
 Pixie passes the current instance of query builder as first parameter of your closure so you can build queries with this object, you can do anything like usual query builder (`QB`).
 
+If something other than `null` is returned from the `before-*` query handler, the value will be result of execution and DB will not be actually queried (and thus, corresponding `after-*` handler will not be called ether).
+
 Only on `after-*` events you get three parameters: **first** is the query builder, **third** is the execution time as float and **the second** varies:
 
  - On `after-select` you get the `results` obtained from `select`.
@@ -570,8 +572,9 @@ Here are some cases where Query Events can be extremely helpful:
 
  - Restrict banned users.
  - Get only `deleted = 0` records.
- - Delete relationship data after a delete query.
+ - Implement caching of all queries.
  - Trigger user notification after every entry.
+ - Delete relationship data after a delete query.
  - Insert relationship data after an insert query.
  - Keep records of modification after each update query.
  - Add/edit created_at and updated _at data after each entry.
