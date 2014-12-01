@@ -61,8 +61,9 @@ class EventHandler
     }
 
     /**
-     * @param QueryBuilderHandler   $queryBuilder
-     * @param                       $event
+     * @param QueryBuilderHandler $queryBuilder
+     * @param                     $event
+     * @return mixed
      */
     public function fireEvents($queryBuilder, $event) {
         $statements = $queryBuilder->getStatements();
@@ -82,9 +83,12 @@ class EventHandler
                 // Fire event
                 $handlerParams = func_get_args();
                 unset($handlerParams[1]); // we do not need $event
-                call_user_func_array($action, $handlerParams);
                 // Add to fired list
                 $this->firedEvents[] = $eventId;
+                $result = call_user_func_array($action, $handlerParams);
+                if (!is_null($result)) {
+                    return $result;
+                };
             }
         }
     }
