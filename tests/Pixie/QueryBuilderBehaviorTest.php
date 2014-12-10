@@ -13,10 +13,23 @@ class QueryBuilderTest extends TestCase
         $this->builder = new QueryBuilder\QueryBuilderHandler($this->mockConnection);
     }
 
+    public function testSelectFlexibility()
+    {
+        $query = $this->builder
+            ->select('foo')
+            ->select(array('bar', 'baz'))
+            ->select('qux', 'lol', 'wut')
+            ->from('t');
+        $this->assertEquals(
+            'SELECT `foo`, `bar`, `baz`, `qux`, `lol`, `wut` FROM `cb_t`',
+            $query->getQuery()->getRawSql(),
+            'SELECT is pretty flexible!'
+        );
+    }
+
     public function testSelectQuery()
     {
         $subQuery = $this->builder->table('person_details')->select('details')->where('person_id', '=', 3);
-
 
         $query = $this->builder->table('my_table')
             ->select('my_table.*')
