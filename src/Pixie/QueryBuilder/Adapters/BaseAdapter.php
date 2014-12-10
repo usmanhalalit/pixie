@@ -56,10 +56,10 @@ abstract class BaseAdapter
         $orderBys = '';
         if (isset($statements['orderBys']) && is_array($statements['orderBys'])) {
             foreach ($statements['orderBys'] as $orderBy) {
-                $orderBys .= $this->wrapSanitizer($orderBy['field']) . ' ' . $orderBy['type'] . ',';
+                $orderBys .= $this->wrapSanitizer($orderBy['field']) . ' ' . $orderBy['type'] . ', ';
             }
 
-            if ($orderBys = trim($orderBys, ',')) {
+            if ($orderBys = trim($orderBys, ', ')) {
                 $orderBys = 'ORDER BY ' . $orderBys;
             }
         }
