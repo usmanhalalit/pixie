@@ -873,22 +873,24 @@ class QueryBuilderHandler
         $return = array();
 
         foreach ($values as $key => $value) {
-            // Its a raw query, just add it to our return array and continue next
+            // It's a raw query, just add it to our return array and continue next
             if ($value instanceof Raw || $value instanceof \Closure) {
                 $return[$key] = $value;
                 continue;
             }
 
-            // If our value has mix of field and table names with a ".", like my_table.field
-            if ($tableFieldMix) {
-                // If we have a . then we really have a table name, else we have only field
-                $return[$key] = strstr($value, '.') ? $this->tablePrefix . $value : $value;
-            } else {
-                // Method call says, we have just table, force adding prefix
-                $return[$key] = $this->tablePrefix . $value;
+            // If key is not integer, it is likely a alias mapping,
+            // so we need to change prefix target
+            $target = &$value;
+            if (!is_int($key)) {
+                $target = &$key;
             }
 
+            if (!$tableFieldMix || ($tableFieldMix && strpos($target, '.') !== false)) {
+                $target = $this->tablePrefix . $target;
+            }
 
+            $return[$key] = $value;
         }
 
         // If we had single value then we should return a single value (end value of the array)

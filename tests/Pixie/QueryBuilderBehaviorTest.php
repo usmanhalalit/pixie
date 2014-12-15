@@ -91,7 +91,7 @@ class QueryBuilderTest extends TestCase
     {
         $builder = $this->builder;
 
-        $query = $this->builder->table('my_table')
+        $query = $builder->table('my_table')
             ->where('my_table.id', '>', 1)
             ->orWhere('my_table.id', 1)
             ->where(function($q)
@@ -103,16 +103,16 @@ class QueryBuilderTest extends TestCase
                             $q2->orWhere('value', 'LIKE', '%sana%');
                         });
                 })
-            ->join($this->builder->raw('cb_person_details as a'), $this->builder->raw('a.person_id'), '=', 'my_table.id')
+            ->join(array('person_details' => 'a'), $builder->raw('a.person_id'), '=', 'my_table.id')
 
-            ->leftJoin($this->builder->raw('cb_person_details as b'), function($table) use ($builder)
+            ->leftJoin(array('person_details' => 'b'), function($table) use ($builder)
                 {
                     $table->on($builder->raw('b.person_id'), '=', 'my_table.id');
                     $table->orOn($builder->raw('b.age'), '>', $builder->raw(1));
                 })
         ;
 
-        $this->assertEquals("SELECT * FROM `cb_my_table` INNER JOIN cb_person_details as a ON a.person_id = `cb_my_table`.`id` LEFT JOIN cb_person_details as b ON b.person_id = `cb_my_table`.`id` OR b.age > 1 WHERE `cb_my_table`.`id` > 1 OR `cb_my_table`.`id` = 1 AND (`value` LIKE '%sana%' OR (`key` LIKE '%sana%' OR `value` LIKE '%sana%'))"
+        $this->assertEquals("SELECT * FROM `cb_my_table` INNER JOIN `cb_person_details` AS `a` ON a.person_id = `cb_my_table`.`id` LEFT JOIN `cb_person_details` AS `b` ON b.person_id = `cb_my_table`.`id` OR b.age > 1 WHERE `cb_my_table`.`id` > 1 OR `cb_my_table`.`id` = 1 AND (`value` LIKE '%sana%' OR (`key` LIKE '%sana%' OR `value` LIKE '%sana%'))"
             , $query->getQuery()->getRawSql());
     }
 
