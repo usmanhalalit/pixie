@@ -454,6 +454,10 @@ class QueryBuilderHandler
      */
     public function select($fields)
     {
+        if (!is_array($fields)) {
+            $fields = func_get_args();
+        }
+
         $fields = $this->addTablePrefix($fields);
         $this->addStatement('selects', $fields);
         return $this;
