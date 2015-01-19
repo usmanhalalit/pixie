@@ -66,7 +66,7 @@ class Connection
      */
     public static function build($adapter, array $adapterConfig, $alias = null, Container $container = null)
     {
-        new Connection($adapter, array $adapterConfig, $alias = null, Container $container = null);
+        new Connection($adapter, $adapterConfig, $alias, $container);
     }
 
     /**
