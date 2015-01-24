@@ -57,6 +57,17 @@ class Connection
             $this->createAlias($alias);
         }
     }
+    
+    /**
+     * @param               $adapter
+     * @param array         $adapterConfig
+     * @param null|string   $alias
+     * @param Container     $container
+     */
+    public static function build($adapter, array $adapterConfig, $alias = null, Container $container = null)
+    {
+        new Connection($adapter, $adapterConfig, $alias, $container);
+    }
 
     /**
      * Create an easily accessible query builder alias
