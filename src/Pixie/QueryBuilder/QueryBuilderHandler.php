@@ -246,6 +246,12 @@ class QueryBuilderHandler
         } else {
             unset($this->statements['selects']);
         }
+        
+        // array fetch mode
+        if (is_array($row[0]) and isset($row[0]['field']))
+        {
+            return (int) $row[0]['field'];
+        }
 
         return isset($row[0]->field) ? (int) $row[0]->field : 0;
     }
