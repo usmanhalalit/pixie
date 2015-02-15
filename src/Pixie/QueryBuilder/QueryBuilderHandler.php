@@ -218,6 +218,7 @@ class QueryBuilderHandler
         // Get the current statements
         $originalStatements = $this->statements;
 
+        unset($this->statements['orderBys']);
         unset($this->statements['limit']);
         unset($this->statements['offset']);
 
