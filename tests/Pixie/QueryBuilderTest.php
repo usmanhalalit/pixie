@@ -1,5 +1,6 @@
 <?php namespace Pixie;
 
+use PDO;
 use Mockery as m;
 use Pixie\QueryBuilder\QueryBuilderHandler;
 
@@ -22,7 +23,13 @@ class QueryBuilder extends TestCase
         $query = 'select * from cb_my_table where id = ? and name = ?';
         $bindings = array(5, 'usman');
         $queryArr = $this->builder->query($query, $bindings)->get();
-        $this->assertEquals($queryArr, array($query, $bindings));
+        $this->assertEquals(
+            array(
+                $query,
+                array(array(5, PDO::PARAM_INT), array('usman', PDO::PARAM_STR)),
+            ),
+            $queryArr
+        );
     }
 
     public function testInsertQueryReturnsIdForInsert()

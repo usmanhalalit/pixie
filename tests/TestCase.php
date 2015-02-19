@@ -20,12 +20,24 @@ class TestCase extends \PHPUnit_Framework_TestCase {
 
         $mockPdoStatement = & $this->mockPdoStatement;
 
+        $mockPdoStatement->bindings = array();
+
+        $this->mockPdoStatement
+            ->expects($this->any())
+            ->method('bindValue')
+            ->will($this->returnCallback(function ($parameter, $value, $dataType) use ($mockPdoStatement) {
+                $mockPdoStatement->bindings[] = array($value, $dataType);
+            }));
+
         $this->mockPdoStatement
             ->expects($this->any())
             ->method('execute')
-            ->will($this->returnCallback(function($bindings) use ($mockPdoStatement){
-                $mockPdoStatement->bindings = $bindings;
+            ->will($this->returnCallback(function($bindings = null) use ($mockPdoStatement) {
+                if ($bindings) {
+                    $mockPdoStatement->bindings = $bindings;
+                }
             }));
+
 
         $this->mockPdoStatement
             ->expects($this->any())
