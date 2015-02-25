@@ -236,10 +236,11 @@ class QueryBuilderTest extends TestCase
         $query = $this->builder
             ->from('t')
             ->orderBy('foo', 'DESC')
-            ->orderBy(array('bar', 'baz' => 'ASC'), 'DESC');
+            ->orderBy(array('bar', 'baz' => 'ASC', $this->builder->raw('raw1')), 'DESC')
+            ->orderBy($this->builder->raw('raw2'), 'DESC');
 
         $this->assertEquals(
-            'SELECT * FROM `cb_t` ORDER BY `foo` DESC, `bar` DESC, `baz` ASC',
+            'SELECT * FROM `cb_t` ORDER BY `foo` DESC, `bar` DESC, `baz` ASC, raw1 DESC, raw2 DESC',
             $query->getQuery()->getRawSql(),
             'ORDER BY is flexible enough!'
         );
