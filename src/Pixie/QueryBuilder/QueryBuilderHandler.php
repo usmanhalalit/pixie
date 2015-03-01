@@ -139,7 +139,14 @@ class QueryBuilderHandler
     {
         $start = microtime(true);
         $pdoStatement = $this->pdo->prepare($sql);
-        $pdoStatement->execute($bindings);
+        foreach ($bindings as $key => $value) {
+            $pdoStatement->bindValue(
+                is_int($key) ? $key + 1 : $key,
+                $value,
+                is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR
+            );
+        }
+        $pdoStatement->execute();
         return array($pdoStatement, microtime(true) - $start);
     }
 
