@@ -484,16 +484,21 @@ class QueryBuilderHandler
      */
     public function orderBy($fields, $defaultDirection = 'ASC')
     {
-        $result = &$this->statements['orderBys'];
-        foreach ((array) $fields as $key => $value) {
+        if (!is_array($fields)) {
+            $fields = array($fields);
+        }
+
+        foreach ($fields as $key => $value) {
             $field = $key;
             $type = $value;
             if (is_int($key)) {
                 $field = $value;
                 $type = $defaultDirection;
             }
-            $field = $this->addTablePrefix($field);
-            $result[] = compact('field', 'type');
+            if (!$field instanceof Raw) {
+                $field = $this->addTablePrefix($field);
+            }
+            $this->statements['orderBys'][] = compact('field', 'type');
         }
 
         return $this;
