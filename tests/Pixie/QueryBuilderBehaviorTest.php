@@ -186,7 +186,7 @@ class QueryBuilderTest extends TestCase
         $data = array('key' => 'Name',
                 'value' => 'Sana',);
 
-        $this->assertEquals("INSERT INTO cb_my_table (`key`,`value`) VALUES ('Name','Sana')"
+        $this->assertEquals("INSERT INTO `cb_my_table` (`key`,`value`) VALUES ('Name','Sana')"
             , $builder->getQuery('insert', $data)->getRawSql());
     }
 
@@ -235,7 +235,7 @@ class QueryBuilderTest extends TestCase
             'value' => 'Amrin',
         );
 
-        $this->assertEquals("UPDATE cb_my_table SET `key`='Sana',`value`='Amrin' WHERE `value` = 'Sana'"
+        $this->assertEquals("UPDATE `cb_my_table` SET `key`='Sana',`value`='Amrin' WHERE `value` = 'Sana'"
             , $builder->getQuery('update', $data)->getRawSql());
     }
 
@@ -245,7 +245,7 @@ class QueryBuilderTest extends TestCase
 
         $builder = $this->builder->table('my_table')->where('value', '=', 'Amrin');
 
-        $this->assertEquals("DELETE from cb_my_table WHERE `value` = 'Amrin'"
+        $this->assertEquals("DELETE FROM `cb_my_table` WHERE `value` = 'Amrin'"
             , $builder->getQuery('delete')->getRawSql());
     }
 
