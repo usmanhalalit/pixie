@@ -196,7 +196,7 @@ class QueryBuilderTest extends TestCase
         $data = array('key' => 'Name',
             'value' => 'Sana',);
 
-        $this->assertEquals("INSERT IGNORE INTO cb_my_table (`key`,`value`) VALUES ('Name','Sana')"
+        $this->assertEquals("INSERT IGNORE INTO `cb_my_table` (`key`,`value`) VALUES ('Name','Sana')"
             , $builder->getQuery('insertignore', $data)->getRawSql());
     }
 
@@ -206,7 +206,7 @@ class QueryBuilderTest extends TestCase
         $data = array('key' => 'Name',
             'value' => 'Sana',);
 
-        $this->assertEquals("REPLACE INTO cb_my_table (`key`,`value`) VALUES ('Name','Sana')"
+        $this->assertEquals("REPLACE INTO `cb_my_table` (`key`,`value`) VALUES ('Name','Sana')"
             , $builder->getQuery('replace', $data)->getRawSql());
     }
 
@@ -222,7 +222,7 @@ class QueryBuilderTest extends TestCase
             'counter' => 2
         );
         $builder->from('my_table')->onDuplicateKeyUpdate($dataUpdate);
-        $this->assertEquals("INSERT INTO cb_my_table (`name`,`counter`) VALUES ('Sana',1) ON DUPLICATE KEY UPDATE `name`='Sana',`counter`=2"
+        $this->assertEquals("INSERT INTO `cb_my_table` (`name`,`counter`) VALUES ('Sana',1) ON DUPLICATE KEY UPDATE `name`='Sana',`counter`=2"
             , $builder->getQuery('insert', $data)->getRawSql());
     }
 
