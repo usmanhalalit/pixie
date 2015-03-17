@@ -151,7 +151,7 @@ abstract class BaseAdapter
 
         $sqlArray = array(
             $type . ' INTO',
-            $table,
+            $this->wrapSanitizer($table),
             '(' . $this->arrayStr($keys, ',') . ')',
             'VALUES',
             '(' . $this->arrayStr($values, ',', false) . ')',
