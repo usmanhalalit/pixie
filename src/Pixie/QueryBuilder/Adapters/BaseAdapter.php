@@ -402,7 +402,7 @@ abstract class BaseAdapter
                         }
 
                         $valuePlaceholder = trim($valuePlaceholder, ', ');
-                   d     $criteria .= ' (' . $valuePlaceholder . ') ';
+                        $criteria .= ' (' . $valuePlaceholder . ') ';
                         break;
                 }
             } else {
