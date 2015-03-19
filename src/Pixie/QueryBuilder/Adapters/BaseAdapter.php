@@ -151,7 +151,7 @@ abstract class BaseAdapter
 
         $sqlArray = array(
             $type . ' INTO',
-            $table,
+            $this->wrapSanitizer($table),
             '(' . $this->arrayStr($keys, ',') . ')',
             'VALUES',
             '(' . $this->arrayStr($values, ',', false) . ')',
@@ -268,7 +268,7 @@ abstract class BaseAdapter
 
         $sqlArray = array(
             'UPDATE',
-            $table,
+            $this->wrapSanitizer($table),
             'SET ' . $updateStatement,
             $whereCriteria,
             $limit
@@ -302,7 +302,7 @@ abstract class BaseAdapter
         // Limit
         $limit = isset($statements['limit']) ? 'LIMIT ' . $statements['limit'] : '';
 
-        $sqlArray = array('DELETE from', $table, $whereCriteria, $limit);
+        $sqlArray = array('DELETE FROM', $this->wrapSanitizer($table), $whereCriteria);
         $sql = $this->concatenateQuery($sqlArray, ' ', false);
         $bindings = $whereBindings;
 
