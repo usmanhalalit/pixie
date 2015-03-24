@@ -95,6 +95,7 @@ Library on [Packagist](https://packagist.org/packages/usmanhalalit/pixie).
     - [Get All](#get-all)
     - [Get First Row](#get-first-row)
     - [Get Rows Count](#get-rows-count)
+    - [PDO Fetch Mode](#get-pdo-fetch-mode)
  - [**Where**](#where)
     - [Where In](#where-in)
     - [Grouped Where](#grouped-where)
@@ -254,6 +255,15 @@ Returns the first row, or null if there is no record. Using this method you can 
 $query = QB::table('my_table')->where('name', '=', 'Sana');
 $query->count();
 ```
+
+#### PDO Fetch Mode
+You can set PDO fetch mode on each query by:
+```PHP
+$query = QB::table('my_table')->where('name', '=', 'Sana')->setFetchMode(PDO::FETCH_ASSOC);
+$query->get();
+```
+If you don't define any fetch mode Pixie will default to `PDO::FETCH_OBJ` returning objects.
+
 
 ### Where
 Basic syntax is `(fieldname, operator, value)`, if you give two parameters then `=` operator is assumed. So `where('name', 'usman')` and `where('name', '=', 'usman')` is the same.
