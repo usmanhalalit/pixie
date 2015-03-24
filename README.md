@@ -95,7 +95,7 @@ Library on [Packagist](https://packagist.org/packages/usmanhalalit/pixie).
     - [Get All](#get-all)
     - [Get First Row](#get-first-row)
     - [Get Rows Count](#get-rows-count)
-    - [PDO Fetch Mode](#get-pdo-fetch-mode)
+    - [PDO Fetch Mode](#pdo-fetch-mode)
  - [**Where**](#where)
     - [Where In](#where-in)
     - [Grouped Where](#grouped-where)
