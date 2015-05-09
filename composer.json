@@ -11,6 +11,11 @@
 			"name": "Muhammad Usman",
 			"email": "hi@usman.it",
 			"role": "Developer"
+		},
+        {
+			"name": "Pavel Puchkin",
+			"email": "i@neoascetic.me",
+			"role": "Developer"
 		}
 	],
 	
