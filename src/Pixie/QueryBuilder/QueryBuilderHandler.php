@@ -718,7 +718,7 @@ class QueryBuilderHandler
      */
     public function whereNull($key)
     {
-        return $this->_where($key, 'IS', null);
+        return $this->_whereNull($key);
     }
 
     /**
@@ -727,7 +727,7 @@ class QueryBuilderHandler
      */
     public function whereNotNull($key)
     {
-        return $this->_where($key, 'IS NOT', null);
+        return $this->_whereNull($key, 'NOT');
     }
 
     /**
@@ -736,7 +736,7 @@ class QueryBuilderHandler
      */
     public function orWhereNull($key)
     {
-        return $this->_where($key, 'IS', null, 'OR');
+        return $this->_whereNull($key, '', 'or');
     }
 
     /**
@@ -745,7 +745,12 @@ class QueryBuilderHandler
      */
     public function orWhereNotNull($key)
     {
-        return $this->_where($key, 'IS NOT', null, 'OR');
+        return $this->_whereNull($key, 'NOT', 'or');
+    }
+
+    protected function _whereNull($key, $prefix = '', $operator = '')
+    {
+        return $this->{$operator . 'Where'}($this->raw("{$this->addTablePrefix($key)} IS {$prefix} NULL"));
     }
 
     /**

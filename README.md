@@ -395,12 +395,12 @@ $insertId = QB::table('my_table')->insert($data);
 ```PHP
 $data = array(
     array(
-        'name' = 'Sana',
-        'description' = 'Blah'
+        'name'        => 'Sana',
+        'description' => 'Blah'
     ),
     array(
-        'name' = 'Usman',
-        'description' = 'Blah'
+        'name'        => 'Usman',
+        'description' => 'Blah'
     ),
 );
 $insertIds = QB::table('my_table')->insert($data);
@@ -411,12 +411,12 @@ In case of batch insert, it will return an array of insert ids.
 #### Insert with ON DUPLICATE KEY statement
 ```PHP
 $data = array(
-    'name' = 'Sana',
-    'counter' = 1
+    'name'    => 'Sana',
+    'counter' => 1
 );
 $dataUpdate = array(
-    'name' = 'Sana',
-    'counter' = 2
+    'name'    => 'Sana',
+    'counter' => 2
 );
 $insertId = QB::table('my_table')->onDuplicateKeyUpdate($dataUpdate)->insert($data);
 ```
@@ -424,8 +424,8 @@ $insertId = QB::table('my_table')->onDuplicateKeyUpdate($dataUpdate)->insert($da
 ### Update
 ```PHP
 $data = array(
-    'name' = 'Sana',
-    'description' = 'Blah'
+    'name'        => 'Sana',
+    'description' => 'Blah'
 );
 
 QB::table('my_table')->where('id', 5)->update($data);
