@@ -598,7 +598,4 @@ Here are some cases where Query Events can be extremely helpful:
 ___
 If you find any typo then please edit and send pull request.
 
-&copy; 2013 [Muhammad Usman](http://usman.it/). Licensed under MIT license.
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/usmanhalalit/pixie/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+&copy; 2015 [Muhammad Usman](http://usman.it/). Licensed under MIT license.
