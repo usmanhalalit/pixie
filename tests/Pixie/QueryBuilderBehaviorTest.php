@@ -264,4 +264,18 @@ class QueryBuilderTest extends TestCase
         );
     }
 
+    public function testSelectQueryWithNull()
+    {
+        $query = $this->builder->from('my_table')
+                ->whereNull('key1')
+                ->orWhereNull('key2')
+                ->whereNotNull('key3')
+                ->orWhereNotNull('key4');
+
+        $this->assertEquals(
+            "SELECT * FROM `cb_my_table` WHERE `key1` IS  NULL OR `key2` IS  NULL AND `key3` IS NOT NULL OR `key4` IS NOT NULL",
+            $query->getQuery()->getRawSql()
+        );
+    }
+
 }
