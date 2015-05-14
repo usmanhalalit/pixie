@@ -750,7 +750,8 @@ class QueryBuilderHandler
 
     protected function _whereNull($key, $prefix = '', $operator = '')
     {
-        return $this->{$operator . 'Where'}($this->raw("{$this->addTablePrefix($key)} IS {$prefix} NULL"));
+        $key = $this->adapterInstance->wrapSanitizer($this->addTablePrefix($key));
+        return $this->{$operator . 'Where'}($this->raw("{$key} IS {$prefix} NULL"));
     }
 
     /**

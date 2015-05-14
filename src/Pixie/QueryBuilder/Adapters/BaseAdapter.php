@@ -441,7 +441,7 @@ abstract class BaseAdapter
      *
      * @return string
      */
-    protected function wrapSanitizer($value)
+    public function wrapSanitizer($value)
     {
         // Its a raw query, just cast as string, object has __toString()
         if ($value instanceof Raw) {
