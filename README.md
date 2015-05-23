@@ -383,8 +383,8 @@ ___
 ### Insert
 ```PHP
 $data = array(
-    'name' = 'Sana',
-    'description' = 'Blah'
+    'name' => 'Sana',
+    'description' => 'Blah'
 );
 $insertId = QB::table('my_table')->insert($data);
 ```
