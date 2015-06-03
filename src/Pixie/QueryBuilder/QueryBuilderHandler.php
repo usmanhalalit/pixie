@@ -143,7 +143,7 @@ class QueryBuilderHandler
             $pdoStatement->bindValue(
                 is_int($key) ? $key + 1 : $key,
                 $value,
-                is_bool($value) ? PDO::PARAM_BOOL : (is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR)
+                is_int($value) || is_bool($value) ? PDO::PARAM_INT : PDO::PARAM_STR
             );
         }
         $pdoStatement->execute();
