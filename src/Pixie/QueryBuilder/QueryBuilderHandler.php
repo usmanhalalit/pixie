@@ -255,7 +255,13 @@ class QueryBuilderHandler
             unset($this->statements['selects']);
         }
 
-        return isset($row[0]->field) ? (int) $row[0]->field : 0;
+        if ($row[0]['field']) {
+            return (int) $row[0]['field'];
+        } else if ($row[0]->field) {
+            return (int) $row[0]->field;
+        }
+
+        return 0;
     }
 
     /**
