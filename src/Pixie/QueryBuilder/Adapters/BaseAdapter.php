@@ -506,7 +506,13 @@ abstract class BaseAdapter
         }
 
         foreach ($statements['joins'] as $joinArr) {
-            $table = $this->arrayStr((array) $joinArr['table'], '');
+            if (is_array($joinArr['table'])) {
+                $mainTable = $joinArr['table'][0];
+                $aliasTable = $joinArr['table'][1];
+                $table = $this->wrapSanitizer($mainTable) . ' AS ' . $this->wrapSanitizer($aliasTable);
+            } else {
+                $table = $joinArr['table'] instanceof Raw ? (string) $joinArr['table'] : $this->wrapSanitizer($joinArr['table']);
+            }
             $joinBuilder = $joinArr['joinBuilder'];
 
             $sqlArr = array($sql, strtoupper($joinArr['type']), 'JOIN', $table, 'ON', $joinBuilder->getQuery('criteriaOnly', false)->getSql());
