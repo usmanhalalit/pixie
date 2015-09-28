@@ -85,6 +85,7 @@ Library on [Packagist](https://packagist.org/packages/usmanhalalit/pixie).
 
  - [Connection](#connection)
     - [Alias](#alias)
+       - [Code Completion](#code-completion)
     - [Multiple Connection](#alias)
     - [SQLite and PostgreSQL Config Sample](sqlite-and-postgresql-config-sample)
  - [Query](#query)
@@ -153,7 +154,7 @@ new \Pixie\Connection('mysql', $config, 'MyAlias');
 ```
 `MyAlias` is the name for the class alias you want to use (like `MyAlias::table(...)`), you can use whatever name (with Namespace also, `MyNamespace\\MyClass`) you like or you may skip it if you don't need an alias. Alias gives you the ability to easily access the QueryBuilder class across your application.
 
-When not using an alias you can instanciate the QueryBuilder handler separately, helpful for Dependency Injection and Testing.
+When not using an alias you can instantiate the QueryBuilder handler separately, helpful for Dependency Injection and Testing.
 
 ```PHP
 $connection = new \Pixie\Connection('mysql', $config));
@@ -165,6 +166,17 @@ var_dump($query->get());
 ```
 
 `$connection` here is optional, if not given it will always associate itself to the first connection, but it can be useful when you have multiple database connections.
+
+#### Code Completion
+When using an alias, you can enable IDE code completion by creating a "stub" for that alias. For example
+
+```PHP
+class MyAlias extends \Pixie\QueryBuilder\QueryBuilderHandlerStub {
+
+}
+```
+
+It is important that your stub *is not* included anywhere in your project. The presence of the file should be sufficient to enable code completion.
 
 ### SQLite and PostgreSQL Config Sample
 ```PHP
@@ -383,8 +395,8 @@ ___
 ### Insert
 ```PHP
 $data = array(
-    'name' = 'Sana',
-    'description' = 'Blah'
+    'name' => 'Sana',
+    'description' => 'Blah'
 );
 $insertId = QB::table('my_table')->insert($data);
 ```
@@ -598,7 +610,4 @@ Here are some cases where Query Events can be extremely helpful:
 ___
 If you find any typo then please edit and send pull request.
 
-&copy; 2013 [Muhammad Usman](http://usman.it/). Licensed under MIT license.
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/usmanhalalit/pixie/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+&copy; 2015 [Muhammad Usman](http://usman.it/). Licensed under MIT license.

@@ -143,7 +143,7 @@ class QueryBuilderHandler
             $pdoStatement->bindValue(
                 is_int($key) ? $key + 1 : $key,
                 $value,
-                is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR
+                is_int($value) || is_bool($value) ? PDO::PARAM_INT : PDO::PARAM_STR
             );
         }
         $pdoStatement->execute();
@@ -255,7 +255,13 @@ class QueryBuilderHandler
             unset($this->statements['selects']);
         }
 
-        return isset($row[0]->field) ? (int) $row[0]->field : 0;
+        if ($row[0]['field']) {
+            return (int) $row[0]['field'];
+        } else if ($row[0]->field) {
+            return (int) $row[0]->field;
+        }
+
+        return 0;
     }
 
     /**
@@ -718,7 +724,7 @@ class QueryBuilderHandler
      */
     public function whereNull($key)
     {
-        return $this->_where($key, 'IS', null);
+        return $this->_whereNull($key);
     }
 
     /**
@@ -727,7 +733,7 @@ class QueryBuilderHandler
      */
     public function whereNotNull($key)
     {
-        return $this->_where($key, 'IS NOT', null);
+        return $this->_whereNull($key, 'NOT');
     }
 
     /**
@@ -736,7 +742,7 @@ class QueryBuilderHandler
      */
     public function orWhereNull($key)
     {
-        return $this->_where($key, 'IS', null, 'OR');
+        return $this->_whereNull($key, '', 'or');
     }
 
     /**
@@ -745,7 +751,13 @@ class QueryBuilderHandler
      */
     public function orWhereNotNull($key)
     {
-        return $this->_where($key, 'IS NOT', null, 'OR');
+        return $this->_whereNull($key, 'NOT', 'or');
+    }
+
+    protected function _whereNull($key, $prefix = '', $operator = '')
+    {
+        $key = $this->adapterInstance->wrapSanitizer($this->addTablePrefix($key));
+        return $this->{$operator . 'Where'}($this->raw("{$key} IS {$prefix} NULL"));
     }
 
     /**
