@@ -392,7 +392,7 @@ abstract class BaseAdapter
                 switch ($statement['operator']) {
                     case 'BETWEEN':
                         $bindings = array_merge($bindings, $statement['value']);
-                        $criteria .= ' ? AND ?';
+                        $criteria .= ' ? AND ? ';
                         break;
                     default:
                         $valuePlaceholder = '';
