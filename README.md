@@ -98,6 +98,8 @@ Library on [Packagist](https://packagist.org/packages/usmanhalalit/pixie).
     - [Get Rows Count](#get-rows-count)
  - [**Where**](#where)
     - [Where In](#where-in)
+    - [Where Between](#where-between)
+    - [Where Null](#where-null)
     - [Grouped Where](#grouped-where)
  - [Group By and Order By](#group-by-and-order-by)
  - [Having](#having)
@@ -291,6 +293,22 @@ QB::table('my_table')
     ->whereNotIn('name', array('heera', 'dalim'))
     ->orWhereNotIn('name', array('usman', 'sana'))
     ;
+```
+
+#### Where Between
+```PHP
+QB::table('my_table')
+    ->whereBetween('id', 10, 100)
+    ->orWhereBetween('status', 5, 8);
+```
+
+#### Where Null
+```PHP
+QB::table('my_table')
+    ->whereNull('modified')
+    ->orWhereNull('field2')
+    ->whereNotNull('field3')
+    ->orWhereNotNull('field4');
 ```
 
 #### Grouped Where
