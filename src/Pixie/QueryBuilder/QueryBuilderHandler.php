@@ -23,7 +23,7 @@ class QueryBuilderHandler
     protected $statements = array();
 
     /**
-     * @var PDO
+     * @var \PDO
      */
     protected $pdo;
 
@@ -434,7 +434,6 @@ class QueryBuilderHandler
 
         list($response, $executionTime) = $this->statement($queryObject->getSql(), $queryObject->getBindings());
         $this->fireEvents('after-delete', $queryObject, $executionTime);
-        
 
         return $response;
     }
@@ -788,6 +787,21 @@ class QueryBuilderHandler
         $this->statements['joins'][] = compact('type', 'table', 'joinBuilder');
 
         return $this;
+    }
+
+    public function transaction(\Closure $callback)
+    {
+        try {
+            $this->pdo->beginTransaction();
+
+            $callback($this);
+            $this->pdo->commit();
+
+            return true;
+        } catch (\Exception $e) {
+            $this->pdo->rollBack();
+            return false;
+        }
     }
 
     /**
