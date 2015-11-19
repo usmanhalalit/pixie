@@ -655,7 +655,7 @@ class QueryBuilderHandler
      *
      * @return $this
      */
-    public function whereIn($key, array $values)
+    public function whereIn($key, $values)
     {
         return $this->_where($key, 'IN', $values, 'AND');
     }
@@ -677,7 +677,7 @@ class QueryBuilderHandler
      *
      * @return $this
      */
-    public function orWhereIn($key, array $values)
+    public function orWhereIn($key, $values)
     {
         return $this->_where($key, 'IN', $values, 'OR');
     }

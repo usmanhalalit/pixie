@@ -405,6 +405,8 @@ abstract class BaseAdapter
                         $criteria .= ' (' . $valuePlaceholder . ') ';
                         break;
                 }
+            } elseif ($value instanceof Raw) {
+                $criteria .= "{$statement['joiner']} {$key} {$statement['operator']} $value";
             } else {
                 // Usual where like criteria
 
