@@ -278,4 +278,16 @@ class QueryBuilderTest extends TestCase
         );
     }
 
+    public function testIsPossibleToUseSubqueryInWhereClause()
+    {
+        $sub = clone $this->builder;
+        $query = $this->builder->from('my_table')->whereIn('foo', $this->builder->subQuery(
+            $sub->from('some_table')->select('foo')->where('id', 1)
+        ));
+        $this->assertEquals(
+            "SELECT * FROM `cb_my_table` WHERE `foo` IN (SELECT `foo` FROM `cb_some_table` WHERE `id` = 1)",
+            $query->getQuery()->getRawSql()
+        );
+    }
+
 }
