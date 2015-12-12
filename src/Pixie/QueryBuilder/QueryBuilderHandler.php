@@ -789,18 +789,37 @@ class QueryBuilderHandler
         return $this;
     }
 
+    /**
+     * Runs a transaction
+     *
+     * @param $callback
+     *
+     * @return $this
+     */
     public function transaction(\Closure $callback)
     {
         try {
+            // Begin the PDO transaction
             $this->pdo->beginTransaction();
 
-            $callback($this);
+            // Get the Transaction class
+            $transaction = $this->container->build('\\Pixie\\QueryBuilder\\Transaction', array($this->connection));
+
+            // Call closure
+            $callback($transaction);
+
+            // If no errors have been thrown or the transaction wasn't completed within
+            // the closure, commit the changes
             $this->pdo->commit();
 
-            return true;
+            return $this;
+        } catch (TransactionHaltException $e) {
+            // Commit or rollback behavior has been handled in the closure, so exit
+            return $this;
         } catch (\Exception $e) {
+            // something happened, rollback changes
             $this->pdo->rollBack();
-            return false;
+            return $this;
         }
     }
 
