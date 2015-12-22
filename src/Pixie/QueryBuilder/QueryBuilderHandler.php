@@ -823,13 +823,13 @@ class QueryBuilderHandler
      */
     public function rollback() 
     {
-		  if ($this->transactions == 1) {
-			  $this->transactions = 0;
-			  $this->pdo->rollBack();
-		  }
-		  else {
-			  --$this->transactions;
-		  }
+        if ($this->transactions == 1) {
+            $this->transactions = 0;
+            $this->pdo->rollBack();
+        }
+        else {
+            --$this->transactions;
+        }
     }
     
     /**
