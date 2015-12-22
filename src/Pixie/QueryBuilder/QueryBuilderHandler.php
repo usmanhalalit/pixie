@@ -48,6 +48,11 @@ class QueryBuilderHandler
      * @var array
      */
     protected $fetchParameters = array(\PDO::FETCH_OBJ);
+    
+    /**
+     * @var integer
+     */
+    protected $transactions = 0;
 
     /**
      * @param null|\Pixie\Connection $connection
@@ -788,20 +793,66 @@ class QueryBuilderHandler
 
         return $this;
     }
-
+    
+    /**
+     * @return void
+     */
+    public function beginTransaction() 
+    {
+        ++$this->transactions;
+        
+        if ($this->transactions === 1) {
+            $this->pdo->beginTransaction();
+        }
+    }
+    
+    /**
+     * @return void
+     */
+    public function commit() 
+    {
+        if ($this->transactions === 1) {
+            $this->pdo->commit();
+        }
+        
+        --$this->transactions;
+    }
+    
+    /**
+     * @return void
+     */
+    public function rollback() 
+    {
+        if ($this->transactions == 1) {
+            $this->transactions = 0;
+            $this->pdo->rollBack();
+        }
+        else {
+            --$this->transactions;
+        }
+    }
+    
+    /**
+     * @param \Closure $callback
+     *
+     * @return mixed
+     *
+     * @throws \Exception
+     */
     public function transaction(\Closure $callback)
     {
         try {
-            $this->pdo->beginTransaction();
+            $this->beginTransaction();
 
-            $callback($this);
-            $this->pdo->commit();
-
-            return true;
+            $result = $callback($this);
+            $this->commit();
         } catch (\Exception $e) {
-            $this->pdo->rollBack();
-            return false;
+            $this->rollback();
+            
+            throw $e;
         }
+        
+        return $result;
     }
 
     /**
