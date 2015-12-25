@@ -113,6 +113,7 @@ Library on [Packagist](https://packagist.org/packages/usmanhalalit/pixie).
     - [Insert with ON DUPLICATE KEY statement](#insert-with-on-duplicate-key-statement)
  - [**Update**](#update)
  - [**Delete**](#delete)
+ - [Transactions](#transactions)
  - [Get Built Query](#get-built-query)
  - [Sub Queries and Nested Queries](#sub-queries-and-nested-queries)
  - [Get PDO Instance](#get-pdo-instance)
@@ -468,6 +469,45 @@ Will update the name field to Sana and description field to Blah where id = 5.
 QB::table('my_table')->where('id', '>', 5)->delete();
 ```
 Will delete all the rows where id is greater than 5.
+
+### Transactions
+
+Pixie has the ability to run database "transactions", in which all database
+changes are not saved until committed. That way, if something goes wrong or
+differently then you intend, the database changes are not saved and no changes
+are made.
+
+Here's a basic transaction:
+
+```PHP
+QB::transaction(function ($qb) {
+    $qb->table('my_table')->insert(array(
+        'name' => 'Test',
+        'url' => 'example.com'
+    ));
+
+    $qb->table('my_table')->insert(array(
+        'name' => 'Test2',
+        'url' => 'example.com'
+    ));
+});
+```
+
+If this were to cause any errors (such as a duplicate name or some other such
+error), neither data set would show up in the database. If not, the changes would
+be successfully saved.
+
+If you wish to manually commit or rollback your changes, you can use the
+`commit()` and `rollback()` methods accordingly:
+
+```PHP
+QB::transaction(function (qb) {
+    $qb->table('my_table')->insert(array(/* data... */));
+
+    $qb->commit(); // to commit the changes (data would be saved)
+    $qb->rollback(); // to rollback the changes (data would be rejected)
+});
+```
 
 ### Get Built Query
 Sometimes you may need to get the query string, its possible.
