@@ -677,7 +677,7 @@ class QueryBuilderHandler
      *
      * @return $this
      */
-    public function whereNotIn($key, array $values)
+    public function whereNotIn($key, $values)
     {
         return $this->_where($key, 'NOT IN', $values, 'AND');
     }
@@ -699,7 +699,7 @@ class QueryBuilderHandler
      *
      * @return $this
      */
-    public function orWhereNotIn($key, array $values)
+    public function orWhereNotIn($key, $values)
     {
         return $this->_where($key, 'NOT IN', $values, 'OR');
     }
