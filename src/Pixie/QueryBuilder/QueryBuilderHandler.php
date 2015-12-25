@@ -439,12 +439,19 @@ class QueryBuilderHandler
     }
 
     /**
-     * @param $tables
+     * @param $tables Single table or multiple tables as an array or as
+     *                multiple parameters
      *
      * @return static
      */
     public function table($tables)
     {
+        if (!is_array($tables)) {
+            // because a single table is converted to an array anyways,
+            // this makes sense.
+            $tables = func_get_args();
+        }
+
         $instance = new static($this->connection);
         $tables = $this->addTablePrefix($tables, false);
         $instance->addStatement('tables', $tables);
@@ -458,6 +465,10 @@ class QueryBuilderHandler
      */
     public function from($tables)
     {
+        if (!is_array($tables)) {
+            $tables = func_get_args();
+        }
+
         $tables = $this->addTablePrefix($tables, false);
         $this->addStatement('tables', $tables);
         return $this;
