@@ -2,12 +2,14 @@
 
 namespace Pixie\QueryBuilder;
 
-class Transaction extends QueryBuilderHandler {
+class Transaction extends QueryBuilderHandler
+{
 
     /**
      * Commit the database changes
      */
-    public function commit() {
+    public function commit()
+    {
         $this->pdo->commit();
         throw new TransactionHaltException();
     }
@@ -15,7 +17,8 @@ class Transaction extends QueryBuilderHandler {
     /**
      * Rollback the database changes
      */
-    public function rollback() {
+    public function rollback()
+    {
         $this->pdo->rollBack();
         throw new TransactionHaltException();
     }

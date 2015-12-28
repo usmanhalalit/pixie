@@ -73,7 +73,10 @@ class QueryBuilderHandler
         }
 
         // Query builder adapter instance
-        $this->adapterInstance = $this->container->build('\\Pixie\\QueryBuilder\\Adapters\\' . ucfirst($this->adapter), array($this->connection));
+        $this->adapterInstance = $this->container->build(
+            '\\Pixie\\QueryBuilder\\Adapters\\' . ucfirst($this->adapter),
+            array($this->connection)
+        );
 
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
@@ -257,7 +260,7 @@ class QueryBuilderHandler
 
         if (is_array($row[0])) {
             return (int) $row[0]['field'];
-        } else if (is_object($row[0])) {
+        } elseif (is_object($row[0])) {
             return (int) $row[0]->field;
         }
 
@@ -334,7 +337,7 @@ class QueryBuilderHandler
                 list($result, $time) = $this->statement($queryObject->getSql(), $queryObject->getBindings());
                 $executionTime += $time;
 
-                if($result->rowCount() === 1){
+                if ($result->rowCount() === 1) {
                     $return[] = $this->pdo->lastInsertId();
                 }
             }
@@ -605,7 +608,7 @@ class QueryBuilderHandler
             $value = $operator;
             $operator = '=';
         }
-        return $this->_where($key, $operator, $value);
+        return $this->whereHandler($key, $operator, $value);
     }
 
     /**
@@ -623,7 +626,7 @@ class QueryBuilderHandler
             $operator = '=';
         }
 
-        return $this->_where($key, $operator, $value, 'OR');
+        return $this->whereHandler($key, $operator, $value, 'OR');
     }
 
     /**
@@ -640,7 +643,7 @@ class QueryBuilderHandler
             $value = $operator;
             $operator = '=';
         }
-        return $this->_where($key, $operator, $value, 'AND NOT');
+        return $this->whereHandler($key, $operator, $value, 'AND NOT');
     }
 
     /**
@@ -657,7 +660,7 @@ class QueryBuilderHandler
             $value = $operator;
             $operator = '=';
         }
-        return $this->_where($key, $operator, $value, 'OR NOT');
+        return $this->whereHandler($key, $operator, $value, 'OR NOT');
     }
 
     /**
@@ -668,7 +671,7 @@ class QueryBuilderHandler
      */
     public function whereIn($key, $values)
     {
-        return $this->_where($key, 'IN', $values, 'AND');
+        return $this->whereHandler($key, 'IN', $values, 'AND');
     }
 
     /**
@@ -679,7 +682,7 @@ class QueryBuilderHandler
      */
     public function whereNotIn($key, $values)
     {
-        return $this->_where($key, 'NOT IN', $values, 'AND');
+        return $this->whereHandler($key, 'NOT IN', $values, 'AND');
     }
 
     /**
@@ -690,7 +693,7 @@ class QueryBuilderHandler
      */
     public function orWhereIn($key, $values)
     {
-        return $this->_where($key, 'IN', $values, 'OR');
+        return $this->whereHandler($key, 'IN', $values, 'OR');
     }
 
     /**
@@ -701,7 +704,7 @@ class QueryBuilderHandler
      */
     public function orWhereNotIn($key, $values)
     {
-        return $this->_where($key, 'NOT IN', $values, 'OR');
+        return $this->whereHandler($key, 'NOT IN', $values, 'OR');
     }
 
     /**
@@ -713,7 +716,7 @@ class QueryBuilderHandler
      */
     public function whereBetween($key, $valueFrom, $valueTo)
     {
-        return $this->_where($key, 'BETWEEN', array($valueFrom, $valueTo), 'AND');
+        return $this->whereHandler($key, 'BETWEEN', array($valueFrom, $valueTo), 'AND');
     }
 
     /**
@@ -725,7 +728,7 @@ class QueryBuilderHandler
      */
     public function orWhereBetween($key, $valueFrom, $valueTo)
     {
-        return $this->_where($key, 'BETWEEN', array($valueFrom, $valueTo), 'OR');
+        return $this->whereHandler($key, 'BETWEEN', array($valueFrom, $valueTo), 'OR');
     }
 
     /**
@@ -734,7 +737,7 @@ class QueryBuilderHandler
      */
     public function whereNull($key)
     {
-        return $this->_whereNull($key);
+        return $this->whereNullHandler($key);
     }
 
     /**
@@ -743,7 +746,7 @@ class QueryBuilderHandler
      */
     public function whereNotNull($key)
     {
-        return $this->_whereNull($key, 'NOT');
+        return $this->whereNullHandler($key, 'NOT');
     }
 
     /**
@@ -752,7 +755,7 @@ class QueryBuilderHandler
      */
     public function orWhereNull($key)
     {
-        return $this->_whereNull($key, '', 'or');
+        return $this->whereNullHandler($key, '', 'or');
     }
 
     /**
@@ -761,10 +764,10 @@ class QueryBuilderHandler
      */
     public function orWhereNotNull($key)
     {
-        return $this->_whereNull($key, 'NOT', 'or');
+        return $this->whereNullHandler($key, 'NOT', 'or');
     }
 
-    protected function _whereNull($key, $prefix = '', $operator = '')
+    protected function whereNullHandler($key, $prefix = '', $operator = '')
     {
         $key = $this->adapterInstance->wrapSanitizer($this->addTablePrefix($key));
         return $this->{$operator . 'Where'}($this->raw("{$key} IS {$prefix} NULL"));
@@ -782,7 +785,7 @@ class QueryBuilderHandler
     public function join($table, $key, $operator = null, $value = null, $type = 'inner')
     {
         if (!$key instanceof \Closure) {
-            $key = function($joinBuilder) use ($key, $operator, $value) {
+            $key = function ($joinBuilder) use ($key, $operator, $value) {
                 $joinBuilder->on($key, $operator, $value);
             };
         }
@@ -923,7 +926,7 @@ class QueryBuilderHandler
      *
      * @return $this
      */
-    protected function _where($key, $operator = null, $value = null, $joiner = 'AND')
+    protected function whereHandler($key, $operator = null, $value = null, $joiner = 'AND')
     {
         $key = $this->addTablePrefix($key);
         $this->statements['wheres'][] = compact('key', 'operator', 'value', 'joiner');
@@ -1016,11 +1019,14 @@ class QueryBuilderHandler
      *
      * @return void
      */
-    public function registerEvent($event, $table = ':any', \Closure $action)
+    public function registerEvent($event, $table, \Closure $action)
     {
+        $table = $table ?: ':any';
+
         if ($table != ':any') {
             $table = $this->addTablePrefix($table, false);
         }
+
         return $this->connection->getEventHandler()->registerEvent($event, $table, $action);
     }
 
@@ -1043,7 +1049,8 @@ class QueryBuilderHandler
      * @param      $event
      * @return mixed
      */
-    public function fireEvents($event) {
+    public function fireEvents($event)
+    {
         $params = func_get_args();
         array_unshift($params, $this);
         return call_user_func_array(array($this->connection->getEventHandler(), 'fireEvents'), $params);

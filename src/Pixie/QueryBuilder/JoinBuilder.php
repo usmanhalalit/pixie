@@ -1,6 +1,5 @@
 <?php namespace Pixie\QueryBuilder;
 
-
 class JoinBuilder extends QueryBuilderHandler
 {
     /**
@@ -12,7 +11,7 @@ class JoinBuilder extends QueryBuilderHandler
      */
     public function on($key, $operator, $value)
     {
-        return $this->_join($key, $operator, $value, 'AND');
+        return $this->joinHandler($key, $operator, $value, 'AND');
     }
 
     /**
@@ -24,7 +23,7 @@ class JoinBuilder extends QueryBuilderHandler
      */
     public function orOn($key, $operator, $value)
     {
-        return $this->_join($key, $operator, $value, 'OR');
+        return $this->joinHandler($key, $operator, $value, 'OR');
     }
 
     /**
@@ -35,7 +34,7 @@ class JoinBuilder extends QueryBuilderHandler
      *
      * @return $this
      */
-    protected function _join($key, $operator = null, $value = null, $joiner = 'AND')
+    protected function joinHandler($key, $operator = null, $value = null, $joiner = 'AND')
     {
         $key = $this->addTablePrefix($key);
         $value = $this->addTablePrefix($value);

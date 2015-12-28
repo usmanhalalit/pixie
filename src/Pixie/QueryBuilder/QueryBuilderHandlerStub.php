@@ -14,7 +14,9 @@ abstract class QueryBuilderHandlerStub
      *
      * @return QueryBuilderHandler
      */
-    public static function setFetchMode( $mode ) {}
+    public static function setFetchMode($mode)
+    {
+    }
 
     /**
      * Fetch query results as object of specified type
@@ -24,14 +26,18 @@ abstract class QueryBuilderHandlerStub
      *
      * @return QueryBuilderHandler
      */
-    public static function asObject( $className, $constructorArgs = array() ) {}
+    public static function asObject($className, $constructorArgs = array())
+    {
+    }
 
     /**
      * @param null|\Pixie\Connection $connection
      *
      * @return QueryBuilderHandler
      */
-    public static function newQuery( Connection $connection = null ) {}
+    public static function newQuery(Connection $connection = null)
+    {
+    }
 
     /**
      * @param       $sql
@@ -39,7 +45,9 @@ abstract class QueryBuilderHandlerStub
      *
      * @return QueryBuilderHandler
      */
-    public static function query( $sql, $bindings = array() ) {}
+    public static function query($sql, $bindings = array())
+    {
+    }
 
     /**
      * @param       $sql
@@ -47,21 +55,27 @@ abstract class QueryBuilderHandlerStub
      *
      * @return array PDOStatement and execution time as float
      */
-    public static function statement( $sql, $bindings = array() ) {}
+    public static function statement($sql, $bindings = array())
+    {
+    }
 
     /**
      * Get all rows
      *
      * @return \stdClass|null
      */
-    public static function get() {}
+    public static function get()
+    {
+    }
 
     /**
      * Get first row
      *
      * @return \stdClass|null
      */
-    public static function first() {}
+    public static function first()
+    {
+    }
 
     /**
      * @param        $value
@@ -69,7 +83,9 @@ abstract class QueryBuilderHandlerStub
      *
      * @return null|\stdClass
      */
-    public static function findAll( $fieldName, $value ) {}
+    public static function findAll($fieldName, $value)
+    {
+    }
 
     /**
      * @param        $value
@@ -77,14 +93,18 @@ abstract class QueryBuilderHandlerStub
      *
      * @return null|\stdClass
      */
-    public static function find( $value, $fieldName = 'id' ) {}
+    public static function find($value, $fieldName = 'id')
+    {
+    }
 
     /**
      * Get count of rows
      *
      * @return int
      */
-    public static function count() {}
+    public static function count()
+    {
+    }
 
     /**
      * @param string $type
@@ -93,7 +113,9 @@ abstract class QueryBuilderHandlerStub
      * @return mixed
      * @throws Exception
      */
-    public static function getQuery( $type = 'select', $dataToBePassed = array() ) {}
+    public static function getQuery($type = 'select', $dataToBePassed = array())
+    {
+    }
 
     /**
      * @param QueryBuilderHandler $queryBuilder
@@ -101,89 +123,115 @@ abstract class QueryBuilderHandlerStub
      *
      * @return Raw
      */
-    public static function subQuery( QueryBuilderHandler $queryBuilder, $alias = null ) {}
+    public static function subQuery(QueryBuilderHandler $queryBuilder, $alias = null)
+    {
+    }
 
     /**
      * @param $data
      *
      * @return array|string
      */
-    public static function insert( $data ) {}
+    public static function insert($data)
+    {
+    }
 
     /**
      * @param $data
      *
      * @return array|string
      */
-    public static function insertIgnore( $data ) {}
+    public static function insertIgnore($data)
+    {
+    }
 
     /**
      * @param $data
      *
      * @return array|string
      */
-    public static function replace( $data ) {}
+    public static function replace($data)
+    {
+    }
 
     /**
      * @param $data
      *
      * @return QueryBuilderHandler
      */
-    public static function update( $data ) {}
+    public static function update($data)
+    {
+    }
 
     /**
      * @param $data
      *
      * @return array|string
      */
-    public static function updateOrInsert( $data ) {}
+    public static function updateOrInsert($data)
+    {
+    }
 
     /**
      * @param $data
      *
      * @return QueryBuilderHandler
      */
-    public static function onDuplicateKeyUpdate( $data ) {}
+    public static function onDuplicateKeyUpdate($data)
+    {
+    }
 
     /**
      *
      */
-    public static function delete() {}
+    public static function delete()
+    {
+    }
 
     /**
      * @param $tables
      *
      * @return QueryBuilderHandler
      */
-    public static function table( $tables ) {}
+    public static function table($tables)
+    {
+    }
 
     /**
      * @param $tables
      *
      * @return QueryBuilderHandler
      */
-    public static function from( $tables ) {}
+    public static function from($tables)
+    {
+    }
 
     /**
      * @param $fields
      *
      * @return QueryBuilderHandler
      */
-    public static function select( $fields ) {}
+    public static function select($fields)
+    {
+    }
 
     /**
      * @param $fields
      *
      * @return QueryBuilderHandler
      */
-    public static function selectDistinct( $fields ) {}
+    public static function selectDistinct($fields)
+    {
+    }
 
     /**
      * @param $field
      *
      * @return QueryBuilderHandler
      */
-    public static function groupBy( $field ) {}
+    public static function groupBy($field)
+    {
+    }
 
     /**
      * @param        $fields
@@ -191,21 +239,27 @@ abstract class QueryBuilderHandlerStub
      *
      * @return QueryBuilderHandler
      */
-    public static function orderBy( $fields, $defaultDirection = 'ASC' ) {}
+    public static function orderBy($fields, $defaultDirection = 'ASC')
+    {
+    }
 
     /**
      * @param $limit
      *
      * @return QueryBuilderHandler
      */
-    public static function limit( $limit ) {}
+    public static function limit($limit)
+    {
+    }
 
     /**
      * @param $offset
      *
      * @return QueryBuilderHandler
      */
-    public static function offset( $offset ) {}
+    public static function offset($offset)
+    {
+    }
 
     /**
      * @param        $key
@@ -215,7 +269,9 @@ abstract class QueryBuilderHandlerStub
      *
      * @return QueryBuilderHandler
      */
-    public static function having( $key, $operator, $value, $joiner = 'AND' ) {}
+    public static function having($key, $operator, $value, $joiner = 'AND')
+    {
+    }
 
     /**
      * @param        $key
@@ -224,7 +280,9 @@ abstract class QueryBuilderHandlerStub
      *
      * @return QueryBuilderHandler
      */
-    public static function orHaving( $key, $operator, $value ) {}
+    public static function orHaving($key, $operator, $value)
+    {
+    }
 
     /**
      * @param $key
@@ -233,7 +291,9 @@ abstract class QueryBuilderHandlerStub
      *
      * @return QueryBuilderHandler
      */
-    public static function where( $key, $operator = null, $value = null ) {}
+    public static function where($key, $operator = null, $value = null)
+    {
+    }
 
     /**
      * @param $key
@@ -242,7 +302,9 @@ abstract class QueryBuilderHandlerStub
      *
      * @return QueryBuilderHandler
      */
-    public static function orWhere( $key, $operator = null, $value = null ) {}
+    public static function orWhere($key, $operator = null, $value = null)
+    {
+    }
 
     /**
      * @param $key
@@ -251,7 +313,9 @@ abstract class QueryBuilderHandlerStub
      *
      * @return QueryBuilderHandler
      */
-    public static function whereNot( $key, $operator = null, $value = null ) {}
+    public static function whereNot($key, $operator = null, $value = null)
+    {
+    }
 
     /**
      * @param $key
@@ -260,7 +324,9 @@ abstract class QueryBuilderHandlerStub
      *
      * @return QueryBuilderHandler
      */
-    public static function orWhereNot( $key, $operator = null, $value = null ) {}
+    public static function orWhereNot($key, $operator = null, $value = null)
+    {
+    }
 
     /**
      * @param       $key
@@ -268,7 +334,9 @@ abstract class QueryBuilderHandlerStub
      *
      * @return QueryBuilderHandler
      */
-    public static function whereIn( $key, array $values ) {}
+    public static function whereIn($key, array $values)
+    {
+    }
 
     /**
      * @param       $key
@@ -276,7 +344,9 @@ abstract class QueryBuilderHandlerStub
      *
      * @return QueryBuilderHandler
      */
-    public static function whereNotIn( $key, array $values ) {}
+    public static function whereNotIn($key, array $values)
+    {
+    }
 
     /**
      * @param       $key
@@ -284,7 +354,9 @@ abstract class QueryBuilderHandlerStub
      *
      * @return QueryBuilderHandler
      */
-    public static function orWhereIn( $key, array $values ) {}
+    public static function orWhereIn($key, array $values)
+    {
+    }
 
     /**
      * @param       $key
@@ -292,7 +364,9 @@ abstract class QueryBuilderHandlerStub
      *
      * @return QueryBuilderHandler
      */
-    public static function orWhereNotIn( $key, array $values ) {}
+    public static function orWhereNotIn($key, array $values)
+    {
+    }
 
     /**
      * @param $key
@@ -301,7 +375,9 @@ abstract class QueryBuilderHandlerStub
      *
      * @return QueryBuilderHandler
      */
-    public static function whereBetween( $key, $valueFrom, $valueTo ) {}
+    public static function whereBetween($key, $valueFrom, $valueTo)
+    {
+    }
 
     /**
      * @param $key
@@ -310,35 +386,45 @@ abstract class QueryBuilderHandlerStub
      *
      * @return QueryBuilderHandler
      */
-    public static function orWhereBetween( $key, $valueFrom, $valueTo ) {}
+    public static function orWhereBetween($key, $valueFrom, $valueTo)
+    {
+    }
 
     /**
      * @param $key
      *
      * @return QueryBuilderHandler
      */
-    public static function whereNull( $key ) {}
+    public static function whereNull($key)
+    {
+    }
 
     /**
      * @param $key
      *
      * @return QueryBuilderHandler
      */
-    public static function whereNotNull( $key ) {}
+    public static function whereNotNull($key)
+    {
+    }
 
     /**
      * @param $key
      *
      * @return QueryBuilderHandler
      */
-    public static function orWhereNull( $key ) {}
+    public static function orWhereNull($key)
+    {
+    }
 
     /**
      * @param $key
      *
      * @return QueryBuilderHandler
      */
-    public static function orWhereNotNull( $key ) {}
+    public static function orWhereNotNull($key)
+    {
+    }
 
     /**
      * @param        $table
@@ -349,7 +435,9 @@ abstract class QueryBuilderHandlerStub
      *
      * @return QueryBuilderHandler
      */
-    public static function join( $table, $key, $operator = null, $value = null, $type = 'inner' ) {}
+    public static function join($table, $key, $operator = null, $value = null, $type = 'inner')
+    {
+    }
 
     /**
      * @param      $table
@@ -359,7 +447,9 @@ abstract class QueryBuilderHandlerStub
      *
      * @return QueryBuilderHandler
      */
-    public static function leftJoin( $table, $key, $operator = null, $value = null ) {}
+    public static function leftJoin($table, $key, $operator = null, $value = null)
+    {
+    }
 
     /**
      * @param      $table
@@ -369,7 +459,9 @@ abstract class QueryBuilderHandlerStub
      *
      * @return QueryBuilderHandler
      */
-    public static function rightJoin( $table, $key, $operator = null, $value = null ) {}
+    public static function rightJoin($table, $key, $operator = null, $value = null)
+    {
+    }
 
     /**
      * @param      $table
@@ -379,7 +471,9 @@ abstract class QueryBuilderHandlerStub
      *
      * @return QueryBuilderHandler
      */
-    public static function innerJoin( $table, $key, $operator = null, $value = null ) {}
+    public static function innerJoin($table, $key, $operator = null, $value = null)
+    {
+    }
 
     /**
      * Add a raw query
@@ -389,26 +483,34 @@ abstract class QueryBuilderHandlerStub
      *
      * @return mixed
      */
-    public static function raw( $value, $bindings = array() ) {}
+    public static function raw($value, $bindings = array())
+    {
+    }
 
     /**
      * Return PDO instance
      *
      * @return PDO
      */
-    public static function pdo() {}
+    public static function pdo()
+    {
+    }
 
     /**
      * @param Connection $connection
      *
      * @return QueryBuilderHandler
      */
-    public static function setConnection( Connection $connection ) {}
+    public static function setConnection(Connection $connection)
+    {
+    }
 
     /**
      * @return Connection
      */
-    public static function getConnection() {}
+    public static function getConnection()
+    {
+    }
 
     /**
      * Add table prefix (if given) on given string.
@@ -418,7 +520,9 @@ abstract class QueryBuilderHandlerStub
      *
      * @return array|mixed
      */
-    public static function addTablePrefix( $values, $tableFieldMix = true ) {}
+    public static function addTablePrefix($values, $tableFieldMix = true)
+    {
+    }
 
     /**
      * @param $event
@@ -426,7 +530,9 @@ abstract class QueryBuilderHandlerStub
      *
      * @return callable|null
      */
-    public static function getEvent( $event, $table = ':any' ) {}
+    public static function getEvent($event, $table = ':any')
+    {
+    }
 
     /**
      * @param          $event
@@ -434,7 +540,9 @@ abstract class QueryBuilderHandlerStub
      * @param callable|\Closure $action
      *
      */
-    public static function registerEvent( $event, $table = ':any', \Closure $action ) {}
+    public static function registerEvent($event, $table, \Closure $action)
+    {
+    }
 
     /**
      * @param          $event
@@ -442,17 +550,23 @@ abstract class QueryBuilderHandlerStub
      *
      * @return void
      */
-    public static function removeEvent( $event, $table = ':any' ) {}
+    public static function removeEvent($event, $table = ':any')
+    {
+    }
 
     /**
      * @param      $event
      *
      * @return mixed
      */
-    public static function fireEvents( $event ) {}
+    public static function fireEvents($event)
+    {
+    }
 
     /**
      * @return array
      */
-    public static function getStatements() {}
+    public static function getStatements()
+    {
+    }
 }

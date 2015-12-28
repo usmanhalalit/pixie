@@ -1,6 +1,5 @@
 <?php namespace Pixie\QueryBuilder;
 
-
 class Raw
 {
 
@@ -32,5 +31,4 @@ class Raw
     {
         return (string)$this->value;
     }
-
 }

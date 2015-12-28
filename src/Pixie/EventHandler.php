@@ -44,8 +44,10 @@ class EventHandler
      *
      * @return void
      */
-    public function registerEvent($event, $table = ':any', \Closure $action)
+    public function registerEvent($event, $table, \Closure $action)
     {
+        $table = $table ?: ':any';
+
         $this->events[$table][$event] = $action;
     }
 
@@ -65,7 +67,8 @@ class EventHandler
      * @param                     $event
      * @return mixed
      */
-    public function fireEvents($queryBuilder, $event) {
+    public function fireEvents($queryBuilder, $event)
+    {
         $statements = $queryBuilder->getStatements();
         $tables = isset($statements['tables']) ? $statements['tables'] : array();
 
