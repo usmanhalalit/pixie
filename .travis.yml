@@ -11,4 +11,6 @@ before_script:
   - curl -sS http://getcomposer.org/installer | php
   - php composer.phar install --prefer-source --no-interaction
 
-script: phpunit
+script:
+  - ./vendor/bin/phpunit
+  - ./vendor/bin/phpcs --standard=PSR2 --colors ./src/Pixie/

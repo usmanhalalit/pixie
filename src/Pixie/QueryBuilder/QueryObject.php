@@ -1,6 +1,5 @@
 <?php namespace Pixie\QueryBuilder;
 
-
 class QueryObject
 {
 
@@ -94,5 +93,4 @@ class QueryObject
 
         return $query;
     }
-
 }
