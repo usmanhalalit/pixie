@@ -212,40 +212,6 @@ abstract class BaseAdapter
     {
         return $this->doInsert($statements, $data, 'REPLACE');
     }
-
-    /**
-     * Build fields assignment part of SET ... or ON DUBLICATE KEY UPDATE ... statements
-     *
-     * @param array $data
-     *
-     * @return array
-     */
-    private function getUpdateStatement($data)
-    {
-        $bindings = array();
-        $statement = '';
-
-        foreach ($data as $key => $value) {
-            if ($value instanceof Raw) {
-                $statement .= $this->wrapSanitizer($key) . '=' . $value . ',';
-            } else {
-                $statement .= $this->wrapSanitizer($key) . '=?,';
-                $bindings[] = $value;
-            }
-        }
-        
-        if (isset($statements['onduplicate'])) {
-            if (count($statements['onduplicate']) < 1) {
-                throw new Exception('No data given.', 4);
-            }
-            list($updateStatement, $updateBindings) = $this->getUpdateStatement($statements['onduplicate']);
-            $sqlArray[] = 'ON DUPLICATE KEY UPDATE ' . $updateStatement;
-            $bindings = array_merge($bindings, $updateBindings);
-        }
-
-        $statement = trim($statement, ',');
-        return array($statement, $bindings);
-    }
     
     /**
      * Build fields assignment part of SET ... or ON DUBLICATE KEY UPDATE ... statements
