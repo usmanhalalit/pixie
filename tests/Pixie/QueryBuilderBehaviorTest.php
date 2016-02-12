@@ -126,11 +126,12 @@ class QueryBuilderTest extends TestCase
             ->leftJoin(array('person_details', 'b'), function($table) use ($builder)
                 {
                     $table->on('b.person_id', '=', 'my_table.id');
+                    $table->on('b.deleted', '=', $builder->raw(0));
                     $table->orOn('b.age', '>', $builder->raw(1));
                 })
         ;
 
-        $this->assertEquals("SELECT * FROM `cb_my_table` INNER JOIN `cb_person_details` AS `cb_a` ON `cb_a`.`person_id` = `cb_my_table`.`id` LEFT JOIN `cb_person_details` AS `cb_b` ON `cb_b`.`person_id` = `cb_my_table`.`id` OR `cb_b`.`age` > 1 WHERE `cb_my_table`.`id` > 1 OR `cb_my_table`.`id` = 1 AND (`value` LIKE '%sana%' OR (`key` LIKE '%sana%' OR `value` LIKE '%sana%'))"
+        $this->assertEquals("SELECT * FROM `cb_my_table` INNER JOIN `cb_person_details` AS `cb_a` ON `cb_a`.`person_id` = `cb_my_table`.`id` LEFT JOIN `cb_person_details` AS `cb_b` ON `cb_b`.`person_id` = `cb_my_table`.`id` AND `cb_b`.`deleted` = 0 OR `cb_b`.`age` > 1 WHERE `cb_my_table`.`id` > 1 OR `cb_my_table`.`id` = 1 AND (`value` LIKE '%sana%' OR (`key` LIKE '%sana%' OR `value` LIKE '%sana%'))"
             , $query->getQuery()->getRawSql());
     }
 
