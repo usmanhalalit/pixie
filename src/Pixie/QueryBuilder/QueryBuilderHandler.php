@@ -320,7 +320,6 @@ class QueryBuilderHandler
         // If first value is not an array
         // Its not a batch insert
         if (!is_array(current($data))) {
-
             $queryObject = $this->getQuery($type, $data);
 
             list($result, $executionTime) = $this->statement($queryObject->getSql(), $queryObject->getBindings());
@@ -331,7 +330,6 @@ class QueryBuilderHandler
             $return = array();
             $executionTime = 0;
             foreach ($data as $subData) {
-
                 $queryObject = $this->getQuery($type, $subData);
 
                 list($result, $time) = $this->statement($queryObject->getSql(), $queryObject->getBindings());
