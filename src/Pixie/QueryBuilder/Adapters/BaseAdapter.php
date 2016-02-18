@@ -366,7 +366,6 @@ abstract class BaseAdapter
         $criteria = '';
         $bindings = array();
         foreach ($statements as $statement) {
-
             $key = $this->wrapSanitizer($statement['key']);
             $value = $statement['value'];
 
