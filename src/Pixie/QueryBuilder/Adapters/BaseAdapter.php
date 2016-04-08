@@ -364,7 +364,6 @@ abstract class BaseAdapter
         $criteria = '';
         $bindings = array();
         foreach ($statements as $statement) {
-
             $key = $this->wrapSanitizer($statement['key']);
             $value = $statement['value'];
 
@@ -408,7 +407,7 @@ abstract class BaseAdapter
                         break;
                 }
             } elseif ($value instanceof Raw) {
-                $criteria .= "{$statement['joiner']} {$key} {$statement['operator']} $value";
+                $criteria .= "{$statement['joiner']} {$key} {$statement['operator']} $value ";
             } else {
                 // Usual where like criteria
 

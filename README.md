@@ -317,7 +317,7 @@ QB::table('my_table')
 
 ### Group By and Order By
 ```PHP
-$query = QB::table('my_table')->groupBy('age')->orderBy('created_at');
+$query = QB::table('my_table')->groupBy('age')->orderBy('created_at', 'ASC');
 ```
 
 #### Multiple Group By
