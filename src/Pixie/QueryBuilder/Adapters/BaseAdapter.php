@@ -131,8 +131,6 @@ abstract class BaseAdapter
     {
         if (!isset($statements['tables'])) {
             throw new Exception('No table specified', 3);
-        } elseif (count($data) < 1) {
-            throw new Exception('No data given.', 4);
         }
 
         $table = end($statements['tables']);
