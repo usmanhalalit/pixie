@@ -63,7 +63,7 @@ QB::registerEvent('before-select', 'users', function($qb)
 ```
 
 
-There are many advanced options which are documented below. Sold? Lets install.
+There are many advanced options which are documented below. Sold? Let's install.
 
 ## Installation
 
@@ -71,7 +71,7 @@ Pixie uses [Composer](http://getcomposer.org/doc/00-intro.md#installation-nix) t
 
 Learn to use composer and add this to require section (in your composer.json):
 
-    "usmanhalalit/pixie": "1.*@dev"
+    "usmanhalalit/pixie": "2.*@dev"
 
 And run:
 
@@ -85,7 +85,6 @@ Library on [Packagist](https://packagist.org/packages/usmanhalalit/pixie).
 
  - [Connection](#connection)
     - [Alias](#alias)
-       - [Code Completion](#code-completion)
     - [Multiple Connection](#alias)
     - [SQLite and PostgreSQL Config Sample](sqlite-and-postgresql-config-sample)
  - [Query](#query)
@@ -169,17 +168,6 @@ var_dump($query->get());
 ```
 
 `$connection` here is optional, if not given it will always associate itself to the first connection, but it can be useful when you have multiple database connections.
-
-#### Code Completion
-When using an alias, you can enable IDE code completion by creating a "stub" for that alias. For example
-
-```PHP
-class MyAlias extends \Pixie\QueryBuilder\QueryBuilderHandlerStub {
-
-}
-```
-
-It is important that your stub *is not* included anywhere in your project. The presence of the file should be sufficient to enable code completion.
 
 ### SQLite and PostgreSQL Config Sample
 ```PHP
@@ -666,6 +654,6 @@ Here are some cases where Query Events can be extremely helpful:
  - Of course Query Events don't work with raw queries.
 
 ___
-If you find any typo then please edit and send pull request.
+If you find any typo then please edit and send a pull request.
 
-&copy; 2015 [Muhammad Usman](http://usman.it/). Licensed under MIT license.
+&copy; 2016 [Muhammad Usman](http://usman.it/). Licensed under MIT license.
