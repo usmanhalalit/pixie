@@ -13,4 +13,3 @@ before_script:
 
 script:
   - ./vendor/bin/phpunit
-  - ./vendor/bin/phpcs --standard=PSR2 --colors ./src/Pixie/
