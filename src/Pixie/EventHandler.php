@@ -34,6 +34,19 @@ class EventHandler
         if ($table instanceof Raw) {
             return null;
         }
+
+        // Find event with *
+        if(isset($this->events[$table])) {
+            foreach($this->events[$table] as $name => $e) {
+                if (stripos($name, '*') > - 1) {
+                    $name = substr($name, 0, strpos($name, '*'));
+                    if (stripos($event, $name) > - 1) {
+                        return $e;
+                    }
+                }
+            }
+        }
+
         return isset($this->events[$table][$event]) ? $this->events[$table][$event] : null;
     }
 
