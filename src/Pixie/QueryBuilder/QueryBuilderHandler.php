@@ -141,8 +141,14 @@ class QueryBuilderHandler
     public function statement($sql, $bindings = array())
     {
         $start = microtime(true);
+
         $pdoStatement = $this->pdo->prepare($sql);
         foreach ($bindings as $key => $value) {
+
+            if($value instanceof self) {
+                $value = $value->getQuery()->getRawSql();
+            }
+
             $pdoStatement->bindValue(
                 is_int($key) ? $key + 1 : $key,
                 $value,
