@@ -566,6 +566,8 @@ Pixie comes with powerful query events to supercharge your application. These ev
 
 #### Available Events
 
+ - after-*
+ - before-*
  - before-select
  - after-select
  - before-insert
