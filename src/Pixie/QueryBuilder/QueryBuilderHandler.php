@@ -144,11 +144,6 @@ class QueryBuilderHandler
 
         $pdoStatement = $this->pdo->prepare($sql);
         foreach ($bindings as $key => $value) {
-
-            if($value instanceof self) {
-                $value = $value->getQuery()->getRawSql();
-            }
-
             $pdoStatement->bindValue(
                 is_int($key) ? $key + 1 : $key,
                 $value,
@@ -175,8 +170,7 @@ class QueryBuilderHandler
         if (is_null($this->pdoStatement)) {
             $queryObject = $this->getQuery('select');
             list($this->pdoStatement, $executionTime) = $this->statement(
-                $queryObject->getSql(),
-                $queryObject->getBindings()
+                $queryObject->getRawSql()
             );
         }
 
