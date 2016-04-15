@@ -324,7 +324,7 @@ class QueryBuilderHandler
 
             list($result, $executionTime) = $this->statement($queryObject->getSql(), $queryObject->getBindings());
 
-            $return = $result->rowCount() === 1 ? $this->pdo->lastInsertId() : null;
+            $return = $result->rowCount() >= 1 ? $this->pdo->lastInsertId() : null;
         } else {
             // Its a batch insert
             $return = array();
@@ -335,7 +335,7 @@ class QueryBuilderHandler
                 list($result, $time) = $this->statement($queryObject->getSql(), $queryObject->getBindings());
                 $executionTime += $time;
 
-                if ($result->rowCount() === 1) {
+                if ($result->rowCount() >= 1) {
                     $return[] = $this->pdo->lastInsertId();
                 }
             }
