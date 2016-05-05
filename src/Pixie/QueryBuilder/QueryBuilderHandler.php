@@ -530,14 +530,17 @@ class QueryBuilderHandler
         foreach ($fields as $key => $value) {
             $field = $key;
             $type = $value;
+            $bindings = [];
             if (is_int($key)) {
                 $field = $value;
                 $type = $defaultDirection;
             }
             if (!$field instanceof Raw) {
                 $field = $this->addTablePrefix($field);
+            } else {
+                $bindings = $field->getBindings();
             }
-            $this->statements['orderBys'][] = compact('field', 'type');
+            $this->statements['orderBys'][] = compact('field', 'type', 'bindings');
         }
 
         return $this;
