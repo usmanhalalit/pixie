@@ -329,7 +329,22 @@ class QueryBuilderHandler
             // Its a batch insert
             $return = array();
             $executionTime = 0;
-            foreach ($data as $subData) {
+
+            // We want to check if they're an array
+            $onDuplicate = $this->statements['onduplicate'];
+
+            // Loop over the data
+            foreach ($data as $index => $subData) {
+
+                // Assume the data is the same size
+                if (is_array(current($onDuplicate))) {
+                    if (!empty($onDuplicate[$index])) {
+                        $this->statements['onduplicate'] = $onDuplicate[$index];
+                    } else {
+                        $this->statements['onduplicate'] = null;
+                    }
+                }
+
                 $queryObject = $this->getQuery($type, $subData);
 
                 list($result, $time) = $this->statement($queryObject->getSql(), $queryObject->getBindings());
