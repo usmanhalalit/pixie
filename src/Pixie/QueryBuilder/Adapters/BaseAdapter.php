@@ -344,11 +344,7 @@ abstract class BaseAdapter
      */
     protected function concatenateQuery(array $pieces)
     {
-        $str = '';
-        foreach ($pieces as $piece) {
-            $str = trim($str) . ' ' . trim($piece);
-        }
-        return trim($str);
+        return implode(' ', array_filter($pieces));
     }
 
     /**
