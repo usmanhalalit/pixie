@@ -77,6 +77,7 @@ class EventHandler
         array_unshift($tables, ':any');
 
         // Fire all events
+				$counter = 0;
         foreach ($tables as $table) {
             // Fire before events for :any table
             if ($action = $this->getEvent($event, $table)) {
@@ -90,6 +91,7 @@ class EventHandler
                   return $result;
               };
             }
+						$counter++;
         }
     }
 }
