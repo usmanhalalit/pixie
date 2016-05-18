@@ -178,7 +178,8 @@ class QueryBuilderHandler
         $result = call_user_func_array(array($this->pdoStatement, 'fetchAll'), $this->fetchParameters);
         $executionTime += microtime(true) - $start;
         $this->pdoStatement = null;
-        $this->fireEvents('after-select', $result, $executionTime);
+				$optionalInfo = array("result" => &$result, "executionTime" => $executionTime);
+        $this->fireEvents('after-select', $optionalInfo);
         return $result;
     }
 
@@ -312,7 +313,8 @@ class QueryBuilderHandler
      */
     private function doInsert($data, $type)
     {
-        $eventResult = $this->fireEvents('before-insert');
+				$optionalInfo = array("data" => &$data);
+        $eventResult = $this->fireEvents('before-insert', $optionalInfo);
         if (!is_null($eventResult)) {
             return $eventResult;
         }
@@ -341,7 +343,8 @@ class QueryBuilderHandler
             }
         }
 
-        $this->fireEvents('after-insert', $return, $executionTime);
+        $optionalInfo = array("result" => &$result, "executionTime" => $executionTime);
+				$this->fireEvents('after-insert', $optionalInfo);
 
         return $return;
     }
@@ -383,7 +386,8 @@ class QueryBuilderHandler
      */
     public function update($data)
     {
-        $eventResult = $this->fireEvents('before-update');
+        $optionalInfo = array("data" => &$data);
+				$eventResult = $this->fireEvents('before-update', $optionalInfo);
         if (!is_null($eventResult)) {
             return $eventResult;
         }
@@ -391,7 +395,8 @@ class QueryBuilderHandler
         $queryObject = $this->getQuery('update', $data);
 
         list($response, $executionTime) = $this->statement($queryObject->getSql(), $queryObject->getBindings());
-        $this->fireEvents('after-update', $queryObject, $executionTime);
+        $optionalInfo = array("result" => &$result, "executionTime" => $executionTime);
+				$this->fireEvents('after-update', $optionalInfo);
 
         return $response;
     }
@@ -434,7 +439,8 @@ class QueryBuilderHandler
         $queryObject = $this->getQuery('delete');
 
         list($response, $executionTime) = $this->statement($queryObject->getSql(), $queryObject->getBindings());
-        $this->fireEvents('after-delete', $queryObject, $executionTime);
+        $optionalInfo = array("queryObject" => &$queryObject, "executionTime" => $executionTime);
+				$this->fireEvents('after-delete', $optionalInfo);
 
         return $response;
     }
@@ -1047,11 +1053,10 @@ class QueryBuilderHandler
      * @param      $event
      * @return mixed
      */
-    public function fireEvents($event)
+    public function fireEvents($event, &$args = array())
     {
-        $params = func_get_args();
-        array_unshift($params, $this);
-        return call_user_func_array(array($this->connection->getEventHandler(), 'fireEvents'), $params);
+				$parameters = array($this, $event, &$args);
+				return call_user_func_array(array($this->connection->getEventHandler(), 'fireEvents'), $parameters);
     }
 
     /**
