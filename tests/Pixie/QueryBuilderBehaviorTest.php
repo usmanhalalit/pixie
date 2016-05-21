@@ -308,7 +308,7 @@ class QueryBuilderTest extends TestCase
         $query = $this->builder->table('new_table')
 						->AddColumn("id", "int", 11);
 
-        $this->assertEquals("CREATE TABLE `cb_new_table` (`id` INT(11))", $query->getQuery("createTable")->getRawSql());
+        $this->assertEquals("CREATE TABLE `cb_new_table` (`id` INT(11) )", $query->getQuery("createTable")->getRawSql());
     }
 		
 		public function testCreateTableWithMultipleColumnTypesQuery()
@@ -318,7 +318,7 @@ class QueryBuilderTest extends TestCase
 						->AddColumn("column_1", "varchar", 255, array("NOT NULL"))
 						->AddColumn("column_2", "bigint", 2);
 
-        $this->assertEquals("CREATE TABLE `cb_new_table` (`id` INT(11) NOT NULL PRIMARY KEY, `column_1` VARCHAR(255) NOT NULL, `column_2` BIGINT(2))", $query->getQuery("createTable")->getRawSql());
+        $this->assertEquals("CREATE TABLE `cb_new_table` (`id` INT(11) NOT NULL PRIMARY KEY, `column_1` VARCHAR(255) NOT NULL, `column_2` BIGINT(2) )", $query->getQuery("createTable")->getRawSql());
     }
 		
 		public function testCreateTableWithOneColumnQuery()
@@ -336,7 +336,7 @@ class QueryBuilderTest extends TestCase
 						->AddColumn("column_1", "varchar", 255, array("NOT NULL"))
 						->AddColumn("column_2", "bigint", 2);
 
-        $this->assertEquals("ALTER TABLE `cb_new_table` ADD `id` INT(11) NOT NULL PRIMARY KEY, ADD `column_1` VARCHAR(255) NOT NULL, ADD `column_2` BIGINT(2))"
+        $this->assertEquals("ALTER TABLE `cb_new_table` ADD `id` INT(11) NOT NULL PRIMARY KEY, ADD `column_1` VARCHAR(255) NOT NULL, ADD `column_2` BIGINT(2)"
             , $query->getQuery("alterTable")->getRawSql());
     }
 		
@@ -355,7 +355,7 @@ class QueryBuilderTest extends TestCase
 						->ModifyColumn("column_1", "varchar", 255, array("NOT NULL"))
 						->ModifyColumn("column_2", "bigint", 2);
 
-        $this->assertEquals("ALTER TABLE `cb_new_table` MODIFY COLUMN `id` INT(11) NOT NULL PRIMARY KEY, MODIFY COLUMN `column_1` VARCHAR(255) NOT NULL, MODIFY COLUMN `column_2` BIGINT(2))", $query->getQuery("alterTable")->getRawSql());
+        $this->assertEquals("ALTER TABLE `cb_new_table` MODIFY COLUMN `id` INT(11) NOT NULL PRIMARY KEY, MODIFY COLUMN `column_1` VARCHAR(255) NOT NULL, MODIFY COLUMN `column_2` BIGINT(2)", $query->getQuery("alterTable")->getRawSql());
     }
 		
 		public function testAlterTableWithModifiyOneColumnQuery()
@@ -373,7 +373,7 @@ class QueryBuilderTest extends TestCase
 						->DropColumn("column_1")
 						->DropColumn("column_2");
 
-        $this->assertEquals("ALTER TABLE `cb_new_table` DROP `id`, DROP `column_1` , DROP `column_2`", $query->getQuery("alterTable")->getRawSql());
+        $this->assertEquals("ALTER TABLE `cb_new_table` DROP `id` , DROP `column_1` , DROP `column_2`", $query->getQuery("alterTable")->getRawSql());
     }
 		
 		public function testAlterTableWithDropOneColumnQuery()
@@ -381,7 +381,7 @@ class QueryBuilderTest extends TestCase
         $query = $this->builder->table('new_table')
 						->DropColumn("id");
 
-        $this->assertEquals("ALTER TABLE `new_table` DROP COLUMN `id`", $query->getQuery("alterTable")->getRawSql());
+        $this->assertEquals("ALTER TABLE `cb_new_table` DROP COLUMN `id`", $query->getQuery("alterTable")->getRawSql());
     }
 		
 		public function testDropTableQuery()
