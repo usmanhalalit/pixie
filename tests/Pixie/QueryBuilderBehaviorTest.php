@@ -302,4 +302,99 @@ class QueryBuilderTest extends TestCase
             $query->getQuery()->getRawSql()
         );
     }
+		
+		public function testShouldMakeDataTypeUppercaseInQuery()
+    {
+        $query = $this->builder->table('new_table')
+						->AddColumn("id", "int", 11);
+
+        $this->assertEquals("CREATE TABLE `new_table` (`id` INT(11))", $query->getQuery("createTable")->getRawSql());
+    }
+		
+		public function testCreateTableWithMultipleColumnTypesQuery()
+    {
+        $query = $this->builder->table('new_table')
+						->AddColumn("id", "int", 11, array("NOT NULL", "PRIMARY KEY"))
+						->AddColumn("column_1", "varchar", 255, array("NOT NULL"))
+						->AddColumn("column_2", "bigint", 2);
+
+        $this->assertEquals("CREATE TABLE `new_table` (`id` INT(11) NOT NULL PRIMARY KEY, `column_1` VARCHAR(255) NOT NULL, `column_2` BIGINT(2))", $query->getQuery("createTable")->getRawSql());
+    }
+		
+		public function testCreateTableWithOneColumnQuery()
+    {
+        $query = $this->builder->table('new_table')
+						->AddColumn("id", "int", 11, array("NOT NULL", "PRIMARY KEY")));
+
+        $this->assertEquals("CREATE TABLE `new_table` (`id` INT(11) NOT NULL PRIMARY KEY)", $query->getQuery("createTable")->getRawSql());
+    }
+		
+		public function testAlterTableWithAddMultipleColumnTypesQuery()
+    {
+        $query = $this->builder->table('new_table')
+						->AddColumn("id", "int", 11, array("NOT NULL", "PRIMARY KEY"))
+						->AddColumn("column_1", "varchar", 255, array("NOT NULL"))
+						->AddColumn("column_2", "bigint", 2);
+
+        $this->assertEquals("ALTER TABLE `new_table` ADD `id` INT(11) NOT NULL PRIMARY KEY, ADD `column_1` VARCHAR(255) NOT NULL, ADD `column_2` BIGINT(2))"
+            , $query->getQuery("alterTable")->getRawSql());
+    }
+		
+		public function testAlterTableWithAddOneColumnQuery()
+    {
+        $query = $this->builder->table('new_table')
+						->AddColumn("id", "int", 11, array("NOT NULL", "PRIMARY KEY"));
+
+        $this->assertEquals("ALTER TABLE `new_table` ADD COLUMN `id` INT(11) NOT NULL PRIMARY KEY", $query->getQuery("alterTable")->getRawSql());
+    }
+		
+		public function testAlterTableWithModifiyMultipleColumnTypesQuery()
+    {
+        $query = $this->builder->table('new_table')
+						->ModifyColumn("id", "int", 11, array("NOT NULL", "PRIMARY KEY"))
+						->ModifyColumn("column_1", "varchar", 255, array("NOT NULL"))
+						->ModifyColumn("column_2", "bigint", 2);
+
+        $this->assertEquals("ALTER TABLE `new_table` MODIFY COLUMN `id` INT(11) NOT NULL PRIMARY KEY, MODIFY COLUMN `column_1` VARCHAR(255) NOT NULL, MODIFY COLUMN `column_2` BIGINT(2))", $query->getQuery("alterTable")->getRawSql());
+    }
+		
+		public function testAlterTableWithModifiyOneColumnQuery()
+    {
+        $query = $this->builder->table('new_table')
+						->ModifyColumn("id", "int", 11, array("NOT NULL", "PRIMARY KEY"));
+
+        $this->assertEquals("ALTER TABLE `new_table` MODIFY COLUMN `id` INT(11) NOT NULL PRIMARY KEY", $query->getQuery("alterTable")->getRawSql());
+    }
+		
+		public function testAlterTableWithDropMultipleColumnTypesQuery()
+    {
+        $query = $this->builder->table('new_table')
+						->DropColumn("id"))
+						->DropColumn("column_1"))
+						->DropColumn("column_2");
+
+        $this->assertEquals("ALTER TABLE `new_table` DROP `id`, DROP `column_1` , DROP `column_2`", $query->getQuery("alterTable")->getRawSql());
+    }
+		
+		public function testAlterTableWithDropOneColumnQuery()
+    {
+        $query = $this->builder->table('new_table')
+						->DropColumn("id");
+
+        $this->assertEquals("ALTER TABLE `new_table` DROP COLUMN `id`", $query->getQuery("alterTable")->getRawSql());
+    }
+		
+		public function testDropTableQuery()
+    {
+        $query = $this->builder->table('new_table');
+
+        $this->assertEquals("DROP TABLE `new_table`", $query->getQuery("dropTable")->getRawSql());
+    }
+		
+		public function testRenameTableQuery()
+    {
+        $query = $this->builder->table(array('old_table', 'new_table'));
+
+        $this->assertEquals("RENAME TABLE `old_table` TO `new_table`", $query->getQuery("renameTable")->getRawSql());
+    }
 }
