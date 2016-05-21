@@ -324,7 +324,7 @@ class QueryBuilderTest extends TestCase
 		public function testCreateTableWithOneColumnQuery()
     {
         $query = $this->builder->table('new_table')
-						->AddColumn("id", "int", 11, array("NOT NULL", "PRIMARY KEY")));
+						->AddColumn("id", "int", 11, array("NOT NULL", "PRIMARY KEY"));
 
         $this->assertEquals("CREATE TABLE `new_table` (`id` INT(11) NOT NULL PRIMARY KEY)", $query->getQuery("createTable")->getRawSql());
     }
