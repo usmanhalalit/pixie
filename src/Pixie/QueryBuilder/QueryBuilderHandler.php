@@ -277,7 +277,7 @@ class QueryBuilderHandler
      */
     public function getQuery($type = 'select', $dataToBePassed = array())
     {
-        $allowedTypes = array('select', 'insert', 'insertignore', 'replace', 'delete', 'update', 'criteriaonly');
+        $allowedTypes = array('select', 'insert', 'insertignore', 'replace', 'delete', 'update', 'criteriaonly', "createtable", "altertable", "droptable", "renametable");
         if (!in_array(strtolower($type), $allowedTypes)) {
             throw new Exception($type . ' is not a known type.', 2);
         }
