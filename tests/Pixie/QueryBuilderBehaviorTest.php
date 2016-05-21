@@ -369,8 +369,8 @@ class QueryBuilderTest extends TestCase
 		public function testAlterTableWithDropMultipleColumnTypesQuery()
     {
         $query = $this->builder->table('new_table')
-						->DropColumn("id"))
-						->DropColumn("column_1"))
+						->DropColumn("id")
+						->DropColumn("column_1")
 						->DropColumn("column_2");
 
         $this->assertEquals("ALTER TABLE `new_table` DROP `id`, DROP `column_1` , DROP `column_2`", $query->getQuery("alterTable")->getRawSql());
