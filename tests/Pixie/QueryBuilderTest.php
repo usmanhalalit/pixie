@@ -94,4 +94,9 @@ class QueryBuilder extends TestCase
     public function testTableNotSpecifiedException(){
         $this->builder->where('a', 'b')->get();
     }
+
+    public function testFalseBoolWhere() {
+        $result = $this->builder->table('test')->where('id', '=', false);
+        $this->assertEquals('SELECT * FROM `cb_test` WHERE `id` = 0', $result->getQuery()->getRawSql());
+    }
 }

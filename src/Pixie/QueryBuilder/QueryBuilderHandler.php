@@ -606,6 +606,11 @@ class QueryBuilderHandler
             $value = $operator;
             $operator = '=';
         }
+
+        if(is_bool($value)) {
+            $value = (int)$value;
+        }
+        
         return $this->whereHandler($key, $operator, $value);
     }
 
