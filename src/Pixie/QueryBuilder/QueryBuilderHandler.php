@@ -593,19 +593,27 @@ class QueryBuilderHandler
     }
 
     /**
-     * @param $key
-     * @param $operator
-     * @param $value
+     * Adds where clause to the query.
      *
-     * @return $this
+     * @param string $key Field to match
+     * @param string|null $operator Operator type (=, <, > etc)
+     * @param string|null $value The value to match upon (null will match nullable values).
+     *
+     * @return static $this
      */
-    public function where($key, $operator = null, $value = null)
+    public function where($key, $operator = null, $value = '')
     {
         // If two params are given then assume operator is =
-        if (func_num_args() == 2) {
+        if (func_num_args() === 2) {
             $value = $operator;
             $operator = '=';
         }
+
+        // If only one argument or value is null, use whereNull instead
+        if(is_string($value) && $value === null) {
+            return $this->whereNull($key);
+        }
+
         return $this->whereHandler($key, $operator, $value);
     }
 
