@@ -610,7 +610,7 @@ class QueryBuilderHandler
         }
 
         // If only one argument or value is null, use whereNull instead
-        if(func_num_args() === 1 || $value === null) {
+        if(is_string($value) && $value === null) {
             return $this->whereNull($key);
         }
 
