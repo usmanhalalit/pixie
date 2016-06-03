@@ -96,7 +96,7 @@ class QueryBuilder extends TestCase
     }
 
     public function testFalseBoolWhere() {
-        $result = $this->builder->table('test')->where('id', '=', false);
-        $this->assertEquals('SELECT * FROM `cb_test` WHERE `id` = 0', $result->getQuery()->getRawSql());
+        $result = $this->builder->table('test')->where('deleted', '=', false);
+        $this->assertEquals('SELECT * FROM `cb_test` WHERE `deleted` = 0', $result->getQuery()->getRawSql());
     }
 }
