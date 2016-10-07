@@ -323,8 +323,13 @@ class QueryBuilderHandler
             $queryObject = $this->getQuery($type, $data);
 
             list($result, $executionTime) = $this->statement($queryObject->getSql(), $queryObject->getBindings());
-
-            $return = $result->rowCount() >= 1 ? $this->pdo->lastInsertId() : null;
+			
+			// Use with LAST_INSERT_ID(id)
+			if (isset($this->statements['onduplicate'])) {
+                $return = $this->pdo->lastInsertId();
+            } else {
+                $return = $result->rowCount() >= 1 ? $this->pdo->lastInsertId() : null;
+            }
         } else {
             // Its a batch insert
             $return = array();
@@ -348,9 +353,12 @@ class QueryBuilderHandler
                 $queryObject = $this->getQuery($type, $subData);
 
                 list($result, $time) = $this->statement($queryObject->getSql(), $queryObject->getBindings());
-                $executionTime += $time;
-
-                if ($result->rowCount() >= 1) {
+                $executionTime += $time;	
+				
+                // Use with LAST_INSERT_ID(id)
+				if (isset($this->statements['onduplicate'])) {
+					$return = $this->pdo->lastInsertId();
+				} else if ($result->rowCount() >= 1) {
                     $return[] = $this->pdo->lastInsertId();
                 }
             }
