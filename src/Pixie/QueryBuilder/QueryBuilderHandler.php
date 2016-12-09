@@ -796,7 +796,7 @@ class QueryBuilderHandler
         $key($joinBuilder);
         $table = $this->addTablePrefix($table, false);
         // Get the criteria only query from the joinBuilder object
-        $this->statements['joins'][] = compact('type', 'table', 'joinBuilder');
+        $this->statements['joins'][$table] = compact('type', 'table', 'joinBuilder');
 
         return $this;
     }
