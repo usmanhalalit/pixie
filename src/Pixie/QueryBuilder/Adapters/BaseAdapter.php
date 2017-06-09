@@ -354,8 +354,14 @@ abstract class BaseAdapter
         $criteria = '';
         $bindings = array();
         foreach ($statements as $statement) {
-            $key = $this->wrapSanitizer($statement['key']);
-            $value = $statement['value'];
+            
+            $key = $statement['key'];
+			$value = $statement['value'];
+
+			// Wrap in our escape tags or not?
+			if (!isset($statement['skipSanitizer'])) {
+	            $key = $this->wrapSanitizer($statement['key']);
+			}
 
             if (is_null($value) && $key instanceof \Closure) {
                 // We have a closure, a nested criteria
