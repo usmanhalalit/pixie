@@ -953,7 +953,7 @@ class QueryBuilderHandler
 
 	// We're an array, do a CONCAT
 	if (is_array($key)) {
-		$key = 'CONCAT_WS('.implode($key, ', ').', " ")';
+		$key = 'CONCAT_WS(" ", '.implode($key, ', ').')';
 		$skipSanitizer = true;
 	}
 	    
