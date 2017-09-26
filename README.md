@@ -621,7 +621,7 @@ QB::registerEvent('after-delete', 'my_table', function($queryBuilder, $queryObje
 
 Pixie passes the current instance of query builder as first parameter of your closure so you can build queries with this object, you can do anything like usual query builder (`QB`).
 
-If something other than `null` is returned from the `before-*` query handler, the value will be result of execution and DB will not be actually queried (and thus, corresponding `after-*` handler will not be called ether).
+If something other than `null` is returned from the `before-*` query handler, the value will be result of execution and DB will not be actually queried (and thus, corresponding `after-*` handler will not be called either).
 
 Only on `after-*` events you get three parameters: **first** is the query builder, **third** is the execution time as float and **the second** varies:
 
