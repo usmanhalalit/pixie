@@ -141,6 +141,7 @@ class QueryBuilderHandler
     public function statement($sql, $bindings = array())
     {
         $start = microtime(true);
+
         $pdoStatement = $this->pdo->prepare($sql);
         foreach ($bindings as $key => $value) {
             $pdoStatement->bindValue(
@@ -169,8 +170,7 @@ class QueryBuilderHandler
         if (is_null($this->pdoStatement)) {
             $queryObject = $this->getQuery('select');
             list($this->pdoStatement, $executionTime) = $this->statement(
-                $queryObject->getSql(),
-                $queryObject->getBindings()
+                $queryObject->getRawSql()
             );
         }
 
