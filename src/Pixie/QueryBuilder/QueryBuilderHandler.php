@@ -324,18 +324,33 @@ class QueryBuilderHandler
 
             list($result, $executionTime) = $this->statement($queryObject->getSql(), $queryObject->getBindings());
 
-            $return = $result->rowCount() === 1 ? $this->pdo->lastInsertId() : null;
+            $return = $result->rowCount() >= 1 ? $this->pdo->lastInsertId() : null;
         } else {
             // Its a batch insert
             $return = array();
             $executionTime = 0;
-            foreach ($data as $subData) {
+
+            // We want to check if they're an array
+            $onDuplicate = $this->statements['onduplicate'];
+
+            // Loop over the data
+            foreach ($data as $index => $subData) {
+
+                // Assume the data is the same size
+                if (is_array(current($onDuplicate))) {
+                    if (!empty($onDuplicate[$index])) {
+                        $this->statements['onduplicate'] = $onDuplicate[$index];
+                    } else {
+                        $this->statements['onduplicate'] = null;
+                    }
+                }
+
                 $queryObject = $this->getQuery($type, $subData);
 
                 list($result, $time) = $this->statement($queryObject->getSql(), $queryObject->getBindings());
                 $executionTime += $time;
 
-                if ($result->rowCount() === 1) {
+                if ($result->rowCount() >= 1) {
                     $return[] = $this->pdo->lastInsertId();
                 }
             }

@@ -16,12 +16,12 @@ class QueryBuilderTest extends TestCase
     public function testSelectFlexibility()
     {
         $query = $this->builder
-            ->select('foo')
-            ->select(array('bar', 'baz'))
+            ->select('foo1')
+            ->select(array('bar-2', 'baz_3'))
             ->select('qux', 'lol', 'wut')
             ->from('t');
         $this->assertEquals(
-            'SELECT `foo`, `bar`, `baz`, `qux`, `lol`, `wut` FROM `cb_t`',
+            'SELECT `foo1`, `bar-2`, `baz_3`, `qux`, `lol`, `wut` FROM `cb_t`',
             $query->getQuery()->getRawSql(),
             'SELECT is pretty flexible!'
         );
