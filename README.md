@@ -159,7 +159,7 @@ new \Pixie\Connection('mysql', $config, 'MyAlias');
 When not using an alias you can instantiate the QueryBuilder handler separately, helpful for Dependency Injection and Testing.
 
 ```PHP
-$connection = new \Pixie\Connection('mysql', $config));
+$connection = new \Pixie\Connection('mysql', $config);
 $qb = new \Pixie\QueryBuilder\QueryBuilderHandler($connection);
 
 $query = $qb->table('my_table')->where('name', '=', 'Sana');
