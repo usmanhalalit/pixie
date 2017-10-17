@@ -310,7 +310,7 @@ class QueryBuilderHandler
      *
      * @return array|string
      */
-    private function doInsert($data, $type)
+    private function doInsert($data, $type, $sequence = null)
     {
         $eventResult = $this->fireEvents('before-insert');
         if (!is_null($eventResult)) {
@@ -324,7 +324,7 @@ class QueryBuilderHandler
 
             list($result, $executionTime) = $this->statement($queryObject->getSql(), $queryObject->getBindings());
 
-            $return = $result->rowCount() === 1 ? $this->pdo->lastInsertId() : null;
+            $return = $result->rowCount() === 1 ? $this->pdo->lastInsertId($sequence) : null;
         } else {
             // Its a batch insert
             $return = array();
@@ -336,7 +336,7 @@ class QueryBuilderHandler
                 $executionTime += $time;
 
                 if ($result->rowCount() === 1) {
-                    $return[] = $this->pdo->lastInsertId();
+                    $return[] = $this->pdo->lastInsertId($sequence);
                 }
             }
         }
@@ -351,9 +351,9 @@ class QueryBuilderHandler
      *
      * @return array|string
      */
-    public function insert($data)
+    public function insert($data, $sequence = null)
     {
-        return $this->doInsert($data, 'insert');
+        return $this->doInsert($data, 'insert', $sequence);
     }
 
     /**
@@ -361,9 +361,9 @@ class QueryBuilderHandler
      *
      * @return array|string
      */
-    public function insertIgnore($data)
+    public function insertIgnore($data, $sequence = null)
     {
-        return $this->doInsert($data, 'insertignore');
+        return $this->doInsert($data, 'insertignore', $sequence);
     }
 
     /**
@@ -371,9 +371,9 @@ class QueryBuilderHandler
      *
      * @return array|string
      */
-    public function replace($data)
+    public function replace($data, $sequence = null)
     {
-        return $this->doInsert($data, 'replace');
+        return $this->doInsert($data, 'replace', $sequence);
     }
 
     /**
