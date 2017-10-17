@@ -32,14 +32,18 @@ abstract class BaseAdapter
      */
     public function select($statements)
     {
-        if (!array_key_exists('tables', $statements)) {
-            throw new Exception('No table specified.', 3);
-        } elseif (!array_key_exists('selects', $statements)) {
+        if (!array_key_exists('selects', $statements)) {
             $statements['selects'][] = '*';
         }
 
         // From
-        $tables = $this->arrayStr($statements['tables'], ', ');
+        $fromEnabled = false;
+        $tables = '';
+
+        if(isset($statements['tables'])) {
+            $tables = $this->arrayStr($statements['tables'], ', ');
+            $fromEnabled = true;
+        }
         // Select
         $selects = $this->arrayStr($statements['selects'], ', ');
 
@@ -77,7 +81,7 @@ abstract class BaseAdapter
         $sqlArray = array(
             'SELECT' . (isset($statements['distinct']) ? ' DISTINCT' : ''),
             $selects,
-            'FROM',
+            (($fromEnabled) ? 'FROM' : ''),
             $tables,
             $joinString,
             $whereCriteria,
@@ -129,10 +133,6 @@ abstract class BaseAdapter
      */
     private function doInsert($statements, array $data, $type)
     {
-        if (!isset($statements['tables'])) {
-            throw new Exception('No table specified', 3);
-        }
-
         $table = end($statements['tables']);
 
         $bindings = $keys = $values = array();
@@ -247,9 +247,7 @@ abstract class BaseAdapter
      */
     public function update($statements, array $data)
     {
-        if (!isset($statements['tables'])) {
-            throw new Exception('No table specified', 3);
-        } elseif (count($data) < 1) {
+        if (count($data) < 1) {
             throw new Exception('No data given.', 4);
         }
 
@@ -288,10 +286,6 @@ abstract class BaseAdapter
      */
     public function delete($statements)
     {
-        if (!isset($statements['tables'])) {
-            throw new Exception('No table specified', 3);
-        }
-
         $table = end($statements['tables']);
 
         // Wheres
