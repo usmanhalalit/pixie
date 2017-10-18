@@ -2,6 +2,7 @@
 
 use Pixie\Connection;
 use Pixie\Exception;
+use Pixie\QueryBuilder\QueryBuilderHandler;
 use Pixie\QueryBuilder\Raw;
 
 abstract class BaseAdapter
@@ -16,6 +17,11 @@ abstract class BaseAdapter
      */
     protected $container;
 
+    /**
+     * @var string
+     */
+    protected $sanitizer = '';
+
     public function __construct(Connection $connection)
     {
         $this->connection = $connection;
@@ -25,7 +31,7 @@ abstract class BaseAdapter
     /**
      * Build select query string and bindings
      *
-     * @param $statements
+     * @param array $statements
      *
      * @throws Exception
      * @return array
@@ -34,7 +40,9 @@ abstract class BaseAdapter
     {
         if (!array_key_exists('tables', $statements)) {
             throw new Exception('No table specified.', 3);
-        } elseif (!array_key_exists('selects', $statements)) {
+        }
+
+        if (!array_key_exists('selects', $statements)) {
             $statements['selects'][] = '*';
         }
 
@@ -55,7 +63,7 @@ abstract class BaseAdapter
         // Order bys
         $orderBys = '';
         if (isset($statements['orderBys']) && is_array($statements['orderBys'])) {
-            foreach ($statements['orderBys'] as $orderBy) {
+            foreach ((array)$statements['orderBys'] as $orderBy) {
                 $orderBys .= $this->wrapSanitizer($orderBy['field']) . ' ' . $orderBy['type'] . ', ';
             }
 
@@ -101,7 +109,7 @@ abstract class BaseAdapter
     /**
      * Build just criteria part of the query
      *
-     * @param      $statements
+     * @param array $statements
      * @param bool $bindValues
      *
      * @return array
@@ -121,8 +129,9 @@ abstract class BaseAdapter
     /**
      * Build a generic insert/ignore/replace query
      *
-     * @param       $statements
+     * @param array $statements
      * @param array $data
+     * @param string $type
      *
      * @return array
      * @throws Exception
@@ -172,7 +181,7 @@ abstract class BaseAdapter
     /**
      * Build Insert query
      *
-     * @param       $statements
+     * @param array $statements
      * @param array $data
      *
      * @return array
@@ -186,7 +195,7 @@ abstract class BaseAdapter
     /**
      * Build Insert Ignore query
      *
-     * @param       $statements
+     * @param array $statements
      * @param array $data
      *
      * @return array
@@ -200,7 +209,7 @@ abstract class BaseAdapter
     /**
      * Build Insert Ignore query
      *
-     * @param       $statements
+     * @param array $statements
      * @param array $data
      *
      * @return array
@@ -239,7 +248,7 @@ abstract class BaseAdapter
     /**
      * Build update query
      *
-     * @param       $statements
+     * @param array $statements
      * @param array $data
      *
      * @return array
@@ -249,7 +258,9 @@ abstract class BaseAdapter
     {
         if (!isset($statements['tables'])) {
             throw new Exception('No table specified', 3);
-        } elseif (count($data) < 1) {
+        }
+
+        if (count($data) < 1) {
             throw new Exception('No data given.', 4);
         }
 
@@ -281,7 +292,7 @@ abstract class BaseAdapter
     /**
      * Build delete query
      *
-     * @param $statements
+     * @param array $statements
      *
      * @return array
      * @throws Exception
@@ -297,9 +308,6 @@ abstract class BaseAdapter
         // Wheres
         list($whereCriteria, $whereBindings) = $this->buildCriteriaWithType($statements, 'wheres', 'WHERE');
 
-        // Limit
-        $limit = isset($statements['limit']) ? 'LIMIT ' . $statements['limit'] : '';
-
         $sqlArray = array('DELETE FROM', $this->wrapSanitizer($table), $whereCriteria);
         $sql = $this->concatenateQuery($sqlArray);
         $bindings = $whereBindings;
@@ -312,8 +320,8 @@ abstract class BaseAdapter
      * But it does wrap sanitizer and trims last glue
      *
      * @param array $pieces
-     * @param       $glue
-     * @param bool  $wrapSanitizer
+     * @param string|mixed $glue
+     * @param bool $wrapSanitizer
      *
      * @return string
      */
@@ -354,7 +362,7 @@ abstract class BaseAdapter
     /**
      * Build generic criteria string and bindings from statements, like "a = b and c = ?"
      *
-     * @param      $statements
+     * @param array $statements
      * @param bool $bindValues
      *
      * @return array
@@ -364,10 +372,12 @@ abstract class BaseAdapter
         $criteria = '';
         $bindings = array();
         foreach ($statements as $statement) {
+            /** @var array $statement */
+
             $key = $this->wrapSanitizer($statement['key']);
             $value = $statement['value'];
 
-            if (is_null($value) && $key instanceof \Closure) {
+            if (null === $value && $key instanceof \Closure) {
                 // We have a closure, a nested criteria
 
                 // Build a new NestedCriteria class, keep it by reference so any changes made
@@ -377,7 +387,6 @@ abstract class BaseAdapter
                     array($this->connection)
                 );
 
-                $nestedCriteria = & $nestedCriteria;
                 // Call the closure with our new nestedCriteria object
                 $key($nestedCriteria);
                 // Get the criteria only query from the nestedCriteria object
@@ -390,21 +399,18 @@ abstract class BaseAdapter
                 // where_in or between like query
                 $criteria .= $statement['joiner'] . ' ' . $key . ' ' . $statement['operator'];
 
-                switch ($statement['operator']) {
-                    case 'BETWEEN':
-                        $bindings = array_merge($bindings, $statement['value']);
-                        $criteria .= ' ? AND ? ';
-                        break;
-                    default:
-                        $valuePlaceholder = '';
-                        foreach ($statement['value'] as $subValue) {
-                            $valuePlaceholder .= '?, ';
-                            $bindings[] = $subValue;
-                        }
+                if ($statement['operator'] === 'BETWEEN') {
+                    $bindings = array_merge($bindings, $statement['value']);
+                    $criteria .= ' ? AND ? ';
+                } else {
+                    $valuePlaceholder = '';
+                    foreach ($value as $subValue) {
+                        $valuePlaceholder .= '?, ';
+                        $bindings[] = $subValue;
+                    }
 
-                        $valuePlaceholder = trim($valuePlaceholder, ', ');
-                        $criteria .= ' (' . $valuePlaceholder . ') ';
-                        break;
+                    $valuePlaceholder = trim($valuePlaceholder, ', ');
+                    $criteria .= ' (' . $valuePlaceholder . ') ';
                 }
             } elseif ($value instanceof Raw) {
                 $criteria .= "{$statement['joiner']} {$key} {$statement['operator']} $value ";
@@ -449,7 +455,9 @@ abstract class BaseAdapter
         // Its a raw query, just cast as string, object has __toString()
         if ($value instanceof Raw) {
             return (string)$value;
-        } elseif ($value instanceof \Closure) {
+        }
+
+        if ($value instanceof \Closure) {
             return $value;
         }
 
@@ -459,7 +467,7 @@ abstract class BaseAdapter
 
         foreach ($valueArr as $key => $subValue) {
             // Don't wrap if we have *, which is not a usual field
-            $valueArr[$key] = trim($subValue) == '*' ? $subValue : $this->sanitizer . $subValue . $this->sanitizer;
+            $valueArr[$key] = trim($subValue) === '*' ? $subValue : $this->sanitizer . $subValue . $this->sanitizer;
         }
 
         // Join these back with "." and return
@@ -469,9 +477,9 @@ abstract class BaseAdapter
     /**
      * Build criteria string and binding with various types added, like WHERE and Having
      *
-     * @param      $statements
-     * @param      $key
-     * @param      $type
+     * @param array $statements
+     * @param string|integer $key
+     * @param string|mixed $type
      * @param bool $bindValues
      *
      * @return array
@@ -496,9 +504,10 @@ abstract class BaseAdapter
     /**
      * Build join string
      *
-     * @param $statements
+     * @param array $statements
      *
-     * @return array
+     * @return array|string
+     * @throws Exception
      */
     protected function buildJoin($statements)
     {
@@ -508,16 +517,16 @@ abstract class BaseAdapter
             return $sql;
         }
 
-        foreach ($statements['joins'] as $joinArr) {
+        foreach ((array)$statements['joins'] as $joinArr) {
             if (is_array($joinArr['table'])) {
-                $mainTable = $joinArr['table'][0];
-                $aliasTable = $joinArr['table'][1];
+                list($mainTable, $aliasTable) = $joinArr['table'];
                 $table = $this->wrapSanitizer($mainTable) . ' AS ' . $this->wrapSanitizer($aliasTable);
             } else {
                 $table = $joinArr['table'] instanceof Raw ?
                     (string) $joinArr['table'] :
                     $this->wrapSanitizer($joinArr['table']);
             }
+            /** @var QueryBuilderHandler $joinBuilder */
             $joinBuilder = $joinArr['joinBuilder'];
 
             $sqlArr = array(

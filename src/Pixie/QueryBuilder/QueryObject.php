@@ -84,7 +84,7 @@ class QueryObject
                 $values[$key] = implode(',', $this->pdo->quote($value));
             }
 
-            if (is_null($value)) {
+            if (null === $value) {
                 $values[$key] = 'NULL';
             }
         }
