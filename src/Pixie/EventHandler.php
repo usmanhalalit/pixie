@@ -38,7 +38,7 @@ class EventHandler
     }
 
     /**
-     * @param          $event
+     * @param string   $event
      * @param string   $table
      * @param callable $action
      *

@@ -11,13 +11,13 @@ class JoinBuilder extends QueryBuilderHandler
      */
     public function on($key, $operator, $value)
     {
-        return $this->joinHandler($key, $operator, $value, 'AND');
+        return $this->joinHandler($key, $operator, $value);
     }
 
     /**
-     * @param $key
-     * @param $operator
-     * @param $value
+     * @param mixed $key
+     * @param mixed $operator
+     * @param mixed $value
      *
      * @return $this
      */
@@ -28,8 +28,8 @@ class JoinBuilder extends QueryBuilderHandler
 
     /**
      * @param        $key
-     * @param null   $operator
-     * @param null   $value
+     * @param null|mixed $operator
+     * @param null|mixed $value
      * @param string $joiner
      *
      * @return $this
