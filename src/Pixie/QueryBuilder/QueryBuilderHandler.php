@@ -271,7 +271,7 @@ class QueryBuilderHandler
      * @param string $type
      * @param array  $dataToBePassed
      *
-     * @return mixed
+     * @return QueryObject
      * @throws Exception
      */
     public function getQuery($type = 'select', $dataToBePassed = array())
@@ -291,7 +291,7 @@ class QueryBuilderHandler
 
     /**
      * @param QueryBuilderHandler $queryBuilder
-     * @param null                $alias
+     * @param string|null         $alias
      *
      * @return Raw
      */
@@ -440,8 +440,7 @@ class QueryBuilderHandler
     }
 
     /**
-     * @param $tables Single table or multiple tables as an array or as
-     *                multiple parameters
+     * @param string|string[] $tables Single table or multiple tables as an array or as multiple parameters
      *
      * @return static
      */
@@ -880,7 +879,7 @@ class QueryBuilderHandler
      * @param $value
      * @param $bindings
      *
-     * @return mixed
+     * @return Raw
      */
     public function raw($value, $bindings = array())
     {
