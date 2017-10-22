@@ -87,6 +87,10 @@ class QueryObject
             if (is_null($value)) {
                 $values[$key] = 'NULL';
             }
+
+            if (is_float($value)) {
+                $values[$key] = str_replace(',', '.', $value);
+            }
         }
 
         $query = preg_replace($keys, $values, $query, 1, $count);
