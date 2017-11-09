@@ -9,7 +9,7 @@ class JoinBuilder extends QueryBuilderHandler
      *
      * @return $this
      */
-    public function on($key, $operator, $value)
+    public function on($key, $operator = null, $value = null)
     {
         return $this->joinHandler($key, $operator, $value, 'AND');
     }
@@ -21,7 +21,7 @@ class JoinBuilder extends QueryBuilderHandler
      *
      * @return $this
      */
-    public function orOn($key, $operator, $value)
+    public function orOn($key, $operator = null, $value = null)
     {
         return $this->joinHandler($key, $operator, $value, 'OR');
     }
