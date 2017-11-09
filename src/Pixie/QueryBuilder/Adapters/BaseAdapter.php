@@ -76,7 +76,7 @@ abstract class BaseAdapter
         list($havingCriteria, $havingBindings) = $this->buildCriteriaWithType($statements, 'havings', 'HAVING');
 
         // Joins
-        $joinString = $this->buildJoin($statements);
+        list($joinString, $joinBindings) = $this->buildJoin($statements);
 
         $sqlArray = array(
             'SELECT' . (isset($statements['distinct']) ? ' DISTINCT' : ''),
@@ -95,6 +95,7 @@ abstract class BaseAdapter
         $sql = $this->concatenateQuery($sqlArray);
 
         $bindings = array_merge(
+			$joinBindings,
             $whereBindings,
             $havingBindings
         );
@@ -354,7 +355,7 @@ abstract class BaseAdapter
         $criteria = '';
         $bindings = array();
         foreach ($statements as $statement) {
-            
+
             $key = $statement['key'];
 			$value = $statement['value'];
 
@@ -363,7 +364,7 @@ abstract class BaseAdapter
 	            $key = $this->wrapSanitizer($statement['key']);
 			}
 
-            if (is_null($value) && $key instanceof \Closure) {
+			if (is_null($value) && $key instanceof \Closure) {
                 // We have a closure, a nested criteria
 
                 // Build a new NestedCriteria class, keep it by reference so any changes made
@@ -410,9 +411,19 @@ abstract class BaseAdapter
                 if (!$bindValues) {
                     // Specially for joins
 
-                    // We are not binding values, lets sanitize then
-                    $value = $this->wrapSanitizer($value);
-                    $criteria .= $statement['joiner'] . ' ' . $key . ' ' . $statement['operator'] . ' ' . $value . ' ';
+					// We have no value and a raw statement
+					if ($statement['key'] instanceof Raw) {
+
+						// Just use the key only (for a Raw statement)
+						$criteria .= $statement['joiner'].' '.$key.' ';
+						$bindings = array_merge($bindings, $statement['key']->getBindings());
+					} else {
+
+	                    // We are not binding values, lets sanitize then
+	                    $value = $this->wrapSanitizer($value);
+	                    $criteria .= $statement['joiner'] . ' ' . $key . ' ' . $statement['operator'] . ' ' . $value . ' ';
+					}
+
                 } elseif ($statement['key'] instanceof Raw) {
                     $criteria .= $statement['joiner'] . ' ' . $key . ' ';
                     $bindings = array_merge($bindings, $statement['key']->getBindings());
@@ -500,8 +511,10 @@ abstract class BaseAdapter
         $sql = '';
 
         if (!array_key_exists('joins', $statements) || !is_array($statements['joins'])) {
-            return $sql;
+            return [$sql, []];
         }
+
+		$bindings = [];
 
         foreach ($statements['joins'] as $joinArr) {
             if (is_array($joinArr['table'])) {
@@ -513,7 +526,14 @@ abstract class BaseAdapter
                     (string) $joinArr['table'] :
                     $this->wrapSanitizer($joinArr['table']);
             }
+
             $joinBuilder = $joinArr['joinBuilder'];
+
+			// Get our join statement
+			$joinObject = $joinBuilder->getQuery('criteriaOnly', false);
+
+			// Store our binding values
+			$bindings = array_merge($bindings, $joinObject->getBindings());
 
             $sqlArr = array(
                 $sql,
@@ -521,12 +541,12 @@ abstract class BaseAdapter
                 'JOIN',
                 $table,
                 'ON',
-                $joinBuilder->getQuery('criteriaOnly', false)->getSql()
+                $joinObject->getSql()
             );
 
             $sql = $this->concatenateQuery($sqlArr);
         }
 
-        return $sql;
+        return [$sql, $bindings];
     }
 }
