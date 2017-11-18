@@ -489,7 +489,7 @@ If you wish to manually commit or rollback your changes, you can use the
 `commit()` and `rollback()` methods accordingly:
 
 ```PHP
-QB::transaction(function (qb) {
+QB::transaction(function ($qb) {
     $qb->table('my_table')->insert(array(/* data... */));
 
     $qb->commit(); // to commit the changes (data would be saved)
