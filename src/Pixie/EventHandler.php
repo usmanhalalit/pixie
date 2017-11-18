@@ -67,7 +67,7 @@ class EventHandler
      * @param                     $event
      * @return mixed
      */
-    public function fireEvents($queryBuilder, $event)
+    public function fireEvents($queryBuilder, $event, &$args = array())
     {
         $statements = $queryBuilder->getStatements();
         $tables = isset($statements['tables']) ? $statements['tables'] : array();
@@ -77,22 +77,21 @@ class EventHandler
         array_unshift($tables, ':any');
 
         // Fire all events
+				$counter = 0;
         foreach ($tables as $table) {
             // Fire before events for :any table
             if ($action = $this->getEvent($event, $table)) {
                 // Make an event id, with event type and table
-                $eventId = $event . $table;
-
-                // Fire event
-                $handlerParams = func_get_args();
-                unset($handlerParams[1]); // we do not need $event
-                // Add to fired list
-                $this->firedEvents[] = $eventId;
-                $result = call_user_func_array($action, $handlerParams);
-                if (!is_null($result)) {
-                    return $result;
-                };
+              $eventId = $event . $table;       
+							$params = array($queryBuilder, $tables[$counter + 1], &$args);
+							// Add to fired list
+							$this->firedEvents[] = $eventId;
+							$result = call_user_func_array($action, $params);
+              if (!is_null($result)) {
+                  return $result;
+              };
             }
+						$counter++;
         }
     }
 }
