@@ -344,11 +344,7 @@ abstract class BaseAdapter
      */
     protected function concatenateQuery(array $pieces)
     {
-        $str = '';
-        foreach ($pieces as $piece) {
-            $str = trim($str) . ' ' . trim($piece);
-        }
-        return trim($str);
+        return implode(' ', array_filter($pieces));
     }
 
     /**
@@ -446,24 +442,12 @@ abstract class BaseAdapter
      */
     public function wrapSanitizer($value)
     {
-        // Its a raw query, just cast as string, object has __toString()
         if ($value instanceof Raw) {
             return (string)$value;
         } elseif ($value instanceof \Closure) {
             return $value;
         }
-
-        // Separate our table and fields which are joined with a ".",
-        // like my_table.id
-        $valueArr = explode('.', $value, 2);
-
-        foreach ($valueArr as $key => $subValue) {
-            // Don't wrap if we have *, which is not a usual field
-            $valueArr[$key] = trim($subValue) == '*' ? $subValue : $this->sanitizer . $subValue . $this->sanitizer;
-        }
-
-        // Join these back with "." and return
-        return implode('.', $valueArr);
+        return preg_replace('/([\w\s-]+)/', "{$this->sanitizer}\\1{$this->sanitizer}", $value, 2);
     }
 
     /**
