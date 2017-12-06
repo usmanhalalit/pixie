@@ -258,10 +258,12 @@ class QueryBuilderHandler
             unset($this->statements['selects']);
         }
 
-        if (is_array($row[0])) {
-            return (int) $row[0]['field'];
-        } elseif (is_object($row[0])) {
-            return (int) $row[0]->field;
+        if (isset($row[0])) {
+            if (is_array($row[0])) {
+                return (int) $row[0]['field'];
+            } elseif (is_object($row[0])) {
+                return (int) $row[0]->field;
+            }
         }
 
         return 0;
