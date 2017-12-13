@@ -15,6 +15,7 @@ class QueryBuilderHandler
     /**
      * @var Connection
      */
+	
     protected $connection;
 
     /**
@@ -332,12 +333,15 @@ class QueryBuilderHandler
             }
         } else {
             // Its a batch insert
-            $return = array();
+            $return = [];
+	    $onDuplicate = [];
             $executionTime = 0;
 
             // We want to check if they're an array
-            $onDuplicate = $this->statements['onduplicate'];
-
+	    if (!empty($this->statements['onduplicate'])) {
+                $onDuplicate = $this->statements['onduplicate'];
+	    }
+		    
             // Loop over the data
             foreach ($data as $index => $subData) {
 
