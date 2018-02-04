@@ -601,6 +601,14 @@ class QueryBuilderHandler
      */
     public function where($key, $operator = null, $value = null)
     {
+
+        // If first parameter is array, assume all elements as multiple "key = value" conditions
+        if (is_array($key)) {
+          foreach ($key as $k => $v) {
+            $this->whereHandler($k, '=', $v);
+          }
+          return $this;
+        }
         // If two params are given then assume operator is =
         if (func_num_args() == 2) {
             $value = $operator;
