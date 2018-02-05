@@ -178,7 +178,8 @@ class QueryBuilderHandler
         $result = call_user_func_array(array($this->pdoStatement, 'fetchAll'), $this->fetchParameters);
         $executionTime += microtime(true) - $start;
         $this->pdoStatement = null;
-        $this->fireEvents('after-select', $result, $executionTime);
+				$optionalInfo = array("result" => &$result, "executionTime" => $executionTime);
+        $this->fireEvents('after-select', $optionalInfo);
         return $result;
     }
 
@@ -276,7 +277,7 @@ class QueryBuilderHandler
      */
     public function getQuery($type = 'select', $dataToBePassed = array())
     {
-        $allowedTypes = array('select', 'insert', 'insertignore', 'replace', 'delete', 'update', 'criteriaonly');
+        $allowedTypes = array('select', 'insert', 'insertignore', 'replace', 'delete', 'update', 'criteriaonly', "createtable", "altertable", "droptable", "renametable");
         if (!in_array(strtolower($type), $allowedTypes)) {
             throw new Exception($type . ' is not a known type.', 2);
         }
@@ -312,7 +313,8 @@ class QueryBuilderHandler
      */
     private function doInsert($data, $type)
     {
-        $eventResult = $this->fireEvents('before-insert');
+				$optionalInfo = array("data" => &$data);
+        $eventResult = $this->fireEvents('before-insert', $optionalInfo);
         if (!is_null($eventResult)) {
             return $eventResult;
         }
@@ -341,10 +343,205 @@ class QueryBuilderHandler
             }
         }
 
-        $this->fireEvents('after-insert', $return, $executionTime);
+        $optionalInfo = array("result" => &$result, "executionTime" => $executionTime);
+				$this->fireEvents('after-insert', $optionalInfo);
 
         return $return;
     }
+		
+		/**
+		 * Creates a new table
+		 * Example: QB::table("new_table")
+		 *						->addColumn("ïd", "int", 11, array("NOT NULL", "PRIMARY KEY"))
+		 *						->createTable();
+		 *
+		 * @return array|string
+		 */
+		public function createTable()
+		{
+			return $this->tableMutation("createTable");
+		}
+		
+		/**
+		 * Alter an existing table
+		 * Example: QB::table("existing_table")
+		 *						->addColumn("ïd", "int", 11, array("NOT NULL", "PRIMARY KEY"))
+		 *						->alterTable();
+		 * Options to use:
+		 * Add columns
+		 * Modifiy columns
+		 * Rename columns
+		 * Drop columns
+		 *
+		 * @return array|string
+		 */
+		public function alterTable()
+		{
+			return $this->tableMutation("alterTable");
+		}
+		
+		/**
+		 * Drops an existing table
+		 * Example: QB::table("existing_table")
+		 *						->dropTable();
+		 *
+		 * @return array|string
+		 */
+		public function dropTable()
+		{
+			return $this->tableMutation("dropTable");
+		}
+		
+		/**
+		 * Drops an existing table
+		 * Example: QB::renameTable("old_name", "new_name");
+		 *
+		 * @param $old_name
+		 * @param $new_name
+		 *
+		 * @return array|string
+		 */
+		public function renameTable($old_name, $new_name)
+		{
+			$this->addStatement('tables', array($old_name, $new_name));
+			return $this->tableMutation("renameTable");
+		}
+		
+		/*
+		 * Handles all different table mutations
+		 */
+		private function tableMutation($action)
+		{
+			$eventResult = $this->fireEvents('before-' . $action);
+			if (!is_null($eventResult)) {
+				return $eventResult;
+			}
+
+			$queryObject = $this->getQuery($action, $this->statements['columns']);
+
+			list($response, $executionTime) = $this->statement($queryObject->getSql(), $queryObject->getBindings());
+
+			$optionalInfo = array("response" => &$response, "executionTime" => $executionTime);
+			$this->fireEvents('after-' . $action, $optionalInfo);
+			
+			return $response;
+		}
+		
+		/**
+		 * Adding an column
+		 * Possible for:
+		 *    Creating new tables
+		 *    Alternating the table
+		 *
+		 * Example: QB::table("existing_table")
+		 *						->addColumn("ïd", "int", 11, array("NOT NULL", "PRIMARY KEY"))
+		 *						->alterTable();
+		 *
+		 * @param $name - The name of the column
+		 * @param $datatype - Type of the column (varchar/int/bigint etc.)
+		 * @param $size - The size of the column
+		 * @param $constraint - An array of constraints. Options supported: 'not null', 'null', 'auto_increment', 'primary key'
+		 *
+		 * @return querybuilder
+		 */
+		public function addColumn($name, $datatype, $size, $constraint = array())
+		{
+		 $this->validateConstraintIsSupported($constraint);
+		 
+			$action = "add";
+			$this->statements['columns'][] = compact('action', 'name', 'datatype', 'size', 'constraint');
+
+			return $this;
+		}
+		
+		/**
+		 * Modify an column
+		 * Possible for:
+		 *    Alternating the table
+		 *
+		 * Example: QB::table("existing_table")
+		 *						->modifyColumn("ïd", "int", 11, array("NOT NULL", "PRIMARY KEY"))
+		 *						->alterTable();
+		 *
+		 * @param $name - The name of the column
+		 * @param $datatype - Type of the column (varchar/int/bigint etc.)
+		 * @param $size - The size of the column
+		 * @param $constraint - An array of constraints. Options supported: 'not null', 'null', 'auto_increment', 'primary key'
+		 *
+		 * @return querybuilder
+		 */
+		public function modifyColumn($name, $datatype, $size, $constraint = array())
+		{
+			$this->validateConstraintIsSupported($constraint);
+			
+			$action = "modify";
+			$this->statements['columns'][] = compact('action', 'name', 'datatype', 'size', 'constraint');
+
+			return $this;
+		}
+		
+		/**
+		 * Renames an column
+		 * Possible for:
+		 *    Alternating the table
+		 *
+		 * Example: QB::table("existing_table")
+		 *						->renameColumn("an_id", "ïd", "int", 11, array("NOT NULL", "PRIMARY KEY"))
+		 *						->alterTable();
+		 *
+		 * @param $old_name - The current name of the column
+		 * @param $new_name - The new name
+		 * @param $datatype - Type of the column (varchar/int/bigint etc.)
+		 * @param $size - The size of the column
+		 * @param $constraint - An array of constraints. Options supported: 'not null', 'null', 'auto_increment', 'primary key'
+		 *
+		 * @return querybuilder
+		 */
+		public function renameColumn($old_name, $new_name, $datatype, $size, $constraint = array())
+		{
+			$this->validateConstraintIsSupported($constraint);
+			
+			$action = "rename";
+			$this->statements['columns'][] = compact('action', 'old_name', 'new_name', 'datatype', 'size', 'constraint');
+
+			return $this;
+		}
+		
+		/**
+		 * Drops an column
+		 * Possible for:
+		 *    Alternating the table
+		 *
+		 * Example: QB::table("existing_table")
+		 *						->dropColumn("ïd")
+		 *						->alterTable();
+		 *
+		 * @param $name - The name of the column
+		 *
+		 * @return querybuilder
+		 */
+		public function DropColumn($name)
+		{    
+			$action = "drop";
+			$this->statements['columns'][] = compact('action', 'name');
+
+			return $this;
+		}
+		
+		/*
+		 * Validates the given constraints before processing them
+		 */
+		private function validateConstraintIsSupported(&$constraint)
+		{
+			$allowedTypes = array('not null', 'null', 'auto_increment', 'primary key');
+			if(!is_array($constraint)) {
+				$constraint = array($constraint);
+			}
+			
+			if(array_diff(array_map('strtolower', $constraint), $allowedTypes)) {
+				throw new Exception(implode(" ", $constraint) . ' is not a known type.', 2);
+			}
+		}
 
     /**
      * @param $data
@@ -383,7 +580,8 @@ class QueryBuilderHandler
      */
     public function update($data)
     {
-        $eventResult = $this->fireEvents('before-update');
+        $optionalInfo = array("data" => &$data);
+				$eventResult = $this->fireEvents('before-update', $optionalInfo);
         if (!is_null($eventResult)) {
             return $eventResult;
         }
@@ -391,7 +589,8 @@ class QueryBuilderHandler
         $queryObject = $this->getQuery('update', $data);
 
         list($response, $executionTime) = $this->statement($queryObject->getSql(), $queryObject->getBindings());
-        $this->fireEvents('after-update', $queryObject, $executionTime);
+        $optionalInfo = array("result" => &$result, "executionTime" => $executionTime);
+				$this->fireEvents('after-update', $optionalInfo);
 
         return $response;
     }
@@ -434,7 +633,8 @@ class QueryBuilderHandler
         $queryObject = $this->getQuery('delete');
 
         list($response, $executionTime) = $this->statement($queryObject->getSql(), $queryObject->getBindings());
-        $this->fireEvents('after-delete', $queryObject, $executionTime);
+        $optionalInfo = array("queryObject" => &$queryObject, "executionTime" => $executionTime);
+				$this->fireEvents('after-delete', $optionalInfo);
 
         return $response;
     }
@@ -1047,11 +1247,10 @@ class QueryBuilderHandler
      * @param      $event
      * @return mixed
      */
-    public function fireEvents($event)
+    public function fireEvents($event, &$args = array())
     {
-        $params = func_get_args();
-        array_unshift($params, $this);
-        return call_user_func_array(array($this->connection->getEventHandler(), 'fireEvents'), $params);
+				$parameters = array($this, $event, &$args);
+				return call_user_func_array(array($this->connection->getEventHandler(), 'fireEvents'), $parameters);
     }
 
     /**
