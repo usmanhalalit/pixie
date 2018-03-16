@@ -405,6 +405,7 @@ abstract class BaseAdapter
                 }
             } elseif ($value instanceof Raw) {
                 $criteria .= "{$statement['joiner']} {$key} {$statement['operator']} $value ";
+		$bindings = array_merge($bindings, $value->getBindings());
             } else {
                 // Usual where like criteria
 
