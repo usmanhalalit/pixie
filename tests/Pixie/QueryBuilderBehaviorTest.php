@@ -315,6 +315,6 @@ class QueryBuilderTest extends TestCase
         $builder = new QueryBuilderHandler($this->mockConnection, $selectedFetchMode);
         $newBuilder = $builder->table('stuff');
 
-        $this->assertEquals($selectedFetchMode, $builder->getFetchMode());
+        $this->assertEquals($selectedFetchMode, $newBuilder->getFetchMode());
     }
 }
