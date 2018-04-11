@@ -47,13 +47,13 @@ class QueryBuilderHandler
      *
      * @var array
      */
-    protected $fetchParameters = array(PDO::FETCH_OBJ);
+    protected $fetchParameters = array(\PDO::FETCH_OBJ);
 
     /**
      * @param null|\Pixie\Connection $connection
      *
      * @param int $fetchMode
-     * @throws Exception
+     * @throws \Pixie\Exception
      */
     public function __construct(Connection $connection = null, $fetchMode = PDO::FETCH_OBJ)
     {
@@ -110,7 +110,6 @@ class QueryBuilderHandler
 
     /**
      * @param null|\Pixie\Connection $connection
-     * @param int $fetchMode
      * @return QueryBuilderHandler
      * @throws Exception
      */
@@ -160,7 +159,8 @@ class QueryBuilderHandler
     /**
      * Get all rows
      *
-     * @return \stdClass|null
+     * @return \stdClass|array
+     * @throws Exception
      */
     public function get()
     {
@@ -444,10 +444,10 @@ class QueryBuilderHandler
     }
 
     /**
-     * @param $tables Single table or multiple tables as an array or as
-     *                multiple parameters
+     * @param string|array $tables Single table or array of tables
      *
-     * @return static
+     * @return QueryBuilderHandler
+     * @throws Exception
      */
     public function table($tables)
     {
@@ -1071,6 +1071,7 @@ class QueryBuilderHandler
      */
     private function getFetchMode()
     {
-        return !empty($this->fetchParameters) ? current($this->fetchParameters) : PDO::FETCH_OBJ;
+        return !empty($this->fetchParameters) ?
+            current($this->fetchParameters) : PDO::FETCH_OBJ;
     }
 }
