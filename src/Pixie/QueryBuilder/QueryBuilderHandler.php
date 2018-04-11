@@ -23,7 +23,7 @@ class QueryBuilderHandler
     protected $statements = array();
 
     /**
-     * @var \PDO
+     * @var PDO
      */
     protected $pdo;
 
@@ -47,14 +47,15 @@ class QueryBuilderHandler
      *
      * @var array
      */
-    protected $fetchParameters = array(\PDO::FETCH_OBJ);
+    protected $fetchParameters = array(PDO::FETCH_OBJ);
 
     /**
      * @param null|\Pixie\Connection $connection
      *
-     * @throws \Pixie\Exception
+     * @param int $fetchMode
+     * @throws Exception
      */
-    public function __construct(Connection $connection = null)
+    public function __construct(Connection $connection = null, $fetchMode = PDO::FETCH_OBJ)
     {
         if (is_null($connection)) {
             if (!$connection = Connection::getStoredConnection()) {
@@ -67,6 +68,8 @@ class QueryBuilderHandler
         $this->pdo = $this->connection->getPdoInstance();
         $this->adapter = $this->connection->getAdapter();
         $this->adapterConfig = $this->connection->getAdapterConfig();
+
+        $this->setFetchMode($fetchMode);
 
         if (isset($this->adapterConfig['prefix'])) {
             $this->tablePrefix = $this->adapterConfig['prefix'];
@@ -102,13 +105,13 @@ class QueryBuilderHandler
      */
     public function asObject($className, $constructorArgs = array())
     {
-        return $this->setFetchMode(\PDO::FETCH_CLASS, $className, $constructorArgs);
+        return $this->setFetchMode(PDO::FETCH_CLASS, $className, $constructorArgs);
     }
 
     /**
      * @param null|\Pixie\Connection $connection
-     *
-     * @return static
+     * @return QueryBuilderHandler
+     * @throws Exception
      */
     public function newQuery(Connection $connection = null)
     {
@@ -116,7 +119,7 @@ class QueryBuilderHandler
             $connection = $this->connection;
         }
 
-        return new static($connection);
+        return new static($connection, $this->getFetchMode());
     }
 
     /**
@@ -156,7 +159,8 @@ class QueryBuilderHandler
     /**
      * Get all rows
      *
-     * @return \stdClass|null
+     * @return \stdClass|array
+     * @throws Exception
      */
     public function get()
     {
@@ -259,9 +263,9 @@ class QueryBuilderHandler
         }
 
         if (is_array($row[0])) {
-            return (int) $row[0]['field'];
+            return (int)$row[0]['field'];
         } elseif (is_object($row[0])) {
-            return (int) $row[0]->field;
+            return (int)$row[0]->field;
         }
 
         return 0;
@@ -269,7 +273,7 @@ class QueryBuilderHandler
 
     /**
      * @param string $type
-     * @param array  $dataToBePassed
+     * @param array $dataToBePassed
      *
      * @return mixed
      * @throws Exception
@@ -291,7 +295,7 @@ class QueryBuilderHandler
 
     /**
      * @param QueryBuilderHandler $queryBuilder
-     * @param null                $alias
+     * @param null $alias
      *
      * @return Raw
      */
@@ -440,10 +444,10 @@ class QueryBuilderHandler
     }
 
     /**
-     * @param $tables Single table or multiple tables as an array or as
-     *                multiple parameters
+     * @param string|array $tables Single table or array of tables
      *
-     * @return static
+     * @return QueryBuilderHandler
+     * @throws Exception
      */
     public function table($tables)
     {
@@ -453,7 +457,7 @@ class QueryBuilderHandler
             $tables = func_get_args();
         }
 
-        $instance = new static($this->connection);
+        $instance = new static($this->connection, $this->getFetchMode());
         $tables = $this->addTablePrefix($tables, false);
         $instance->addStatement('tables', $tables);
         return $instance;
@@ -791,7 +795,7 @@ class QueryBuilderHandler
         // Build a new JoinBuilder class, keep it by reference so any changes made
         // in the closure should reflect here
         $joinBuilder = $this->container->build('\\Pixie\\QueryBuilder\\JoinBuilder', array($this->connection));
-        $joinBuilder = & $joinBuilder;
+        $joinBuilder = &$joinBuilder;
         // Call the closure with our new joinBuilder object
         $key($joinBuilder);
         $table = $this->addTablePrefix($table, false);
@@ -1012,7 +1016,7 @@ class QueryBuilderHandler
 
     /**
      * @param          $event
-     * @param string   $table
+     * @param string $table
      * @param callable $action
      *
      * @return void
@@ -1030,7 +1034,7 @@ class QueryBuilderHandler
 
     /**
      * @param          $event
-     * @param string   $table
+     * @param string $table
      *
      * @return void
      */
@@ -1060,5 +1064,14 @@ class QueryBuilderHandler
     public function getStatements()
     {
         return $this->statements;
+    }
+
+    /**
+     * @return int will return PDO Fetch mode
+     */
+    public function getFetchMode()
+    {
+        return !empty($this->fetchParameters) ?
+            current($this->fetchParameters) : PDO::FETCH_OBJ;
     }
 }
