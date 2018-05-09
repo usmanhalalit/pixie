@@ -153,7 +153,9 @@ class QueryBuilderHandler
             );
         }
         $pdoStatement->execute();
-        return array($pdoStatement, microtime(true) - $start);
+        $executionTime = microtime(true) - $start;
+        $this->fireEvents('query', $sql, $bindings);
+        return array($pdoStatement, $executionTime);
     }
 
     /**
