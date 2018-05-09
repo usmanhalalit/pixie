@@ -154,7 +154,7 @@ class QueryBuilderHandler
         }
         $pdoStatement->execute();
         $executionTime = microtime(true) - $start;
-        $this->fireEvents('query', $sql, $bindings);
+        $this->fireEvents('query', $sql, $bindings, $executionTime);
         return array($pdoStatement, $executionTime);
     }
 
