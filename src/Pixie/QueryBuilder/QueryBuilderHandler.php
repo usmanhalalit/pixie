@@ -1095,4 +1095,25 @@ class QueryBuilderHandler
     {
         return $this->statements;
     }
+	
+    /**
+     * Get the value of Pdo Statement
+     * @return null|PDOStatement
+     */
+    public function getPdoStatement() : ?\PDOStatement
+    {
+        return $this->pdoStatement;
+    }
+
+    /**
+     * Set the value of Pdo Statement
+     *
+     * @param null|PDOStatement pdoStatement
+     * @return self
+     */
+    public function setPdoStatement(?\PDOStatement $pdoStatement) : self
+    {
+        $this->pdoStatement = $pdoStatement;
+        return $this;
+    }
 }
