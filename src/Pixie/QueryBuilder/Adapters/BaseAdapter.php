@@ -141,6 +141,7 @@ abstract class BaseAdapter
             $keys[] = $key;
             if ($value instanceof Raw) {
                 $values[] = (string) $value;
+                $bindings = array_merge($bindings, $value->getBindings());
             } else {
                 $values[] =  '?';
                 $bindings[] = $value;
@@ -226,6 +227,7 @@ abstract class BaseAdapter
         foreach ($data as $key => $value) {
             if ($value instanceof Raw) {
                 $statement .= $this->wrapSanitizer($key) . '=' . $value . ',';
+                $bindings = array_merge($bindings, $value->getBindings());
             } else {
                 $statement .= $this->wrapSanitizer($key) . '=?,';
                 $bindings[] = $value;
@@ -408,6 +410,9 @@ abstract class BaseAdapter
                 }
             } elseif ($value instanceof Raw) {
                 $criteria .= "{$statement['joiner']} {$key} {$statement['operator']} $value ";
+                if ($bindValues) {
+                    $bindings = array_merge($bindings, $value->getBindings());
+                }
             } else {
                 // Usual where like criteria
 
