@@ -67,6 +67,17 @@ class QueryBuilderTest extends TestCase
         );
     }
 
+    public function testSelectWithPrefixAndJoin()
+    {
+        $query = $this->builder->from(['my_table' => 'c0'])->select('c0.entity_id')
+            ->leftJoin(['second_table', 'c1'], 'c1.entity_id', '=', 'c0.entity_id');
+
+        $this->assertEquals(
+            "SELECT `cb_c0`.`entity_id` FROM `cb_my_table` AS `cb_c0` LEFT JOIN `cb_second_table` AS `cb_c1` ON `cb_c1`.`entity_id` = `cb_c0`.`entity_id`",
+            $query->getQuery()->getRawSql()
+        );
+    }
+
     public function testRawStatementsWithinCriteria()
     {
         $query = $this->builder->from('my_table')

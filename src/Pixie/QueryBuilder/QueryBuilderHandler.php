@@ -973,6 +973,9 @@ class QueryBuilderHandler
             $target = &$value;
             if (!is_int($key)) {
                 $target = &$key;
+                if (!$tableFieldMix) {
+                    $value = $this->tablePrefix . $value;
+                }
             }
 
             if (!$tableFieldMix || ($tableFieldMix && strpos($target, '.') !== false)) {
