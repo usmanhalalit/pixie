@@ -954,6 +954,9 @@ class QueryBuilderHandler
     protected function whereHandler($key, $operator = null, $value = null, $joiner = 'AND')
     {
 	$key = $this->addTablePrefix($key);
+	
+	// By default, santize the keys
+	$skipSanitizer = false;
 
 	// We're an array, do a CONCAT
 	if (is_array($key)) {
