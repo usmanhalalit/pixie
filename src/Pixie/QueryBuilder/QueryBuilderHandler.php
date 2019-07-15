@@ -439,11 +439,14 @@ class QueryBuilderHandler
 
     /**
      * @param $data
-     *
+     * @param $identifier
      * @return $this
      */
-    public function onDuplicateKeyUpdate($data)
+    public function onDuplicateKeyUpdate($data, $identifier = false)
     {
+        if ($identifier) {
+            $data[$identifier] = $this->db->raw('LAST_INSERT_ID('.$identifier.')');
+        }
         $this->addStatement('onduplicate', $data);
         return $this;
     }
