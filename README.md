@@ -20,7 +20,7 @@ The syntax is quite similar to Laravel's query builder.
 require 'vendor/autoload.php';
 
 // Create a connection, once only.
-$config = array(
+$config = [
             'driver'    => 'mysql', // Db driver
             'host'      => 'localhost',
             'database'  => 'your-database',
@@ -29,11 +29,11 @@ $config = array(
             'charset'   => 'utf8', // Optional
             'collation' => 'utf8_unicode_ci', // Optional
             'prefix'    => 'cb_', // Table prefix, optional
-            'options'   => array( // PDO constructor options, optional
+            'options'   => [ // PDO constructor options, optional
                 PDO::ATTR_TIMEOUT => 5,
                 PDO::ATTR_EMULATE_PREPARES => false,
-            ),
-        );
+            ],
+        ];
 
 new \Pixie\Connection('mysql', $config, 'QB');
 ```
@@ -659,4 +659,4 @@ Here are some cases where Query Events can be extremely helpful:
 ___
 If you find any typo then please edit and send a pull request.
 
-&copy; 2016 [Muhammad Usman](http://usman.it/). Licensed under MIT license.
+&copy; 2020 [Muhammad Usman](http://usman.it/). Licensed under MIT license.
