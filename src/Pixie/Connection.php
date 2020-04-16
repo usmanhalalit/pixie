@@ -65,9 +65,9 @@ class Connection
      */
     public function createAlias($alias)
     {
-        class_alias('Pixie\\AliasFacade', $alias);
+        eval("class $alias extends Pixie\\AliasFacade {}");
         $builder = $this->container->build('\\Pixie\\QueryBuilder\\QueryBuilderHandler', array($this));
-        AliasFacade::setQueryBuilderInstance($builder);
+        AliasFacade::setQueryBuilderInstance($alias, $builder);
     }
 
     /**
