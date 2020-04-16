@@ -86,12 +86,5 @@ class QueryBuilder extends TestCase
 
         $this->assertEquals(null, $id);
     }
-
-    /**
-     * @expectedException \Pixie\Exception
-     * @expectedExceptionCode 3
-     */
-    public function testTableNotSpecifiedException(){
-        $this->builder->where('a', 'b')->get();
-    }
+    
 }

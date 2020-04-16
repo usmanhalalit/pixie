@@ -104,6 +104,7 @@ Library on [Packagist](https://packagist.org/packages/usmanhalalit/pixie).
     - [Get All](#get-all)
     - [Get First Row](#get-first-row)
     - [Get Rows Count](#get-rows-count)
+    - [Selects With Sub-Queries](#select-with-sub-queries)
  - [**Where**](#where)
     - [Where In](#where-in)
     - [Where Between](#where-between)
@@ -265,6 +266,21 @@ Returns the first row, or null if there is no record. Using this method you can 
 ```PHP
 $query = QB::table('my_table')->where('name', '=', 'Sana');
 $query->count();
+```
+
+#### Select With Sub-Queries
+
+```PHP
+$subQuery1 = $this->builder->table('mail')->select($this->builder->raw('COUNT(*)'));
+$subQuery2 = $this->builder->table('event_message')->select($this->builder->raw('COUNT(*)'));
+
+$count = $this->builder->select($this->builder->subQuery($subQuery1, 'row1'), $this->builder->subQuery($subQuery2, 'row2'))->first();
+```
+
+Will produce the following query:
+
+```sql
+SELECT (SELECT COUNT(*) FROM `cb_mail`) as row1, (SELECT COUNT(*) FROM `cb_event_message`) as row2 LIMIT 1
 ```
 
 ### Where
@@ -575,6 +591,8 @@ Pixie comes with powerful query events to supercharge your application. These ev
 
 #### Available Events
 
+ - after-*
+ - before-*
  - before-select
  - after-select
  - before-insert
