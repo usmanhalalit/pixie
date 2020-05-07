@@ -54,9 +54,13 @@ abstract class BaseAdapter
 
         // Order bys
         $orderBys = '';
+        $orderBindings = [];
         if (isset($statements['orderBys']) && is_array($statements['orderBys'])) {
             foreach ($statements['orderBys'] as $orderBy) {
                 $orderBys .= $this->wrapSanitizer($orderBy['field']) . ' ' . $orderBy['type'] . ', ';
+                if ($orderBy['bindings']) {
+                    $orderBindings = array_merge($orderBindings, $orderBy['bindings']);
+                }
             }
 
             if ($orderBys = trim($orderBys, ', ')) {
@@ -92,7 +96,8 @@ abstract class BaseAdapter
 
         $bindings = array_merge(
             $whereBindings,
-            $havingBindings
+            $havingBindings,
+            $orderBindings
         );
 
         return compact('sql', 'bindings');
