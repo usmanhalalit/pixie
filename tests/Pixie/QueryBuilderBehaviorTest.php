@@ -73,10 +73,11 @@ class QueryBuilderTest extends TestCase
             ->where('simple', 'criteria')
             ->where($this->builder->raw('RAW'))
             ->where($this->builder->raw('PARAMETERIZED_ONE(?)', 'foo'))
-            ->where($this->builder->raw('PARAMETERIZED_SEVERAL(?, ?, ?)', array(1, '2', 'foo')));
+            ->where($this->builder->raw('PARAMETERIZED_SEVERAL(?, ?, ?)', array(1, '2', 'foo')))
+            ->where('raw_parameterized_value', '=', $this->builder->raw('FUNC(?)', 'parm'));
 
         $this->assertEquals(
-            "SELECT * FROM `cb_my_table` WHERE `simple` = 'criteria' AND RAW AND PARAMETERIZED_ONE('foo') AND PARAMETERIZED_SEVERAL(1, '2', 'foo')",
+            "SELECT * FROM `cb_my_table` WHERE `simple` = 'criteria' AND RAW AND PARAMETERIZED_ONE('foo') AND PARAMETERIZED_SEVERAL(1, '2', 'foo') AND `raw_parameterized_value` = FUNC('parm')",
             $query->getQuery()->getRawSql()
         );
     }
@@ -191,6 +192,16 @@ class QueryBuilderTest extends TestCase
             , $builder->getQuery('insert', $data)->getRawSql());
     }
 
+    public function testInsertQueryWithRawParams()
+    {
+        $builder = $this->builder->from('my_table');
+        $data = array('key' => 'Name',
+                'value' => $this->builder->raw('UPPER(?)', 'Sana'),);
+
+        $this->assertEquals("INSERT INTO `cb_my_table` (`key`,`value`) VALUES ('Name',UPPER('Sana'))"
+            , $builder->getQuery('insert', $data)->getRawSql());
+    }
+
     public function testInsertIgnoreQuery()
     {
         $builder = $this->builder->from('my_table');
@@ -201,6 +212,16 @@ class QueryBuilderTest extends TestCase
             , $builder->getQuery('insertignore', $data)->getRawSql());
     }
 
+    public function testInsertIgnoreQueryWithRawParams()
+    {
+        $builder = $this->builder->from('my_table');
+        $data = array('key' => 'Name',
+                'value' => $this->builder->raw('UPPER(?)', 'Sana'),);
+
+        $this->assertEquals("INSERT IGNORE INTO `cb_my_table` (`key`,`value`) VALUES ('Name',UPPER('Sana'))"
+            , $builder->getQuery('insertignore', $data)->getRawSql());
+    }
+
     public function testReplaceQuery()
     {
         $builder = $this->builder->from('my_table');
@@ -208,6 +229,16 @@ class QueryBuilderTest extends TestCase
             'value' => 'Sana',);
 
         $this->assertEquals("REPLACE INTO `cb_my_table` (`key`,`value`) VALUES ('Name','Sana')"
+            , $builder->getQuery('replace', $data)->getRawSql());
+    }
+
+    public function testReplaceQueryWithRawParams()
+    {
+        $builder = $this->builder->from('my_table');
+        $data = array('key' => 'Name',
+                'value' => $this->builder->raw('UPPER(?)', 'Sana'),);
+
+        $this->assertEquals("REPLACE INTO `cb_my_table` (`key`,`value`) VALUES ('Name',UPPER('Sana'))"
             , $builder->getQuery('replace', $data)->getRawSql());
     }
 
@@ -237,6 +268,19 @@ class QueryBuilderTest extends TestCase
         );
 
         $this->assertEquals("UPDATE `cb_my_table` SET `key`='Sana',`value`='Amrin' WHERE `value` = 'Sana'"
+            , $builder->getQuery('update', $data)->getRawSql());
+    }
+
+    public function testUpdateQueryWithRawParams()
+    {
+        $builder = $this->builder->table('my_table')->where('value', 'Sana');
+
+        $data = array(
+            'key' => 'Sana',
+            'value' => $this->builder->raw('UPPER(?)', 'Amrin'),
+        );
+
+        $this->assertEquals("UPDATE `cb_my_table` SET `key`='Sana',`value`=UPPER('Amrin') WHERE `value` = 'Sana'"
             , $builder->getQuery('update', $data)->getRawSql());
     }
 
